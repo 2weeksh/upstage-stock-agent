@@ -25,28 +25,33 @@
 
 ## 📂 프로젝트 구조
 
-`src/` 디렉토리를 중심으로 각 계층의 관심사를 분리한 클린 아키텍처 구조입니다.
+`app/` 디렉토리를 중심으로 각 계층의 관심사를 분리한 클린 아키텍처 구조입니다.
 
 ```
 upstage-stock-agent/
-├── .env                # API Key 관리 (Upstage, Tavily 등) - gitignore 필수
-├── .env.example        # 환경변수 설정 템플릿
-├── pyproject.toml      # uv 패키지 관리 설정
-├── main.py             # 시스템 실행 진입점
-└── src/
-    ├── agents/         # 에이전트 페르소나 및 프롬프트 정의
-    │   ├── chart_agent.py      # 차트 분석가 (Technical)
-    │   ├── finance_agent.py    # 재무 분석가 (Fundamental)
-    │   └── news_agent.py       # 뉴스/감성 분석가 (Sentiment)
-    ├── tools/          # 에이전트 전용 도구 (Data Provider)
-    │   ├── chart_tools.py      # 주가 지표 추출
-    │   ├── finance_tools.py    # 재무 데이터 추출
-    │   └── search_tools.py     # 실시간 뉴스 검색
-    ├── graph/          # 토론 흐름 제어 로직
-    │   ├── state.py            # 에이전트 간 공유 상태(State) 정의
-    │   └── workflow.py         # LangGraph 노드 및 엣지 구성
-    └── utils/
-        └── llm.py              # Solar/GPT 모델 초기화 설정
+├── .env                # API Key 관리 (Upstage, Tavily, OpenAI 등)
+├── .gitignore          # Git 제외 파일 (.env, .venv, __pycache__ 등)
+├── pyproject.toml      # uv 패키지 및 프로젝트 의존성 관리
+├── main.py             # 시스템 실행 진입점 (FastAPI 또는 CLI 실행)
+└── app/                # 실제 소스 코드 디렉토리
+    ├── agents/         # 각 에이전트의 페르소나 및 프롬프트 로직 정의
+    │   ├── __init__.py
+    │   ├── news_agent.py      # 뉴스/감성 분석 에이전트
+    │   ├── finance_agent.py   # 재무제표/펀더멘탈 분석 에이전트
+    │   ├── chart_agent.py     # 차트/기술적 분석 에이전트
+    │   └── moderator_agent.py # 사회자 및 최종 전략가 (주혁님 설계안 반영)
+    ├── tools/          # 에이전트가 데이터 수집 시 사용하는 도구들
+    │   ├── __init__.py
+    │   ├── search_tools.py    # 뉴스 검색 (Tavily/DuckDuckGo)
+    │   ├── finance_tools.py   # 주가 및 재무 정보 수집 (yfinance)
+    │   └── chart_tools.py     # 기술적 지표 계산 (TA-Lib/Pandas)
+    ├── graph/          # LangGraph를 이용한 토론 흐름 제어
+    │   ├── __init__.py
+    │   ├── state.py           # 에이전트 간 공유할 상태(State) 정의
+    │   └── workflow.py        # 토론 순서 및 로직 구성 (노드와 엣지)
+    └── utils/          # 공통 유틸리티
+        ├── __init__.py
+        └── llm.py             # LLM 모델(Solar 등) 초기화 및 설정
 ```
 
 ## 🧠 프로젝트 아키텍처: 4-Agent 토론 시스템
