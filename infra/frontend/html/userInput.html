@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토론형 AI 투자 서비스</title>
+    <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="page-main">
+
+    <div id="back-btn-container" >
+
+        <img src="../img/left_arrow.png" alt="뒤로가기" id="back-icon">
+    </div>
+
+    <div class="chart-bg" id="chartBg"></div>
+
+    <main class="wrapper">
+        <header class="header">
+            <h2 class="t-sub">투자 전략 토론 요청</h2>
+            <p class="desc">분석하고 싶은 종목이나 투자 궁금증을 자유롭게 입력하세요.</p>
+        </header>
+
+        <form id="analysisForm" class="box">
+            <div class="mb-6">
+                <label class="label">질문 입력</label>
+                <textarea id="userQuestion" 
+                    placeholder="예: 엔비디아 지금 매수해도 될까?" 
+                    class="input" required></textarea>
+            </div>
+            <button type="submit" class="btn">전략 토론 시작하기</button>
+        </form>
+    </main>
+    
+    
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

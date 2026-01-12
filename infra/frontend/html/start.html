@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토론형 AI 투자 서비스</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        /* 스크롤 허용 */
+        body, html, .page-main {
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+
+        .landing-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 비디오 */
+        .video-wrapper {
+            margin: 8rem 0;
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.15);
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(2,6,23,0.8) 100%);
+            pointer-events: none;
+        }
+    </style>
+    
+</head>
+<body class="page-main">
+
+    <div class="chart-bg" id="chartBg" style="position: fixed;"></div>
+
+    <div class="landing-container">
+        
+        <header class="mb-20">
+            <div class="badge">Next-Gen AI Analysis</div>
+            <h1 class="t-main" style="line-height: 1.2;">
+                토론형 AI<br>투자 서비스
+            </h1>
+            <p class="desc">
+                각 분야의 전문 AI 에이전트가 치열하게 토론합니다.<br>
+                데이터에 기반한 가장 객관적인 투자 전략을 확인하세요.
+            </p>
+        </header>
+
+        <div class="video-wrapper">
+            <video autoplay muted loop playsinline poster="../img/video_poster.jpg">
+                <source src="../img/background.mp4" type="video/mp4">
+                브라우저가 동영상을 지원하지 않습니다.
+            </video>
+            <div class="video-overlay-gradient"></div>
+        </div>
+
+        <div class="mt-24 mb-32">
+            
+            <a href="userInput.html" class="btn btn-w" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
+                분석 시작하기
+            </a>
+        </div>
+
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>
