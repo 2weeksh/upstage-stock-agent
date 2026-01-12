@@ -16,6 +16,7 @@
 * **Technical Indicators**: Pandas, TA-Lib (이동평균선, RSI, MACD 계산)
 * **Documentation**: Swagger UI (FastAPI 기반 API 문서화)
 
+<<<<<<< HEAD
 ### **Infrastructure & DevOps**
 * **Containerization**: Docker (멀티 스테이지 빌드)
 * **Orchestration**: Kubernetes (K8s)
@@ -23,6 +24,8 @@
 * **Vector DB**: ChromaDB
 * **Web Server**: Nginx Ingress Controller
 
+=======
+>>>>>>> origin/develop
 ### **Environment & Tools**
 * **Language**: Python 3.11+
 * **Package Manager**: **uv** (초고속 패키지 및 가상환경 관리)
@@ -38,6 +41,7 @@
 upstage-stock-agent/
 ├── .env                # API Key 관리 (Upstage, Tavily, OpenAI 등)
 ├── .gitignore          # Git 제외 파일 (.env, .venv, __pycache__ 등)
+<<<<<<< HEAD
 ├── .dockerignore       # Docker 빌드 제외 파일
 ├── pyproject.toml      # uv 패키지 및 프로젝트 의존성 관리
 ├── Dockerfile          # 멀티 스테이지 Docker 이미지 (Backend, Frontend)
@@ -93,6 +97,31 @@ upstage-stock-agent/
 
 ---
 
+=======
+├── pyproject.toml      # uv 패키지 및 프로젝트 의존성 관리
+├── main.py             # 시스템 실행 진입점 (FastAPI 또는 CLI 실행)
+└── app/                # 실제 소스 코드 디렉토리
+    ├── agents/         # 각 에이전트의 페르소나 및 프롬프트 로직 정의
+    │   ├── __init__.py
+    │   ├── news_agent.py      # 뉴스/감성 분석 에이전트
+    │   ├── finance_agent.py   # 재무제표/펀더멘탈 분석 에이전트
+    │   ├── chart_agent.py     # 차트/기술적 분석 에이전트
+    │   └── moderator_agent.py # 사회자 및 최종 전략가 (주혁님 설계안 반영)
+    ├── tools/          # 에이전트가 데이터 수집 시 사용하는 도구들
+    │   ├── __init__.py
+    │   ├── search_tools.py    # 뉴스 검색 (Tavily/DuckDuckGo)
+    │   ├── finance_tools.py   # 주가 및 재무 정보 수집 (yfinance)
+    │   └── chart_tools.py     # 기술적 지표 계산 (TA-Lib/Pandas)
+    ├── graph/          # LangGraph를 이용한 토론 흐름 제어
+    │   ├── __init__.py
+    │   ├── state.py           # 에이전트 간 공유할 상태(State) 정의
+    │   └── workflow.py        # 토론 순서 및 로직 구성 (노드와 엣지)
+    └── utils/          # 공통 유틸리티
+        ├── __init__.py
+        └── llm.py             # LLM 모델(Solar 등) 초기화 및 설정
+```
+
+>>>>>>> origin/develop
 ## 🧠 프로젝트 아키텍처: 4-Agent 토론 시스템
 
 본 프로젝트는 각 분야에 특화된 에이전트들이 독립적으로 분석하고, 상호 검증(Debate) 과정을 통해 객관적인 투자 전략을 도출하도록 설계되었습니다.
@@ -106,6 +135,11 @@ upstage-stock-agent/
 | **뉴스 감성 분석가** | 외부 리스크 감지 | 실시간 뉴스 감성 분석, 규제 및 리스크 탐지 |
 | **사회자/전략가** | **최종 의사결정** | 토론 통제, 분석 일관성 검증 및 최종 투자 판단 |
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/develop
 ### **2. 5단계 분석 프로세스**
 
 1. **개별 분석**: 각 분석 에이전트가 독립적으로 데이터를 수집하고 핵심 근거와 리스크를 도출합니다.
@@ -118,6 +152,7 @@ upstage-stock-agent/
 
 ## ⚙️ 설치 및 실행 방법
 
+<<<<<<< HEAD
 ### **사전 준비**
 
 1. API 키 발급
@@ -222,6 +257,29 @@ sh stop_docker.sh
 
 ## 📊 결과물 예시 (Explainable Output)
 
+=======
+### **1. 환경 변수 설정**
+루트 디렉토리에 `.env` 파일을 생성하고 필요한 API 키를 입력합니다. (보안을 위해 `.gitignore`에 반드시 등록하세요.)
+
+```
+UPSTAGE_API_KEY=your_solar_api_key
+TAVILY_API_KEY=your_tavily_key
+```
+
+### **2. 의존성 설치 (uv)**
+본 프로젝트는 초고속 패키지 관리자 uv를 사용합니다.
+```
+uv sync
+```
+
+### **3. 시스템 실행** 
+```
+# 삼성전자(005930) 종목 분석 실행 예시
+uv run main.py --symbol 005930
+```
+
+## 📊 결과물 예시 (Explainable Output)
+>>>>>>> origin/develop
 에이전트 토론 과정을 거쳐 사용자에게 전달되는 최종 리포트 예시입니다.
 
 ```
@@ -230,6 +288,7 @@ sh stop_docker.sh
 - 핵심 리스크: "중기 추세 하락 가능성 및 외부 정책 변화 주의"
 ```
 
+<<<<<<< HEAD
 ---
 
 ## 🚀 개발 로드맵
@@ -282,3 +341,8 @@ sh stop_docker.sh
 ## 📞 문의
 
 프로젝트 관련 문의사항은 Issue를 통해 남겨주세요.
+=======
+## ⚠️ 주의사항
+- API 호출 제한: 실시간 데이터 수집 시 API 호출 횟수 제한(Rate Limit)에 유의하세요.
+- 보안: .env 파일은 절대 깃허브에 올리지 마십시오.
+>>>>>>> origin/develop

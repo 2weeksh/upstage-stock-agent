@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토론형 AI 투자 서비스</title>
+    <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="../css/analysis.css">
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <a href="/" class="home-link" data-tooltip="처음으로 돌아가기">
+            <img src="../img/home.png" alt="뒤로가기" id="back-icon">
+        </a>
+        
+        <div class="top-section">
+            <header class="report-header">
+                <div class="report-meta-info">
+                    <span id="report-date">2023.00.00</span>
+                    <span class="divider">|</span>
+                    <span>Report #AI-9421</span>
+                    <span class="divider">|</span>
+                    <span class="status-live"><span class="dot"></span>Live Analysis</span>
+                </div>
+                <h1 class="t-main">투자 전략 보고서</h1>
+                <p class="desc">
+                  AI 에이전트 간의 심층 토론<br>
+                  시장 흐름을 꿰뚫는 냉철한 통찰을 확인하세요.
+                </p>
+                <div class="agent-specs">
+                    <div class="spec-item"><span>Technical</span></div>
+                    <div class="spec-item"><span>Financial</span></div>
+                    <div class="spec-item"><span>News Sentiment</span></div>
+                    <div class="spec-item"><span>Strategy</span></div>
+                </div>
+            </header>
+
+            <main class="report-content">
+                <div class="user-query-wrapper">
+                    <span class="query-label">Q. 사용자 질문</span>
+                    <div class="box user-query-box"><p id="user-query-text">...</p></div>
+                </div>
+                <section>
+                    <span class="section-title">핵심 요약</span>
+                    <div class="box ai-box"><p id="res-summary">...</p></div>
+                </section>
+                <section>
+                    <span class="section-title">최종 투자 의견</span>
+                    <div class="box ai-box highlight-border"><p id="res-conclusion">...</p></div>
+                    <span class="disclaimer-text">⚠️ 본 분석 결과는 AI 예측이며, 모든 투자의 책임은 투자자 본인에게 있습니다.</span>
+                </section>
+                <section>
+                    <button id="toggleDiscussionBtn" class="btn-toggle">
+                        <span>에이전트 토론 보기</span>
+                        <svg class="w-6 h-6 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="discussionContent" class="discussion-wrapper hidden">
+                        <div class="box discussion-box"><p id="res-discussion">...</p></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <div class="section-divider market-divider"></div>
+
+        <footer class="market-section">
+            <h2 class="t-main" style="font-size: 2rem; margin-bottom: 3rem;">시장 요약</h2>
+            
+            <div class="kospi-section" id="kospi-wrapper">
+                <div class="kospi-header">
+                    <div class="kospi-title">
+                        <span class="flag-icon">🇰🇷</span> KOSPI
+                    </div>
+                    <div class="kospi-value-group">
+                        <span class="kospi-price" id="kospi-price">Loading...</span>
+                        <span class="kospi-change" id="kospi-change">--</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="kospiChart"></canvas>
+                </div>
+            </div>
+
+            <div class="market-grid" id="market-grid">
+                <div class="market-card skeleton"></div>
+                <div class="market-card skeleton"></div>
+                <div class="market-card skeleton"></div>
+                <div class="market-card skeleton"></div>
+            </div>
+
+            <p class="market-update-time">
+                Data provided by Yahoo Finance API • Updated: <span id="market-time">-</span>
+            </p>
+        </footer>
+
+    </div>
+
+    <script src="../js/analysis.js"></script>
+</body>
+</html>
