@@ -1,5 +1,6 @@
 import os
 from langchain_community.tools.tavily_search import TavilySearchResults
+#from langchain_tavily import TavilySearchResults
 
 def get_stock_news(ticker: str, company_name: str):
     """
