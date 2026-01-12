@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # 1. ChromaDB - Vector Database
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: stock-agent-chromadb
+    ports:
+      - "8000:8000"
+    environment:
+      - CHROMA_HOST_ADDR=0.0.0.0
+      - CHROMA_HOST_PORT=8000
+      - IS_PERSISTENT=TRUE
+    volumes:
+      - ./chroma_data:/data
+    networks:
+      - stock-agent-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Backend - FastAPI Server
+  backend:
+    build:
+      context: .
+      target: backend
+    image: stock-agent-backend:latest
+    container_name: stock-agent-backend
+    ports:
+      - "8001:8001"
+    environment:
+      - UPSTAGE_API_KEY=${UPSTAGE_API_KEY}
+      - SERPER_API_KEY=${SERPER_API_KEY}
+      - SEED_URL=${SEED_URL}
+      - CHROMA_MODE=server
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - CHROMA_COLLECTION_NAME=stock_embeddings
+      - BACKEND_URL=http://backend:8001
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    networks:
+      - stock-agent-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Frontend - Streamlit UI
+  frontend:
+    build:
+      context: .
+      target: frontend
+    image: stock-agent-frontend:latest
+    container_name: stock-agent-frontend
+    ports:
+      - "8002:8002"
+    environment:
+      - BACKEND_URL=http://backend:8001
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - stock-agent-network
+    restart: unless-stopped
+
+networks:
+  stock-agent-network:
+    driver: bridge
+
+volumes:
+  chroma_data:
+    driver: local
