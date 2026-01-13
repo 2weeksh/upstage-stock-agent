@@ -147,6 +147,10 @@ async def get_kospi_data():
         print(f"KOSPI Error: {e}")
         return {"error": "Load Failed"}
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "stock-agent-backend"}
+
 @app.get("/")
 async def read_index():
     path = "infra/frontend/html/start.html"

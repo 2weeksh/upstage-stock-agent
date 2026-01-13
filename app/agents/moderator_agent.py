@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 class ModeratorAgent:
     def process_request(self, user_input: str):
         # 나중에 여기에 Upstage LLM 로직이 들어갈 자리입니다.
@@ -11,4 +8,3 @@ class ModeratorAgent:
             "conclusion": "현재 지표상 '보유' 의견을 유지하며, 추가 하락 시 분할 매수를 권장합니다.",
             "discussion": "차트 에이전트: 거래량이 늘고 있습니다.\n재무 에이전트: 영업이익률이 개선되었습니다.\n뉴스 에이전트: 긍정적인 기사가 많습니다."
         }
->>>>>>> origin/develop

@@ -1,6 +1,3 @@
-
-<<<<<<< HEAD
-=======
 from app.utils.llm import get_solar_model
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -35,4 +32,4 @@ class NewsAgent:
         
         response = self.llm.invoke(messages)
         return response.content
->>>>>>> origin/develop
+

@@ -150,50 +150,73 @@ upstage-stock-agent/
 
 ---
 
-## ⚙️ 설치 및 실행 방법
+## ⚙️ 설치 및 실행 방법 (Windows)
+
+### **사전 준비 체크**
+
+배포 전 환경을 자동으로 체크하려면:
+```cmd
+check_setup.bat
+```
 
 <<<<<<< HEAD
 ### **사전 준비**
 
-1. API 키 발급
+1. **API 키 발급**
    - [Upstage Console](https://console.upstage.ai/)에서 API 키 발급
    - (Optional) [Serper.dev](https://serper.dev/)에서 검색 API 키 발급
 
-2. 환경 변수 설정
-```bash
-cp .env.example .env
-# .env 파일을 열어서 발급받은 API 키를 입력하세요
+2. **환경 변수 설정**
+   - `.env.example`을 복사하여 `.env` 생성
+   - `.env` 파일에서 API 키를 실제 값으로 변경
+   ```env
+   UPSTAGE_API_KEY=up_xxxxxxxxxxxxxxxxx
+   SERPER_API_KEY=xxxxxxxxxxxxxxxxx
+   ```
+
+### **방법 1: 로컬 환경 실행 (Windows)**
+
+```cmd
+# 실행
+start.bat
+
+# 또는 직접 실행
+python -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload
 ```
 
-### **방법 1: 로컬 환경 실행**
+**접속**:
+- 메인 페이지: http://localhost:8001
+- Backend API: http://localhost:8001/api/v1/chat
+- API 문서: http://localhost:8001/docs
+- Health Check: http://localhost:8001/health
+- 시장 데이터: http://localhost:8001/market-summary
+- 코스피 데이터: http://localhost:8001/kospi-data
 
-```bash
-# 실행
-sh start.sh
+### **방법 2: Docker 환경 실행 (Windows)**
+
+```cmd
+# 실행 (Docker Desktop 실행 필요)
+start_docker.bat
 
 # 종료
-sh stop.sh
+stop_docker.bat
+
+# 또는 docker-compose 직접 사용
+docker-compose up -d --build
+docker-compose down
 ```
 
 **접속**:
 - Backend API: http://localhost:8001
 - API 문서: http://localhost:8001/docs
-- Frontend: http://localhost:8002 (구현 완료 시)
-
-### **방법 2: Docker 환경 실행**
-
-```bash
-# 실행
-sh start_docker.sh
-
-# 종료
-sh stop_docker.sh
-```
-
-**접속**:
-- Backend API: http://localhost:8001
-- Frontend: http://localhost:8002
+- Frontend: http://localhost:8002 (Streamlit - 구현 예정)
 - ChromaDB: http://localhost:8000
+
+**로그 확인**:
+```cmd
+docker-compose logs -f backend
+docker-compose logs -f frontend
+```
 
 ### **방법 3: Kubernetes 배포**
 
