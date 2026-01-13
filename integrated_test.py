@@ -7,6 +7,7 @@ from app.agents.chart_agent import ChartAgent
 from app.agents.news_agent import NewsAgent
 from app.agents.finance_agent import FinanceAgent
 from app.agents.moderator_agent import ModeratorAgent
+from app.tools.chart_tools import get_chart_indicators
 
 # 주혁님의 실제 도구 함수들 임포트
 from app.tools.finance_tools import get_financial_summary
@@ -32,10 +33,10 @@ async def run_multi_turn_debate(user_query: str, max_turns: int =3):
     # 2단계: 기초 데이터 수집 (주혁님의 툴 적용)
     print("\n[2/5] 토론을 위한 기초 데이터 수집 중...")
     
-    # [수정] 주혁님의 get_stock_news 함수 파라미터에 맞춰 ticker와 company_name 전달
+    # [수정] get_stock_news 함수 파라미터에 맞춰 ticker와 company_name 전달
     f_data = get_financial_summary(ticker)
     n_data = get_stock_news(ticker, company_name) 
-    c_data = "RSI: 85, 5일 이평선 골든크로스, 거래량 급증" # 차트 데이터 (추후 툴 연결 가능)
+    c_data = get_chart_indicators(ticker)
 
     # 에이전트 맵 구성
     agent_map = {
