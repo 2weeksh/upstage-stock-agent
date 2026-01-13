@@ -83,8 +83,7 @@
         </div>
 
         <div class="mt-24 mb-32">
-            
-            <a href="userInput.html" class="btn btn-w" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
+            <a href="#" id="startBtn" class="btn btn-w" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
                 분석 시작하기
             </a>
         </div>
@@ -92,5 +91,19 @@
     </div>
 
     <script src="js/script.js"></script>
+    
+    <script src="js/auth.js"></script>
+
+    <script>
+        document.getElementById('startBtn').addEventListener('click', (e) => {
+            e.preventDefault(); 
+            if (isLoggedIn()) {
+                window.location.href = 'userInput.html';
+            } else {
+                alert('서비스 이용을 위해 로그인이 필요합니다.');
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
 </body>
 </html>

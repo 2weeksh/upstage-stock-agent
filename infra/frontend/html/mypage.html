@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - AI 투자 서비스</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-main">
+    <div class="chart-bg" id="chartBg"></div>
+    
+    <div id="back-btn-container" onclick="location.href='start.html'">
+        <img src="img/left_arrow.png" alt="뒤로가기" id="back-icon">
+    </div>
+
+    <main class="wrapper">
+        <header class="header">
+            <h2 class="t-sub">마이페이지</h2>
+            <p class="desc">내 정보를 확인합니다.</p>
+        </header>
+
+        <div class="box auth-box" style="text-align: left;">
+            
+            <div class="mb-6 border-b border-gray-700 pb-4">
+                <label class="label">닉네임</label>
+                <div id="my-nickname" class="text-xl text-white font-bold">로딩 중...</div>
+            </div>
+            
+            <div class="mb-8">
+                <label class="label">계정 가입일</label>
+                <div id="join-date" class="text-blue-400 font-mono">2026-00-00</div>
+            </div>
+
+            <button onclick="alert('질문 기록 페이지는 준비 중입니다.')" class="btn">
+                <span class="mr-2">📝</span> 내 질문 기록 보기
+            </button>
+
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isLoggedIn()) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('my-nickname').innerText = localStorage.getItem('userNickname') || '알 수 없음';
+            const joinDate = localStorage.getItem('userJoinDate');
+            document.getElementById('join-date').innerText = joinDate || '정보 없음';
+        });
+    </script>
+</body>
+</html>
