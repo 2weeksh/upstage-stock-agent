@@ -103,67 +103,53 @@ function initLoadingPage() {
 // 3. 스트리밍 데이터 처리 (fetchAnalysisResult)
 // ------------------------------------------------
 
-// ------------------------------------------------
-// 3. 스트리밍 데이터 처리 (fetchAnalysisResult)
-// ------------------------------------------------
-
-// ------------------------------------------------
-// 3. 스트리밍 데이터 처리 (fetchAnalysisResult)
-// ------------------------------------------------
 async function fetchAnalysisResult(question) {
     console.log("백엔드로 분석 요청 전송:", question);
     const API_URL = '/api/v1/chat';
 
     const chatContainer = document.getElementById('chatContainer');
 
-    // [핵심] 채팅 말풍선 추가 함수
-    const addChat = (message) => {
+    // [핵심] speaker 정보를 받아 스타일을 결정하는 함수
+    const addChat = (message, speakerCode = 'system') => {
         if (!chatContainer) return;
 
-        // 1. 화자 및 스타일 결정 (기본값: 시스템 알림)
-        let speaker = { type: 'system' };
+        // 1. 화자 설정 (기본값: 시스템)
+        let config = { type: 'system' };
 
-        // 키워드에 따라 캐릭터 부여
-        if (message.includes('차트') || message.includes('Chart')) {
-            speaker = { type: 'agent', name: '차트 분석가', icon: '📈', theme: 'theme-chart' };
-        } else if (message.includes('재무') || message.includes('Finance')) {
-            speaker = { type: 'agent', name: '재무 분석가', icon: '💰', theme: 'theme-finance' };
-        } else if (message.includes('뉴스') || message.includes('News')) {
-            speaker = { type: 'agent', name: '뉴스 분석가', icon: '📰', theme: 'theme-news' };
+        // 백엔드에서 보낸 speaker 코드에 따라 매핑
+        if (speakerCode === 'chart') {
+            config = { type: 'agent', name: '차트 분석가', icon: '📈', theme: 'theme-chart' };
+        } else if (speakerCode === 'finance') {
+            config = { type: 'agent', name: '재무 분석가', icon: '💰', theme: 'theme-finance' };
+        } else if (speakerCode === 'news') {
+            config = { type: 'agent', name: '뉴스 분석가', icon: '📰', theme: 'theme-news' };
         }
-        // 사회자나 일반 시스템 메시지는 그대로 'system' 타입 유지
+        // system인 경우는 기본값 유지
 
-        // 2. HTML 요소 생성 (분기 처리)
-
-        if (speaker.type === 'system') {
-            // [A] 시스템 알림 스타일 (중앙 정렬, 아이콘 없음)
+        // 2. HTML 생성
+        if (config.type === 'system') {
             const sysDiv = document.createElement('div');
             sysDiv.className = 'chat-system-message';
-            sysDiv.innerText = message; // 예: "서버와 연결되었습니다."
+            sysDiv.innerText = message;
             chatContainer.appendChild(sysDiv);
-        }
-        else {
-            // [B] 에이전트 말풍선 스타일 (오른쪽 정렬, 아이콘 있음)
+        } else {
             const row = document.createElement('div');
-            // 에이전트는 무조건 오른쪽(agent) 배치
-            row.className = `chat-row agent ${speaker.theme}`;
-
+            // 에이전트는 무조건 오른쪽(agent)
+            row.className = `chat-row agent ${config.theme}`;
             row.innerHTML = `
-                <div class="chat-profile-icon">${speaker.icon}</div>
+                <div class="chat-profile-icon">${config.icon}</div>
                 <div class="chat-content">
-                    <span class="chat-name">${speaker.name}</span>
+                    <span class="chat-name">${config.name}</span>
                     <div class="chat-bubble">${message}</div>
                 </div>
             `;
             chatContainer.appendChild(row);
         }
 
-        // 스크롤 맨 아래로 이동
         chatContainer.scrollTop = chatContainer.scrollHeight;
     };
 
-    // 초기 시스템 메시지
-    addChat("서버와 안전하게 연결되었습니다.");
+    addChat("서버와 안전하게 연결되었습니다.", "system");
 
     try {
         const response = await fetch(API_URL, {
@@ -191,12 +177,13 @@ async function fetchAnalysisResult(question) {
                 try {
                     const parsed = JSON.parse(line);
 
+                    // parsed.speaker 값을 addChat에 전달 (핵심!)
                     if (parsed.type === 'status') {
-                        addChat(parsed.message);
+                        addChat(parsed.message, parsed.speaker);
                     }
                     else if (parsed.type === 'result') {
-                        addChat("✅ 모든 데이터 분석이 완료되었습니다!");
-                        addChat("잠시 후 결과 페이지로 이동합니다...");
+                        addChat("✅ 모든 데이터 분석이 완료되었습니다!", "system");
+                        addChat("결과 리포트로 이동합니다...", "system");
 
                         setTimeout(() => {
                             saveDataAndSwitchUI(parsed.data);
@@ -204,7 +191,7 @@ async function fetchAnalysisResult(question) {
                         return;
                     }
                     else if (parsed.type === 'error') {
-                        addChat(`⛔ 오류: ${parsed.message}`);
+                        addChat(`⛔ 오류: ${parsed.message}`, "system");
                         return;
                     }
                 } catch (e) {
@@ -213,7 +200,7 @@ async function fetchAnalysisResult(question) {
             }
         }
     } catch (error) {
-        addChat("서버 연결에 실패했습니다.");
+        addChat("서버 연결에 실패했습니다.", "system");
     }
 }
 // ------------------------------------------------
