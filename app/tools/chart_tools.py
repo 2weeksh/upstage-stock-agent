@@ -6,14 +6,14 @@ def get_chart_indicators(symbol: str):
     yfinance 데이터를 가져와 기술적 지표를 계산합니다.
     MultiIndex 에러를 방지하기 위해 단일 값 추출 로직을 강화했습니다.
     """
-    ticker_symbol = f"{symbol}.KS" if not symbol.endswith((".KS", ".KQ")) else symbol
+    ticker_symbol = symbol
     
     try:
         # group_by='ticker' 설정을 피하고 단일 종목 데이터를 깔끔하게 가져옵니다.
         df = yf.download(ticker_symbol, period="3mo", interval="1d", progress=False)
         
         if df.empty:
-            return "차트 데이터를 불러올 수 없습니다."
+            return f"'{ticker_symbol}'에 대한 차트 데이터를 불러올 수 없습니다."
 
         # 지표 계산
         df['MA5'] = df['Close'].rolling(window=5).mean()
