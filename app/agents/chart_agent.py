@@ -2,10 +2,16 @@ from app.utils.llm import get_solar_model
 from langchain_core.messages import HumanMessage, SystemMessage
 
 class ChartAgent:
-    def __init__(self):
+    def __init__(self, llm= None):
         # app/utils/llm.py에서 Solar 모델을 로드합니다.
-        self.llm = get_solar_model()
+        if llm:
+            self.llm = llm
+        else:
+            from app.utils.llm import get_solar_model
+            self.llm = get_solar_model()
 
+
+    '''
     def analyze(self, symbol: str, company_name: str, chart_data: str):
         """
         기술적 지표를 바탕으로 차트 추세를 분석하고 의견을 도출합니다.
@@ -24,11 +30,33 @@ class ChartAgent:
         2. 나의 분석 논리: (RSI 90, 이평선 괴리 등 수치를 근거로 한 냉정한 판단)
         3. 뉴스 분석가에게 던지는 날카로운 반론: (예: "뉴스 분석가님, 사람들의 심리니 세대니 하는 추상적인 이야기 좀 그만하시죠. RSI 90.18이라는 숫자는 이미 시장이 터지기 직전이라는 명확한 경고입니다. 당신이 말하는 그 호재들, 이미 차트 고점에 다 반영되어 있는 거 안 보이십니까?")
         """
-        
+
         messages = [
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=f"다음은 {company_name}의 최근 차트 지표입니다: \n\n{chart_data}")
-        ]
-        
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=f"다음은 {company_name}의 최근 차트 지표입니다: \n\n{chart_data}")
+            ]
+
         response = self.llm.invoke(messages)
         return response.content
+'''
+    
+    def analyze(self, company_name, ticker, chart_data, debate_context=None):
+        """
+        debate_context: 다른 에이전트의 의견이나 사회자의 질문이 담긴 텍스트
+        """
+        if debate_context:
+            # [반박 모드] 상대방의 논리를 꺾는 프롬프트
+            system_msg = f"""당신은 냉철한 차트 분석가입니다. 
+            현재 진행 중인 토론의 내용을 듣고, 당신의 기술적 지표({chart_data})를 근거로 
+            상대방의 논리를 반박하거나 당신의 입장을 고수하세요."""
+            user_msg = f"현재 토론 상황: {debate_context}\n\n위 내용에 대해 기술적으로 반박해 주세요."
+        else:
+            # [기조 강연 모드] 처음 의견을 내는 프롬프트
+            system_msg = "당신은 데이터와 확률을 믿는 차트 분석가입니다. 지표를 분석해 첫 의견을 주세요."
+            user_msg = f"{company_name}({ticker})의 차트 지표 분석 요청: {chart_data}"
+        
+        messages = [
+            ("system", system_msg),
+            ("user", user_msg)
+        ]
+        return self.llm.invoke(messages).content

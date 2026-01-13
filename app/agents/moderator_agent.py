@@ -1,10 +1,33 @@
 class ModeratorAgent:
-    def process_request(self, user_input: str):
-        # 나중에 여기에 Upstage LLM 로직이 들어갈 자리입니다.
-        # 지금은 프론트엔드 UI가 요구하는 키 값에 맞춰 가짜 데이터를 반환합니다.
+    def __init__(self, llm):
+        self.llm = llm
 
-        return {
-            "summary": f"'{user_input}'에 대한 시장의 핵심 요약입니다.",
-            "conclusion": "현재 지표상 '보유' 의견을 유지하며, 추가 하락 시 분할 매수를 권장합니다.",
-            "discussion": "차트 에이전트: 거래량이 늘고 있습니다.\n재무 에이전트: 영업이익률이 개선되었습니다.\n뉴스 에이전트: 긍정적인 기사가 많습니다."
-        }
+    def facilitate(self, company_name, reports):
+        prompt = f"""
+        당신은 주식 전문 토론회의 사회자입니다. {company_name}에 대한 전문가들의 기조 발언을 분석하여 가장 큰 논리적 충돌 지점을 찾으세요.
+        
+        [전문가 리포트]
+        {reports}
+        
+        [지시사항]
+        1. 의견이 가장 대립하는 두 전문가를 선정하세요.
+        2. 한 전문가의 논리를 인용하며 다른 전문가에게 그에 대한 재반박을 요청하세요.
+        3. **반드시 마지막 줄에 다음 발언자를 지정하세요.**
+           형식: [NEXT]: Chart 또는 [NEXT]: News 또는 [NEXT]: Finance
+        
+        예시: "...해서 차트 분석가님의 의견이 궁금합니다. [NEXT]: Chart"
+        """
+        return self.llm.invoke(prompt).content
+
+    def summarize(self, company_name, full_history):
+        """2단계: 모든 토론 과정을 지켜보고 최종 결론을 내림"""
+        prompt = f"""
+        당신은 최종 의사결정권자입니다. 아래의 치열한 토론 과정을 듣고 
+        {company_name}에 대한 최종 투자 등급과 그 이유를 결정하세요.
+        
+        [전체 토론 기록]
+        {full_history}
+        
+        반드시 [강력 매수 / 매수 / 중립 / 매도 / 강력 매도] 중 하나를 선택하세요.
+        """
+        return self.llm.invoke(prompt).content
