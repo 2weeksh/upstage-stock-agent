@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 배경 애니메이션
+    // 배경 애니메이션 (유지)
     const chartBg = document.getElementById('chartBg');
     if (chartBg) {
         for (let i = 0; i < 25; i++) { createCandle(chartBg); }
@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initLoadingPage();
 });
 
+// ------------------------------------------------
+// 1. UI 초기화 및 이벤트 핸들러
+// ------------------------------------------------
 
 // 캔들 애니메이션 생성
 function createCandle(container) {
@@ -29,8 +32,7 @@ function createCandle(container) {
     container.appendChild(candle);
 }
 
-// userInput 페이지
-// 질문 입력 후 버튼 -> 로컬 저장
+// 질문 입력 페이지 초기화
 function initUserInput() {
     const form = document.getElementById('analysisForm');
     if (!form) return;
@@ -48,13 +50,12 @@ function initUserInput() {
     });
 }
 
-// 뒤로가기
+// 뒤로가기 버튼 초기화
 function initBackButton() {
     const backBtn = document.getElementById('back-btn-container');
     if (backBtn) {
         backBtn.addEventListener('click', () => {
             if (window.location.pathname.includes('loading.html')) {
-               
                 if(confirm("분석을 취소하고 돌아가시겠습니까?")) {
                     window.location.href = 'userInput.html';
                 }
@@ -65,17 +66,22 @@ function initBackButton() {
     }
 }
 
-// Loading 페이지
+// ------------------------------------------------
+// 2. 로딩 페이지 로직 (핵심 수정 부분)
+// ------------------------------------------------
+
 function initLoadingPage() {
     const displayElement = document.getElementById('displayQuestion');
-    if (!displayElement) return; 
+    const statusText = document.getElementById('agentStatusText');
+    if (!displayElement) return;
 
     // 저장된 질문 표시
     const savedQuestion = localStorage.getItem('userQuestion');
     displayElement.innerText = savedQuestion || "질문이 없습니다.";
 
-    // 텍스트 애니메이션
-    startTextAnimation();
+    // [삭제됨] startTextAnimation() 호출 제거 -> 백엔드 메시지로 대체
+    // 초기 대기 메시지 설정
+    if (statusText) statusText.innerText = "분석 서버와 연결 중...";
 
     // 분석 중지 버튼
     const stopBtn = document.getElementById('stopBtn');
@@ -87,104 +93,144 @@ function initLoadingPage() {
         });
     }
 
-    // 데이터 요청 시작 
+    // 실제 데이터 요청 시작
     if (savedQuestion) {
         fetchAnalysisResult(savedQuestion);
     }
 }
 
-// 텍스트 반복
-function startTextAnimation() {
-    const statusText = document.getElementById('agentStatusText');
-    if (!statusText) return; 
-
-    const messages = [
-        "차트 분석가가 분석 중입니다... (1/4)",
-        "재무 분석가가 분석 중입니다... (2/4)",
-        "뉴스 감성 분석가가 분석 중입니다... (3/4)",
-        "투자 전략가가 분석 중입니다... (4/4)"
-    ];
-    let msgIndex = 0;
-    
-    window.statusInterval = setInterval(() => {
-        msgIndex = (msgIndex + 1) % messages.length;
-        statusText.style.opacity = 0; 
-        setTimeout(() => {
-            statusText.innerText = messages[msgIndex];
-            statusText.style.opacity = 1;
-        }, 300);
-    }, 1500);
-}
+// ------------------------------------------------
+// 3. 스트리밍 데이터 처리 (fetchAnalysisResult)
+// ------------------------------------------------
 
 // ------------------------------------------------
-// 실제 데이터 받기
-// infra/frontend/js/script.js
+// 3. 스트리밍 데이터 처리 (fetchAnalysisResult)
+// ------------------------------------------------
 
+// ------------------------------------------------
+// 3. 스트리밍 데이터 처리 (fetchAnalysisResult)
+// ------------------------------------------------
 async function fetchAnalysisResult(question) {
     console.log("백엔드로 분석 요청 전송:", question);
-
-    // 실제 백엔드 에이전트 주소 (prefix 확인 필수)
     const API_URL = '/api/v1/chat';
+
+    const chatContainer = document.getElementById('chatContainer');
+
+    // [핵심] 채팅 말풍선 추가 함수
+    const addChat = (message) => {
+        if (!chatContainer) return;
+
+        // 1. 화자 및 스타일 결정 (기본값: 시스템 알림)
+        let speaker = { type: 'system' };
+
+        // 키워드에 따라 캐릭터 부여
+        if (message.includes('차트') || message.includes('Chart')) {
+            speaker = { type: 'agent', name: '차트 분석가', icon: '📈', theme: 'theme-chart' };
+        } else if (message.includes('재무') || message.includes('Finance')) {
+            speaker = { type: 'agent', name: '재무 분석가', icon: '💰', theme: 'theme-finance' };
+        } else if (message.includes('뉴스') || message.includes('News')) {
+            speaker = { type: 'agent', name: '뉴스 분석가', icon: '📰', theme: 'theme-news' };
+        }
+        // 사회자나 일반 시스템 메시지는 그대로 'system' 타입 유지
+
+        // 2. HTML 요소 생성 (분기 처리)
+
+        if (speaker.type === 'system') {
+            // [A] 시스템 알림 스타일 (중앙 정렬, 아이콘 없음)
+            const sysDiv = document.createElement('div');
+            sysDiv.className = 'chat-system-message';
+            sysDiv.innerText = message; // 예: "서버와 연결되었습니다."
+            chatContainer.appendChild(sysDiv);
+        }
+        else {
+            // [B] 에이전트 말풍선 스타일 (오른쪽 정렬, 아이콘 있음)
+            const row = document.createElement('div');
+            // 에이전트는 무조건 오른쪽(agent) 배치
+            row.className = `chat-row agent ${speaker.theme}`;
+
+            row.innerHTML = `
+                <div class="chat-profile-icon">${speaker.icon}</div>
+                <div class="chat-content">
+                    <span class="chat-name">${speaker.name}</span>
+                    <div class="chat-bubble">${message}</div>
+                </div>
+            `;
+            chatContainer.appendChild(row);
+        }
+
+        // 스크롤 맨 아래로 이동
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
+
+    // 초기 시스템 메시지
+    addChat("서버와 안전하게 연결되었습니다.");
 
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            // 백엔드의 UserRequest 모델(user_question)과 이름을 맞춰야 합니다.
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_question: question })
         });
 
-        if (!response.ok) {
-            throw new Error(`서버 응답 오류: ${response.status}`);
+        if (!response.body) throw new Error("ReadableStream 미지원");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
+                try {
+                    const parsed = JSON.parse(line);
+
+                    if (parsed.type === 'status') {
+                        addChat(parsed.message);
+                    }
+                    else if (parsed.type === 'result') {
+                        addChat("✅ 모든 데이터 분석이 완료되었습니다!");
+                        addChat("잠시 후 결과 페이지로 이동합니다...");
+
+                        setTimeout(() => {
+                            saveDataAndSwitchUI(parsed.data);
+                        }, 1500);
+                        return;
+                    }
+                    else if (parsed.type === 'error') {
+                        addChat(`⛔ 오류: ${parsed.message}`);
+                        return;
+                    }
+                } catch (e) {
+                    console.error("JSON Error:", e);
+                }
+            }
         }
-
-        const data = await response.json();
-        console.log("백엔드로부터 받은 데이터:", data);
-
-        // 데이터 저장 및 화면 전환 (이미 작성된 함수 호출)
-        saveDataAndSwitchUI(data);
-
     } catch (error) {
-        console.error("통신 에러 발생:", error);
-        alert("서버와 연결할 수 없습니다. 백엔드가 켜져 있는지 확인하세요.");
-
-        // 테스트를 위해 실패 시 시뮬레이션이라도 돌리고 싶다면 아래 주석 해제
-        // runSimulation();
+        addChat("서버 연결에 실패했습니다.");
     }
 }
-
 // ------------------------------------------------
-// 테스트: 5초 대기 후 UI 전환(임의)
-function runSimulation() {
+// 4. 데이터 저장 및 화면 전환
+// ------------------------------------------------
 
-    setTimeout(() => {
-        const mockData = {
-            summary: "요약",
-            conclusion: "결론",
-            discussion: "분석 내용"
-        };
-
-        saveDataAndSwitchUI(mockData);
-
-    }, 5000); 
-}
-
-// 데이터 저장 및 화면 전환 처리
 function saveDataAndSwitchUI(data) {
-    // 데이터 나눠서 저장
+    // 데이터 로컬 스토리지 저장
     localStorage.setItem('analysis_summary', data.summary || "내용 없음");
     localStorage.setItem('analysis_conclusion', data.conclusion || "내용 없음");
     localStorage.setItem('analysis_log', data.discussion || "내용 없음");
 
-    // 로딩 애니메이션 중지
-    if (window.statusInterval) clearInterval(window.statusInterval);
-
-    // UI 전환 -> 완료
+    // 로딩 UI 숨기기
     const loadingContent = document.getElementById('loading-content');
     if (loadingContent) loadingContent.classList.add('hidden');
 
+    // 성공 UI 표시
     const successContent = document.getElementById('success-content');
     if (successContent) {
         successContent.classList.remove('hidden');
