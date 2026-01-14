@@ -36,12 +36,12 @@ WORKDIR /app
 RUN useradd -m appuser
 
 # 빌더에서 가상환경 복사 (있는 경우에만)
-COPY --from=builder /app/.venv /app/.venv 2>/dev/null || true
+COPY --from=builder /app/.venv /app/.venv
 
 # 백엔드 코드 복사
 COPY --from=builder /app/main.py /app/main.py
-COPY --from=builder /app/app /app/app 2>/dev/null || true
-COPY --from=builder /app/pyproject.toml /app/pyproject.toml 2>/dev/null || true
+COPY --from=builder /app/app /app/app
+COPY --from=builder /app/pyproject.toml /app/pyproject.toml
 
 # 파일 소유권 변경
 RUN chown -R appuser:appuser /app
