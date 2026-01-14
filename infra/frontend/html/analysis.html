@@ -114,43 +114,43 @@
                     </span>
                 </section>
 <section>
-    <button id="toggleDiscussionBtn" class="btn-toggle">
-        <span>🤖 에이전트 토론 다시보기</span>
-        <svg id="toggleIcon" class="w-6 h-6 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-    </button>
+    <div class="flex items-center gap-3 mb-6">
+        <button id="tab-slider" class="px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-xl transition-all shadow-lg hover:bg-blue-500">
+            📑 카드 보기
+        </button>
+        <button id="tab-chat" class="px-6 py-3 text-base font-bold text-gray-400 bg-gray-800 rounded-xl transition-all hover:bg-gray-700 hover:text-white">
+            💬 채팅 보기
+        </button>
+    </div>
 
-    <div id="discussionContent" class="discussion-wrapper hidden">
-        <div class="box discussion-viewer-box" style="position: relative; min-height: 200px; padding-bottom: 60px;">
+    <div id="discussionContent" class="discussion-wrapper">
 
+        <div id="view-slider" class="box discussion-viewer-box" style="position: relative; min-height: 250px; padding-bottom: 70px;">
             <div class="viewer-header flex items-center mb-4">
-                <div id="viewer-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-xl mr-3 bg-gray-700">
-                    🎤
-                </div>
+                <div id="viewer-avatar" class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4 bg-gray-700 shadow-md">🎤</div>
                 <div>
-                    <span id="viewer-speaker" class="font-bold text-lg text-white">Speaker</span>
-                    <span id="viewer-type" class="text-xs text-gray-400 block">Role</span>
+                    <span id="viewer-speaker" class="font-bold text-xl text-white">Speaker</span>
+                    <span id="viewer-type" class="text-sm text-gray-400 block mt-1">Role</span>
                 </div>
             </div>
 
-            <div class="viewer-body bg-gray-800/50 p-4 rounded-lg border border-gray-700/50 min-h-[120px]">
-                <p id="viewer-message" class="text-gray-200 leading-relaxed whitespace-pre-wrap">
+            <div class="viewer-body bg-gray-800/50 p-6 rounded-xl border border-gray-700/50 min-h-[150px] max-h-[400px] overflow-y-auto custom-scrollbar">
+                <p id="viewer-message" class="text-gray-200 text-lg leading-relaxed whitespace-pre-wrap">
                     대화 내용을 불러오는 중입니다...
                 </p>
             </div>
 
-            <div class="viewer-controls flex items-center justify-between mt-4">
-                <button id="btn-prev" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                    ◀ 이전
-                </button>
-
-                <span id="viewer-counter" class="text-sm text-gray-400 font-mono">0 / 0</span>
-
-                <button id="btn-next" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                    다음 ▶
-                </button>
+            <div class="viewer-controls flex items-center justify-between mt-6">
+                <button id="btn-prev" class="px-5 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium disabled:opacity-50 transition-colors">◀ 이전</button>
+                <span id="viewer-counter" class="text-base text-gray-400 font-mono">0 / 0</span>
+                <button id="btn-next" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium disabled:opacity-50 transition-colors">다음 ▶</button>
             </div>
-
         </div>
+
+        <div id="view-chat" class="box hidden custom-scrollbar" style="background: #2d2d2d; padding: 25px; border-radius: 12px; max-height: 800px; overflow-y: auto;">
+    <div id="chat-list" class="flex flex-col gap-5"></div>
+</div>
+
     </div>
 </section>
             </main>
