@@ -245,7 +245,7 @@ class StockService:
             final_context = self._format_history_for_llm(discussion_log)
             await run_with_retry(self.moderator_agent.summarize_debate, refined_name, final_context)
 
-            yield create_msg("system", "status", "재판관(Judge)이 최종 판결을 내리고 있습니다...")
+            yield create_msg("system", "status", "분석가가 최종 판결을 내리고 있습니다...")
             final_decision = await run_with_retry(self.judge_agent.adjudicate, refined_name, final_context)
 
             yield create_msg("system", "status", "최종 리포트를 생성 중입니다...")
