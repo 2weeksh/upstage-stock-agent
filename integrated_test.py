@@ -15,7 +15,6 @@ from app.tools.finance_tools import get_financial_summary
 from app.tools.search_tools import get_stock_news
 
 async def run_multi_turn_debate(user_query: str):
-    # 0. 초기화
     llm = get_solar_model()
     
     chart_agent = ChartAgent(llm)
@@ -26,7 +25,6 @@ async def run_multi_turn_debate(user_query: str):
 
     print(f"\n{'='*20} 🤖 끝장 토론 시스템 (Reasoning Mode) {'='*20}")
     
-    # 1. 데이터 수집
     company_name = extract_company_name(user_query)
     ticker = get_clean_ticker(company_name)
     print(f"✅ 대상: {company_name} ({ticker})")
@@ -41,9 +39,7 @@ async def run_multi_turn_debate(user_query: str):
         "Finance": {"instance": finance_agent, "data": f_data, "name": "재무 분석가"}
     }
 
-    # ---------------------------------------------------------
-    # [Step 1] 입론 (Opening Statements)
-    # ---------------------------------------------------------
+    # 1. 입론
     print(f"\n🎤 [Step 1: 입론] 사회자가 각 전문가에게 초기 분석을 요청합니다.")
     current_debate_history = "[사회자]: 지금부터 토론을 시작합니다. 각 전문가는 입론을 해주세요.\n"
 
@@ -52,23 +48,15 @@ async def run_multi_turn_debate(user_query: str):
         print(f"👉 {agent['name']} 입론 준비 중...")
         await asyncio.sleep(1)
         
-        # 입론 생성
         stmt = agent["instance"].analyze(company_name, ticker, agent["data"])
-        
-        # 전체 내용 출력
         print(f"🗣️ {agent['name']} 입론:\n{stmt}\n") 
-        
         current_debate_history += f"\n[{agent['name']} 입론]: {stmt}"
     
-    debate_rules = moderator.get_debate_rules()
     print("✅ 모든 입론 완료.")
 
-    # ---------------------------------------------------------
-    # [Step 2] 상호 토론 (Cross Examination)
-    # ---------------------------------------------------------
+    # 2. 상호 토론
     turn_count = 1
     max_turns = 10 
-
     print(f"\n🔥 [Step 2: 상호 토론] 최대 {max_turns}회 진행")
 
     while turn_count <= max_turns:
@@ -92,7 +80,6 @@ async def run_multi_turn_debate(user_query: str):
         if thought:
             print(f"🤔 사회자 생각: {thought.group(1).strip()}")
 
-        # 종료 조건
         if status and "TERMINATE" in status.group(1):
             print("\n🏁 사회자가 토론 종료를 선언했습니다.")
             break
@@ -110,21 +97,16 @@ async def run_multi_turn_debate(user_query: str):
                 print(f"👉 지목: {target['name']}")
                 print(f"📢 질문: {inst_text}")
 
+                # [수정] 규칙 주입 제거, 순수 Context와 지시만 전달
                 forced_context = (
                     f"{current_debate_history}\n\n"
-                    f"--- [SYSTEM ALERT] ---\n"
-                    f"규칙 준수 필수:\n{debate_rules}\n"
-                    f"----------------------\n"
                     f"[사회자 지시]: {inst_text}"
                 )
                 
                 await asyncio.sleep(1)
                 try:
                     rebuttal = target["instance"].analyze(company_name, ticker, target["data"], debate_context=forced_context)
-                    
-                    # 답변 전체 출력
                     print(f"💬 {target['name']} 답변:\n{rebuttal}\n") 
-                    
                     current_debate_history += f"\n\n[사회자]: {inst_text}\n[{target['name']}]: {rebuttal}"
                 except Exception as e:
                     print(f"⚠️ 답변 실패: {e}")
@@ -133,9 +115,7 @@ async def run_multi_turn_debate(user_query: str):
         
         turn_count += 1
 
-    # ---------------------------------------------------------
-    # [Step 3] 최후 변론 (Closing Arguments) - 순서 변경 (위로 이동)
-    # ---------------------------------------------------------
+    # 3. 최후 변론
     print(f"\n🎤 [Step 3: 최후 변론] 각 전문가의 마지막 어필.")
     current_debate_history += "\n\n[사회자]: 토론을 마치겠습니다. 이제 각 전문가는 '최후 변론'을 하세요."
 
@@ -145,38 +125,28 @@ async def run_multi_turn_debate(user_query: str):
 
         closing_context = f"""
         {current_debate_history}
-        
         --- [SYSTEM INSTRUCTION] ---
-        지금까지의 토론 흐름을 참고하여, 
-        당신의 최종 투자의견(매수/매도/보류)을 투자자들에게 설득력 있게 전달하는 '최후 변론'을 하십시오.
+        지금까지의 토론 흐름을 참고하여, '최후 변론'을 하십시오.
         """
         try:
             closing_statement = agent_info["instance"].analyze(
                 company_name, ticker, agent_info["data"], debate_context=closing_context
             )
-            
-            # 최후 변론 전체 출력
             print(f"🗣️ {agent_info['name']} 최후 변론:\n{closing_statement}\n") 
-            
             current_debate_history += f"\n[{agent_info['name']} 최후 변론]: {closing_statement}"
         except Exception as e:
             print(f"⚠️ 변론 실패: {e}")
 
-    # ---------------------------------------------------------
-    # [Step 4] 사회자 요약 (Summarization) - 순서 변경 (아래로 이동)
-    # ---------------------------------------------------------
-    print(f"\n📝 [Step 4: 최종 요약] 사회자가 토론 및 최후 변론 내용을 종합하여 정리합니다.")
+    # 4. 사회자 요약
+    print(f"\n📝 [Step 4: 최종 요약] 사회자가 토론을 정리합니다.")
     print("⏳ 요약 생성 중...")
     await asyncio.sleep(3)
     
     summary = moderator.summarize_debate(company_name, current_debate_history)
     print(f"\n[사회자 정리]:\n{summary}")
-    
     current_debate_history += f"\n\n[사회자 최종 정리]: {summary}"
 
-    # ---------------------------------------------------------
-    # [Step 5] 최종 판결 (Judge)
-    # ---------------------------------------------------------
+    # 5. Judge 판결
     print(f"\n{'='*20} ⚖️ Judge Agent 판결 {'='*20}")
     print("⏳ 최종 전략 수립 중 (5초 대기)...")
     await asyncio.sleep(5)
@@ -187,25 +157,15 @@ async def run_multi_turn_debate(user_query: str):
     except Exception as e:
         print(f"\n❌ 판결 생성 실패: {e}")
 
-    # --------------------------------------------------------
-    # 에이전트 생성
+    # 6. 리포트 생성 및 저장
     report_agent = InsightReportAgent(llm)
-
-    # 6. 인사이트 리포트 생성
     print("🎨 멘토님 취향 저격 리포트 생성 중...")
     insight_report = report_agent.generate_report(company_name, ticker, current_debate_history)
-
-    # 7. 파일 저장
     save_debate_log(company_name, ticker, insight_report)
-
-    # 8. 결과 출력
     print(insight_report)
 
 if __name__ == "__main__":
-    # 1. 사용자로부터 분석할 종목명을 입력받습니다.
     user_input = input("분석하고 싶은 종목을 말씀하세요 (예: 삼성전자, AAPL): ")
-    
-    # 3. 비동기 함수인 run_multi_turn_debate를 실행합니다.
     try:
         asyncio.run(run_multi_turn_debate(user_input))
     except KeyboardInterrupt:
