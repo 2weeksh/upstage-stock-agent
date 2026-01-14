@@ -1,11 +1,16 @@
 class JudgeAgent:
     def __init__(self, llm):
-        self.llm = llm
+        # [수정] Judge에게도 Solar Pro 2 Reasoning Mode 적용 및 확인 메시지 출력
+        try:
+            self.llm = llm.bind(reasoning_effort="high")
+            print(f"✅ Judge Agent Reasoning Mode 설정됨: {self.llm.kwargs}")
+        except:
+            self.llm = llm
+            print("⚠️ Judge Agent: 기본 LLM 모드로 실행됩니다.")
 
     def adjudicate(self, company_name, full_history):
         """
         [Task 3] 최종 투자 전략 수립
-        단순 요약이 아니라, 구체적인 진입가/손절가 등 트레이딩 전략을 제시합니다.
         """
         prompt = f"""
         당신은 세계적인 헤지펀드 매니저이자 최종 의사결정권자(Judge)입니다.

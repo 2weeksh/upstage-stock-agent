@@ -16,11 +16,10 @@ async def run_multi_turn_debate(user_query: str):
     # 0. 초기화
     llm = get_solar_model()
     
-    # 각 에이전트 인스턴스 생성
     chart_agent = ChartAgent(llm)
     news_agent = NewsAgent(llm)
     finance_agent = FinanceAgent(llm)
-    moderator = ModeratorAgent(llm) # Reasoning Mode 적용됨
+    moderator = ModeratorAgent(llm)
     judge = JudgeAgent(llm)
 
     print(f"\n{'='*20} 🤖 끝장 토론 시스템 (Reasoning Mode) {'='*20}")
@@ -30,7 +29,6 @@ async def run_multi_turn_debate(user_query: str):
     ticker = get_clean_ticker(company_name)
     print(f"✅ 대상: {company_name} ({ticker})")
     
-    # 데이터 로드 (실제 툴 사용)
     f_data = get_financial_summary(ticker)
     n_data = get_stock_news(ticker, company_name) 
     c_data = get_chart_indicators(ticker)
@@ -41,44 +39,49 @@ async def run_multi_turn_debate(user_query: str):
         "Finance": {"instance": finance_agent, "data": f_data, "name": "재무 분석가"}
     }
 
-    # 2. 기조 발언 (Round 1)
-    print("\n🎤 [Round 1] 기조 발언 시작")
-    chart_init = chart_agent.analyze(company_name, ticker, c_data)
-    news_init = news_agent.analyze(company_name, ticker, n_data)
-    finance_init = finance_agent.analyze(company_name, ticker, f_data)
+    # ---------------------------------------------------------
+    # [Step 1] 입론 (Opening Statements)
+    # ---------------------------------------------------------
+    print(f"\n🎤 [Step 1: 입론] 사회자가 각 전문가에게 초기 분석을 요청합니다.")
+    current_debate_history = "[사회자]: 지금부터 토론을 시작합니다. 각 전문가는 입론을 해주세요.\n"
 
-    # 사회자로부터 규칙 텍스트 가져오기
-    debate_rules = moderator.get_debate_rules()
+    for role_name in ["Chart", "News", "Finance"]:
+        agent = agent_map[role_name]
+        print(f"👉 {agent['name']} 입론 준비 중...")
+        await asyncio.sleep(1)
+        
+        # 입론 생성
+        stmt = agent["instance"].analyze(company_name, ticker, agent["data"])
+        
+        # [수정완료] 잘림 없이 전체 내용 출력 (\n으로 줄바꿈 추가)
+        print(f"🗣️ {agent['name']} 입론:\n{stmt}\n") 
+        
+        current_debate_history += f"\n[{agent['name']} 입론]: {stmt}"
     
-    current_debate_history = f"""
-    [차트 분석가 초기 관점]: {chart_init}
-    [뉴스 분석가 초기 관점]: {news_init}
-    [재무 분석가 초기 관점]: {finance_init}
-    """
+    debate_rules = moderator.get_debate_rules()
+    print("✅ 모든 입론 완료.")
 
-    # 3. [Task 3] 무제한 토론 루프 (While Loop)
+    # ---------------------------------------------------------
+    # [Step 2] 상호 토론 (Cross Examination)
+    # ---------------------------------------------------------
     turn_count = 1
-    max_safety_turns = 15 
+    max_turns = 10 
 
-    print(f"\n🔥 의견 수렴 시까지 토론을 진행합니다 (최대 {max_safety_turns}회)")
+    print(f"\n🔥 [Step 2: 상호 토론] 최대 {max_turns}회 진행")
 
-    while turn_count <= max_safety_turns:
-        # [Rate Limit 방지 1] 루프 시작 전 대기
-        print("⏳ API 호출 간격 조절 중 (3초 대기)...")
+    while turn_count <= max_turns:
+        print("⏳ API 호출 대기 (3초)...")
         await asyncio.sleep(3) 
 
-        print(f"\n🔄 [Turn {turn_count}] 사회자가 상황을 Reasoning 중...")
+        print(f"\n🔄 [Turn {turn_count}/{max_turns}] 사회자 Reasoning...")
         
-        # 사회자 추론 및 지시
         try:
             mod_output = moderator.facilitate(company_name, current_debate_history)
         except Exception as e:
-            print(f"⚠️ 사회자 호출 중 에러 발생: {e}")
-            print("⏳ 5초 후 재시도합니다...")
-            await asyncio.sleep(5)
+            print(f"⚠️ 사회자 에러: {e}")
+            await asyncio.sleep(3)
             continue
         
-        # 파싱 로직
         thought = re.search(r"THOUGHT:(.*?)(?=STATUS|NEXT_SPEAKER|$)", mod_output, re.DOTALL)
         status = re.search(r"STATUS:\s*\[?(TERMINATE|CONTINUE)\]?", mod_output)
         speaker = re.search(r"NEXT_SPEAKER:\s*\[?(\w+)\]?", mod_output)
@@ -87,17 +90,17 @@ async def run_multi_turn_debate(user_query: str):
         if thought:
             print(f"🤔 사회자 생각: {thought.group(1).strip()}")
 
-        # [종료 조건 검사]
+        # 종료 조건
         if status and "TERMINATE" in status.group(1):
-            print("\n🏁 사회자가 토론 종료를 선언했습니다 (의견 수렴 완료).")
+            print("\n🏁 사회자가 토론 종료를 선언했습니다.")
             break
-        
-        # [토론 진행]
+        if turn_count == max_turns:
+            print("\n⏰ 시간 관계상 토론을 종료합니다.")
+            break
+
         if speaker and instruction:
             target_key_raw = speaker.group(1).strip()
             inst_text = instruction.group(1).strip()
-            
-            # 매핑 키 보정
             target_key = next((k for k in agent_map if k.lower() in target_key_raw.lower()), None)
             
             if target_key:
@@ -105,54 +108,84 @@ async def run_multi_turn_debate(user_query: str):
                 print(f"👉 지목: {target['name']}")
                 print(f"📢 질문: {inst_text}")
 
-                # [Task 2] 규칙 강제 주입
                 forced_context = (
                     f"{current_debate_history}\n\n"
                     f"--- [SYSTEM ALERT] ---\n"
-                    f"지금부터는 다음 규칙을 어기면 안 됩니다.\n"
-                    f"{debate_rules}\n"
+                    f"규칙 준수 필수:\n{debate_rules}\n"
                     f"----------------------\n"
                     f"[사회자 지시]: {inst_text}"
                 )
-
-                # [Rate Limit 방지 2] 에이전트 답변 전 대기
-                await asyncio.sleep(1) 
-
+                
+                await asyncio.sleep(1)
                 try:
-                    rebuttal = target["instance"].analyze(
-                        company_name, 
-                        ticker, 
-                        target["data"], 
-                        debate_context=forced_context
-                    )
-                    print(f"💬 {target['name']} 답변 완료")
+                    rebuttal = target["instance"].analyze(company_name, ticker, target["data"], debate_context=forced_context)
+                    
+                    # [수정] 답변 전체 출력
+                    print(f"💬 {target['name']} 답변:\n{rebuttal}\n") 
+                    
                     current_debate_history += f"\n\n[사회자]: {inst_text}\n[{target['name']}]: {rebuttal}"
                 except Exception as e:
-                    print(f"⚠️ 에이전트 답변 생성 실패: {e}")
-                    await asyncio.sleep(3) # 실패 시 대기 후 다음 턴
+                    print(f"⚠️ 답변 실패: {e}")
             else:
-                print(f"⚠️ 발언자 매핑 실패({target_key_raw}). 다음 턴 진행")
-        else:
-            print("⚠️ 사회자 응답 형식 오류. 재시도합니다.")
+                print(f"⚠️ 발언자 매핑 실패({target_key_raw}).")
         
         turn_count += 1
 
-    # 4. 최종 판결
-    print(f"\n{'='*20} ⚖️ Judge Agent 판결 {'='*20}")
-    print("⏳ 전체 토론 기록을 분석하여 최종 전략을 수립합니다...")
+    # ---------------------------------------------------------
+    # [Step 3] 사회자 요약 (Summarization)
+    # ---------------------------------------------------------
+    print(f"\n📝 [Step 3: 중간 정리] 사회자가 오늘의 논점을 정리합니다.")
+    print("⏳ 요약 생성 중...")
+    await asyncio.sleep(3)
     
-    # [Rate Limit 방지 3] 최종 판결 전 충분한 대기
-    print("⏳ 최종 판결 생성 전 5초 대기...")
+    summary = moderator.summarize_debate(company_name, current_debate_history)
+    print(f"\n[사회자 정리]:\n{summary}")
+    
+    current_debate_history += f"\n\n[사회자 정리]: {summary}"
+
+    # ---------------------------------------------------------
+    # [Step 4] 최후 변론 (Closing Arguments)
+    # ---------------------------------------------------------
+    print(f"\n🎤 [Step 4: 최후 변론] 각 전문가의 마지막 어필.")
+    current_debate_history += "\n\n[사회자]: 정리가 끝났습니다. 이제 각 전문가는 '최후 변론'을 하세요."
+
+    for role, agent_info in agent_map.items():
+        print(f"⏳ {agent_info['name']} 최후 변론 중...")
+        await asyncio.sleep(2)
+
+        closing_context = f"""
+        {current_debate_history}
+        
+        --- [SYSTEM INSTRUCTION] ---
+        지금까지의 토론 흐름과 사회자의 정리를 참고하여, 
+        당신의 최종 투자의견(매수/매도/보류)을 투자자들에게 설득력 있게 전달하는 '최후 변론'을 하십시오.
+        """
+        try:
+            closing_statement = agent_info["instance"].analyze(
+                company_name, ticker, agent_info["data"], debate_context=closing_context
+            )
+            
+            # [수정] 최후 변론 전체 출력
+            print(f"🗣️ {agent_info['name']} 최후 변론:\n{closing_statement}\n") 
+            
+            current_debate_history += f"\n[{agent_info['name']} 최후 변론]: {closing_statement}"
+        except Exception as e:
+            print(f"⚠️ 변론 실패: {e}")
+
+    # ---------------------------------------------------------
+    # [Step 5] 최종 판결 (Judge)
+    # ---------------------------------------------------------
+    print(f"\n{'='*20} ⚖️ Judge Agent 판결 {'='*20}")
+    print("⏳ 최종 전략 수립 중 (5초 대기)...")
     await asyncio.sleep(5)
 
     try:
         final_decision = judge.adjudicate(company_name, current_debate_history)
         print("\n" + final_decision)
     except Exception as e:
-        print(f"\n❌ 최종 판결 생성 중 에러 발생: {e}")
-        print("잠시 후 다시 시도해보세요.")
+        print(f"\n❌ 판결 생성 실패: {e}")
 
 if __name__ == "__main__":
-    user_input = input("종목 입력 (예: 삼성전자): ")
+    user_input = input("종목 입력: ")
     if not user_input.strip(): user_input = "삼성전자"
     asyncio.run(run_multi_turn_debate(user_input))
