@@ -70,11 +70,11 @@ WORKDIR /app
 RUN useradd -m appuser
 
 # 빌더에서 가상환경 복사
-COPY --from=builder /app/.venv /app/.venv 2>/dev/null || true
+COPY --from=builder /app/.venv /app/.venv
 
 # 프론트엔드 코드 복사
 COPY --from=builder /app/infra /app/infra
-COPY --from=builder /app/pyproject.toml /app/pyproject.toml 2>/dev/null || true
+COPY --from=builder /app/pyproject.toml /app/pyproject.toml
 
 RUN chown -R appuser:appuser /app
 
