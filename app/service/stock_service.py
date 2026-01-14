@@ -2,6 +2,7 @@ import json
 import asyncio
 import re
 import functools
+import time
 from app.agents.ticker_agent import extract_company_name
 from app.utils.ticker_utils import get_clean_ticker
 
@@ -50,10 +51,31 @@ class StockService:
 
             loop = asyncio.get_event_loop()
 
-            # [핵심] run_in_executor 에러 방지용 래
-            async def run_analysis(agent_instance, *args, **kwargs):
-                func = functools.partial(agent_instance.analyze, *args, **kwargs)
-                return await loop.run_in_executor(None, func)
+            # ------------------------------------------------------------------
+            # [핵심] 429 Rate Limit 에러 방어용 래퍼 함수 (재시도 로직)
+            # yield를 제거하여 값을 확실하게 리턴하도록 수정함
+            # ------------------------------------------------------------------
+            async def run_with_retry(func, *args, **kwargs):
+                # functools.partial로 함수와 인자를 포장
+                wrapped_func = functools.partial(func, *args, **kwargs)
+
+                max_retries = 5  # 재시도 횟수 증가
+                for attempt in range(max_retries):
+                    try:
+                        # 실행
+                        return await loop.run_in_executor(None, wrapped_func)
+                    except Exception as e:
+                        error_str = str(e)
+                        # 429 (Too Many Requests) 에러 감지 시 대기 후 재시도
+                        if "429" in error_str or "too_many_requests" in error_str:
+                            if attempt < max_retries - 1:
+                                wait_time = 5 * (attempt + 1)  # 5초, 10초... 넉넉하게 대기
+                                print(
+                                    f"⚠️ API 호출 제한(429) 감지. {wait_time}초 대기 후 재시도합니다... ({attempt + 1}/{max_retries})")
+                                await asyncio.sleep(wait_time)
+                                continue
+                        # 그 외 에러는 바로 발생시킴
+                        raise e
 
             # ------------------------------------------------------------------
             # [Step 0] 종목 식별 및 데이터 수집
@@ -66,8 +88,8 @@ class StockService:
                 return
 
             ticker = get_clean_ticker(refined_name)
-            yield create_msg("system", "status", f"대상 종목 티커 {refined_name} ({ticker})")
-            yield create_msg("system", "status", "대상 종목의 3대 데이터 수집 및 초기 분석을 통합 진행합니다...")
+            yield create_msg("system", "status", f"대상 종목: {refined_name} ({ticker})")
+            yield create_msg("system", "status", "3대 데이터(재무, 뉴스, 차트)를 수집 중입니다...")
 
             # 데이터 수집 (병렬)
             f_task = loop.run_in_executor(None, get_financial_summary, ticker)
@@ -95,15 +117,16 @@ class StockService:
                 "message": "지금부터 토론을 시작합니다. 각 전문가는 분석 결과를 발표해주세요."
             })
 
-            # 병렬 실행 래퍼
-            async def run_with_tag(tag, agent_info, *args):
-                res = await run_analysis(agent_info["instance"], *args)
+            # 병렬 실행용 태그 래퍼
+            async def run_analyze_parallel(tag, agent_info, *args):
+                # 여기서 run_with_retry 사용
+                res = await run_with_retry(agent_info["instance"].analyze, *args)
                 return tag, res
 
             tasks = [
-                run_with_tag("Chart", agent_map["Chart"], refined_name, ticker, c_data),
-                run_with_tag("News", agent_map["News"], refined_name, ticker, n_data),
-                run_with_tag("Finance", agent_map["Finance"], refined_name, ticker, f_data)
+                run_analyze_parallel("Chart", agent_map["Chart"], refined_name, ticker, c_data),
+                run_analyze_parallel("News", agent_map["News"], refined_name, ticker, n_data),
+                run_analyze_parallel("Finance", agent_map["Finance"], refined_name, ticker, f_data)
             ]
 
             # 끝나는 순서대로 처리
@@ -130,6 +153,9 @@ class StockService:
                     "type": "opening"
                 })
 
+            # API 부하 방지용 대기
+            await asyncio.sleep(2)
+
             # ------------------------------------------------------------------
             # [Step 2] 상호 토론 (Reasoning)
             # ------------------------------------------------------------------
@@ -142,8 +168,9 @@ class StockService:
 
                 current_context = self._format_history_for_llm(discussion_log)
 
-                mod_output = await loop.run_in_executor(
-                    None, self.moderator_agent.facilitate, refined_name, current_context
+                # [Retry 적용] 사회자 Reasoning
+                mod_output = await run_with_retry(
+                    self.moderator_agent.facilitate, refined_name, current_context
                 )
 
                 # 파싱
@@ -169,7 +196,7 @@ class StockService:
                     if target_key:
                         target = agent_map[target_key]
 
-                        # [복구] 사용자님이 요청하신 "반박 의견을 제시합니다" 상태 메시지
+                        # [요청사항] 반박 준비 알림
                         yield create_msg(target['code'], "status", f"{target['name']}가 반박 의견을 제시합니다.")
 
                         forced_context = (
@@ -180,8 +207,10 @@ class StockService:
                             f"[사회자 지시]: {inst_text}"
                         )
 
-                        rebuttal = await run_analysis(
-                            target["instance"], refined_name, ticker, target["data"],
+                        # [Retry 적용] 전문가 반박
+                        rebuttal = await run_with_retry(
+                            target["instance"].analyze,
+                            refined_name, ticker, target["data"],
                             debate_context=forced_context
                         )
 
@@ -189,6 +218,9 @@ class StockService:
                         yield create_msg(target["code"], "debate", rebuttal)
                         discussion_log.append({"speaker": target["name"], "code": target["code"], "message": rebuttal,
                                                "type": "rebuttal"})
+
+                        # API 부하 조절
+                        await asyncio.sleep(2)
 
             # ------------------------------------------------------------------
             # [Step 3] 최후 변론 (Closing)
@@ -209,8 +241,10 @@ class StockService:
                 당신의 최종 투자의견(매수/매도/보류)을 투자자들에게 설득력 있게 전달하는 '최후 변론'을 하십시오.
                 """
 
-                closing_stmt = await run_analysis(
-                    agent["instance"], refined_name, ticker, agent["data"],
+                # [Retry 적용] 최후 변론
+                closing_stmt = await run_with_retry(
+                    agent["instance"].analyze,
+                    refined_name, ticker, agent["data"],
                     debate_context=closing_context_prompt
                 )
 
@@ -218,20 +252,38 @@ class StockService:
                 discussion_log.append(
                     {"speaker": agent["name"], "code": agent["code"], "message": closing_stmt, "type": "closing"})
 
+                # API 부하 조절
+                await asyncio.sleep(2)
+
             # ------------------------------------------------------------------
-            # [Step 4,5,6] 요약 -> 판결 -> 리포트
+            # [Step 4] 요약 (Summarization)
             # ------------------------------------------------------------------
             yield create_msg("system", "status", "사회자가 토론을 요약 중입니다...")
             final_context = self._format_history_for_llm(discussion_log)
-            await loop.run_in_executor(None, self.moderator_agent.summarize_debate, refined_name, final_context)
 
-            yield create_msg("system", "status", "최종 분석가가 최종 판결을 내리고 있습니다...")
-            final_decision = await loop.run_in_executor(None, self.judge_agent.adjudicate, refined_name, final_context)
+            # [Retry 적용] 요약
+            await run_with_retry(self.moderator_agent.summarize_debate, refined_name, final_context)
 
+            # ------------------------------------------------------------------
+            # [Step 5] 최종 판결 (Judge)
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", "재판관(Judge)이 최종 판결을 내리고 있습니다...")
+
+            # [Retry 적용] 판결
+            final_decision = await run_with_retry(self.judge_agent.adjudicate, refined_name, final_context)
+
+            # ------------------------------------------------------------------
+            # [Step 6] 리포트 생성 (Report)
+            # ------------------------------------------------------------------
             yield create_msg("system", "status", "최종 리포트를 생성 중입니다...")
-            insight_report = await loop.run_in_executor(None, self.report_agent.generate_report, refined_name, ticker,
-                                                        final_context)
 
+            # [Retry 적용] 리포트 생성
+            insight_report = await run_with_retry(self.report_agent.generate_report, refined_name, ticker,
+                                                  final_context)
+
+            # ------------------------------------------------------------------
+            # [Step 7] 결과 반환
+            # ------------------------------------------------------------------
             result_data = {
                 "summary": insight_report,
                 "conclusion": final_decision,
