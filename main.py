@@ -64,7 +64,7 @@ def get_db():
         db.close()
 
 # =========================================================
-# 2. 인증(Auth) 기능
+# 2. 인증 기능
 # =========================================================
 
 class SignupRequest(BaseModel):
@@ -111,7 +111,7 @@ async def signup(req: SignupRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     
-    print(f"✅ 회원가입 성공(DB): ID={req.username}")
+    print(f"회원가입 성공(DB): ID={req.username}")
     return {"message": "회원가입 성공"}
 
 # 로그인
@@ -122,7 +122,7 @@ async def login(req: LoginRequest, db: Session = Depends(get_db)):
     if not user or user.password != req.password:
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 일치하지 않습니다.")
     
-    print(f"🔑 로그인 성공(DB): {req.username}")
+    print(f"로그인 성공(DB): {req.username}")
     
     return {
         "token": f"access-token-{req.username}",

@@ -3,32 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입 - AI 투자 서비스</title>
+    <title>토론형 AI 투자 서비스</title>
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/style.css">
-    
-    <style>
-        /* 중복확인 버튼 */
-        .btn-check {
-            height: 50px;
-            padding: 0 1.2rem;
-            margin-left: 0.8rem;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 0.8rem;
-            color: #94a3b8;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        .btn-check:hover {
-            background: #334155;
-            color: white;
-            border-color: #60a5fa;
-        }
-    </style>
 </head>
 <body class="page-main">
     <div class="chart-bg" id="chartBg"></div>
@@ -45,36 +23,44 @@
 
         <form id="signupForm" class="box auth-box">
             
-            <div class="mb-4">
+            <div class="mb-5">
                 <label class="label">아이디</label>
-                <div class="flex items-center">
-                    <input type="text" id="username" class="input flex-1" style="height: 50px;" required 
+                <div class="relative w-full">
+                    <input type="text" id="username" class="input w-full pr-24" style="height: 50px;" required 
                            pattern="^[A-Za-z0-9]{4,10}$"
                            title="영문 대소문자와 숫자만 사용하여 4~10자로 입력하세요."
                            placeholder="영문+숫자 4~10자">
-                    <button type="button" class="btn-check" onclick="handleCheckUsername()">중복확인</button>
+                    
+                    <button type="button" onclick="handleCheckUsername()"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 h-[36px] px-3 bg-slate-700 hover:bg-slate-600 border border-slate-500 rounded-lg text-xs text-white transition-colors">
+                        중복확인
+                    </button>
                 </div>
-                <p id="username-msg" class="text-xs mt-2" style="color: #94a3b8; min-height: 1rem;"></p>
+                <p id="username-msg" class="text-xs mt-2 min-h-[1rem] text-slate-400"></p>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-5">
                 <label class="label">비밀번호</label>
-                <input type="password" id="password" class="input" style="height: 50px;" required 
+                <input type="password" id="password" class="input w-full" style="height: 50px;" required 
                        pattern="^[A-Za-z0-9]{4,10}$"
                        title="영문 대소문자와 숫자만 사용하여 4~10자로 입력하세요."
                        placeholder="영문+숫자 4~10자">
             </div>
 
-            <div class="mb-6">
+            <div class="mb-8">
                 <label class="label">닉네임</label>
-                <div class="flex items-center">
-                    <input type="text" id="nickname" class="input flex-1" style="height: 50px;" required placeholder="서비스 닉네임">
-                    <button type="button" class="btn-check" onclick="handleCheckNickname()">중복확인</button>
+                <div class="relative w-full">
+                    <input type="text" id="nickname" class="input w-full pr-24" style="height: 50px;">
+                    
+                    <button type="button" onclick="handleCheckNickname()"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 h-[36px] px-3 bg-slate-700 hover:bg-slate-600 border border-slate-500 rounded-lg text-xs text-white transition-colors">
+                        중복확인
+                    </button>
                 </div>
-                <p id="nickname-msg" class="text-xs mt-2" style="color: #94a3b8; min-height: 1rem;"></p>
+                <p id="nickname-msg" class="text-xs mt-2 min-h-[1rem] text-slate-400"></p>
             </div>
             
-            <button type="submit" class="btn">가입하기</button>
+            <button type="submit" class="btn w-full">가입하기</button>
 
             <div class="auth-link">
                 이미 계정이 있으신가요? <a href="login.html">로그인</a>

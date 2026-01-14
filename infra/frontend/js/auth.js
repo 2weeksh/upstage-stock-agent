@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAuthNav();
 });
 
-// 1. 우측 상단 네비게이션 렌더링
+// 1. 우측 상단 네비게이션
 function renderAuthNav() {
     let navContainer = document.getElementById('auth-nav');
     if (!navContainer) {
