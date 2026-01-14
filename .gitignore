@@ -208,7 +208,7 @@ marimo/_lsp/
 __marimo__/
 
 #데이터베이스
-stock_app.db
+users.db
 
 # 캐시
 tickers_cache.pkl
