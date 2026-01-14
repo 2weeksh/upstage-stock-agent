@@ -202,10 +202,13 @@ async function fetchAnalysisResult(question) {
 // ------------------------------------------------
 
 function saveDataAndSwitchUI(data) {
-    // 데이터 로컬 스토리지 저장
+    // 1. 텍스트 데이터 저장
     localStorage.setItem('analysis_summary', data.summary || "내용 없음");
     localStorage.setItem('analysis_conclusion', data.conclusion || "내용 없음");
-    localStorage.setItem('analysis_log', data.discussion || "내용 없음");
+
+    // [중요] discussion_log 배열을 JSON 문자열로 저장 (없으면 빈 배열)
+    const chatHistory = data.discussion_log || [];
+    localStorage.setItem('analysis_chat_history', JSON.stringify(chatHistory));
 
     // 로딩 UI 숨기기
     const loadingContent = document.getElementById('loading-content');

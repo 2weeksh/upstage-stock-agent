@@ -113,18 +113,46 @@
                         ⚠️ 본 분석 결과는 AI 예측이며, 모든 투자의 책임은 투자자 본인에게 있습니다.
                     </span>
                 </section>
+<section>
+    <button id="toggleDiscussionBtn" class="btn-toggle">
+        <span>🤖 에이전트 토론 다시보기</span>
+        <svg id="toggleIcon" class="w-6 h-6 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    </button>
 
-                <section>
-                    <button id="toggleDiscussionBtn" class="btn-toggle">
-                        <span>에이전트 토론 보기</span>
-                        <svg class="w-6 h-6 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="discussionContent" class="discussion-wrapper hidden">
-                        <div class="box discussion-box">
-                            <p id="res-discussion" class="text-sm text-gray-400">데이터를 불러오는 중...</p>
-                        </div>
-                    </div>
-                </section>
+    <div id="discussionContent" class="discussion-wrapper hidden">
+        <div class="box discussion-viewer-box" style="position: relative; min-height: 200px; padding-bottom: 60px;">
+
+            <div class="viewer-header flex items-center mb-4">
+                <div id="viewer-avatar" class="w-10 h-10 rounded-full flex items-center justify-center text-xl mr-3 bg-gray-700">
+                    🎤
+                </div>
+                <div>
+                    <span id="viewer-speaker" class="font-bold text-lg text-white">Speaker</span>
+                    <span id="viewer-type" class="text-xs text-gray-400 block">Role</span>
+                </div>
+            </div>
+
+            <div class="viewer-body bg-gray-800/50 p-4 rounded-lg border border-gray-700/50 min-h-[120px]">
+                <p id="viewer-message" class="text-gray-200 leading-relaxed whitespace-pre-wrap">
+                    대화 내용을 불러오는 중입니다...
+                </p>
+            </div>
+
+            <div class="viewer-controls flex items-center justify-between mt-4">
+                <button id="btn-prev" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    ◀ 이전
+                </button>
+
+                <span id="viewer-counter" class="text-sm text-gray-400 font-mono">0 / 0</span>
+
+                <button id="btn-next" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    다음 ▶
+                </button>
+            </div>
+
+        </div>
+    </div>
+</section>
             </main>
         </div>
 
