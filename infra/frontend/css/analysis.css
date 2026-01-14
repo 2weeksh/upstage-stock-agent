@@ -101,13 +101,21 @@ body, html {
 }
 .highlight-border { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
 
+<<<<<<< HEAD
 /* 메인 타이틀*/
+=======
+/*메인 타이틀*/
+>>>>>>> a8e5824462a8444fb3fe49bbba627725b02dd0ce
 .t-main {
     font-family: "Do Hyeon", sans-serif;
     font-weight: 200;
     font-style: normal;
     font-size: 3.5rem; 
+<<<<<<< HEAD
     color: white;     
+=======
+    color: white;    
+>>>>>>> a8e5824462a8444fb3fe49bbba627725b02dd0ce
     margin-bottom: 0.5rem; 
     line-height: 1.2;
 }
@@ -139,7 +147,11 @@ body, html {
    ========================================= */
 .market-section { padding-bottom: 8rem; text-align: center; width: 100%; }
 
+<<<<<<< HEAD
 /* 코스피 차트 */
+=======
+/* 코스피 차트 섹션 */
+>>>>>>> a8e5824462a8444fb3fe49bbba627725b02dd0ce
 .kospi-section {
     background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(59, 130, 246, 0.3);
     border-radius: 1.5rem; padding: 2rem; max-width: 900px;
@@ -165,16 +177,28 @@ body, html {
 }
 .chart-container { position: relative; height: 300px; width: 100%; }
 
+<<<<<<< HEAD
 /* 8개 카드 그리드 */
+=======
+/* 8개 카드 */
+>>>>>>> a8e5824462a8444fb3fe49bbba627725b02dd0ce
 .market-grid {
     display: grid; gap: 1.5rem; width: 100%; max-width: 1200px; margin: 0 auto;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
+<<<<<<< HEAD
 /* PC: 4열  */
 @media (min-width: 1024px) {
     .market-grid { grid-template-columns: repeat(4, 1fr); }
 }
 /* 모바일: 2열 */
+=======
+/* 4열 고정 */
+@media (min-width: 1024px) {
+    .market-grid { grid-template-columns: repeat(4, 1fr); }
+}
+/*  2열 고정 */
+>>>>>>> a8e5824462a8444fb3fe49bbba627725b02dd0ce
 @media (min-width: 600px) and (max-width: 1023px) {
     .market-grid { grid-template-columns: repeat(2, 1fr); }
 }
