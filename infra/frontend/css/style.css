@@ -469,17 +469,16 @@ body, html {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* ✅ style.css 맨 마지막에 붙여넣기 */
 
 /* =========================================
-   [추가] 인증(Auth) 관련 스타일
+   [필수] 인증(Auth) 네비게이션 스타일
    ========================================= */
-
-/* 우측 상단 네비게이션 */
 #auth-nav {
-    position: fixed;
-    top: 25px;
-    right: 25px;
-    z-index: 1000;
+    position: fixed;   /* 화면에 고정 */
+    top: 25px;         /* 위에서 25px */
+    right: 25px;       /* 오른쪽에서 25px */
+    z-index: 9999;     /* 다른 요소보다 무조건 위에 */
     display: flex;
     gap: 1.5rem;
     align-items: center;
@@ -495,10 +494,9 @@ body, html {
 }
 
 #auth-nav a:hover {
-    color: #60a5fa; /* 포인트 컬러 */
+    color: #60a5fa; /* 마우스 올렸을 때 파란색 */
 }
 
-/* 닉네임 강조 */
 .user-nickname {
     color: white !important;
     font-weight: 700;
