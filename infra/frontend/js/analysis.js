@@ -141,9 +141,7 @@ function renderSliderLog(index) {
     btnNext.disabled = (index === chatLogs.length - 1);
     btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
 }
-
-// [모드 2] 채팅 리스트 렌더링
-// [모드 2] 채팅 리스트 렌더링 (좌우 반전 적용)
+// [모드 2] 채팅 리스트 렌더링 (아바타 상단 고정 수정)
 function renderChatView() {
     const list = document.getElementById('chat-list');
     list.innerHTML = "";
@@ -152,44 +150,43 @@ function renderChatView() {
         const style = getAgentStyle(log.code);
         const isModerator = log.code === 'moderator';
 
-        // [수정됨] 위치 반전 로직
-        // 사회자(isModerator) -> 왼쪽 (flex-row, items-start)
-        // 전문가 -> 오른쪽 (flex-row-reverse, items-end)
+        // 1. 레이아웃 방향 결정
+        // 사회자: 왼쪽(정방향) / 전문가: 오른쪽(역방향)
         const rowClass = isModerator ? 'flex-row' : 'flex-row-reverse';
-        const alignClass = isModerator ? 'items-start' : 'items-end';
 
-        // 말풍선 스타일
+        // 2. 텍스트 정렬 결정 (말풍선 내부 정렬)
+        // 사회자: 왼쪽 정렬 / 전문가: 오른쪽 정렬
+        const colAlign = isModerator ? 'items-start' : 'items-end';
+
         const bubbleColor = isModerator
-            ? 'bg-gray-600 text-white shadow-md'  // 사회자
-            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md'; // 전문가
+            ? 'bg-gray-600 text-white shadow-md'
+            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md';
 
+        // 3. Row 생성 (여기서 items-start를 줘서 아바타를 무조건 위로 올림)
         const row = document.createElement('div');
-        row.className = `flex ${rowClass} ${alignClass} gap-3 w-full`;
+        row.className = `flex ${rowClass} items-start gap-3 w-full`;
 
-        // 1. 아바타
+        // 아바타
         const avatar = document.createElement('div');
         avatar.className = `flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg text-white shadow-md ${style.bg}`;
         avatar.innerText = style.icon;
 
-        // 2. 내용물 Wrapper
+        // 내용물 Wrapper (이름 + 말풍선 정렬은 colAlign 사용)
         const content = document.createElement('div');
-        content.className = `flex flex-col ${alignClass} max-w-[80%]`;
+        content.className = `flex flex-col ${colAlign} max-w-[80%]`;
 
-        // 3. 이름
+        // 이름
         const name = document.createElement('span');
         name.className = "text-xs text-gray-400 mb-1 font-bold";
         name.innerText = log.speaker;
 
-        // 4. 말풍선
+        // 말풍선
         const bubble = document.createElement('div');
         bubble.className = `px-5 py-3 rounded-2xl text-base leading-relaxed whitespace-pre-wrap ${bubbleColor}`;
 
-        // [수정됨] 말풍선 꼬리 방향 반전
-        if (isModerator) {
-            bubble.style.borderTopLeftRadius = '0';  // 사회자: 왼쪽 꼬리
-        } else {
-            bubble.style.borderTopRightRadius = '0'; // 전문가: 오른쪽 꼬리
-        }
+        // 꼬리 방향
+        if (isModerator) bubble.style.borderTopLeftRadius = '0';
+        else bubble.style.borderTopRightRadius = '0';
 
         bubble.innerHTML = formatText(log.message);
 
@@ -200,7 +197,6 @@ function renderChatView() {
         list.appendChild(row);
     });
 }
-
 function getAgentStyle(code) {
     switch (code) {
         case 'chart': return { icon: '📈', role: 'Technical Analyst', bg: 'bg-blue-600' };
