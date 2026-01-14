@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 배경 애니메이션 (유지)
+    // 배경 애니메이션
     const chartBg = document.getElementById('chartBg');
     if (chartBg) {
         for (let i = 0; i < 25; i++) { createCandle(chartBg); }
@@ -10,11 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initLoadingPage();
 });
 
-// ------------------------------------------------
-// 1. UI 초기화 및 이벤트 핸들러
-// ------------------------------------------------
+//  UI 초기화 및 이벤트 핸들러
 
-// 캔들 애니메이션 생성
+// 캔들 애니메이션
 function createCandle(container) {
     const candle = document.createElement('div');
     candle.className = 'candle';
@@ -66,10 +64,7 @@ function initBackButton() {
     }
 }
 
-// ------------------------------------------------
-// 2. 로딩 페이지 로직 (핵심 수정 부분)
-// ------------------------------------------------
-
+// 로딩 페이지
 function initLoadingPage() {
     const displayElement = document.getElementById('displayQuestion');
     const statusText = document.getElementById('agentStatusText');
@@ -79,7 +74,6 @@ function initLoadingPage() {
     const savedQuestion = localStorage.getItem('userQuestion');
     displayElement.innerText = savedQuestion || "질문이 없습니다.";
 
-    // [삭제됨] startTextAnimation() 호출 제거 -> 백엔드 메시지로 대체
     // 초기 대기 메시지 설정
     if (statusText) statusText.innerText = "분석 서버와 연결 중...";
 

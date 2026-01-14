@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토론형 AI 투자 서비스</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-main">
+    <div class="chart-bg" id="chartBg"></div>
+
+    <div id="back-btn-container" onclick="location.href='start.html'">
+        <img src="img/left_arrow.png" alt="뒤로가기" id="back-icon">
+    </div>
+
+    <main class="wrapper">
+        <header class="header">
+            <h2 class="t-sub">로그인</h2>
+            <p class="desc">서비스 이용을 위해 로그인해주세요.</p>
+        </header>
+
+        <form id="loginForm" class="box auth-box">
+            
+            <div class="mb-4">
+                <label class="label">아이디</label>
+                <input type="text" id="username" class="input" style="height: 50px;" required>
+            </div>
+            
+            <div class="mb-6">
+                <label class="label">비밀번호</label>
+                <input type="password" id="password" class="input" style="height: 50px;" required>
+            </div>
+            
+            <button type="submit" class="btn">로그인</button>
+
+            <div class="auth-link">
+                계정이 없으신가요? <a href="signup.html">회원가입</a>
+            </div>
+        </form>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const success = await apiLogin(username, password);
+            if (success) {
+                window.location.href = 'start.html';
+            }
+        });
+    </script>
+</body>
+</html>

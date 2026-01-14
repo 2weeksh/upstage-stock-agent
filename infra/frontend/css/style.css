@@ -29,7 +29,7 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 스크롤 방지 */
+    overflow: hidden; 
 }
 
 .page-main {
@@ -468,4 +468,58 @@ body, html {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   [추가] 인증(Auth) 관련 스타일
+   ========================================= */
+
+/* 우측 상단 네비게이션 */
+#auth-nav {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 1000;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+#auth-nav a, #auth-nav span {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+#auth-nav a:hover {
+    color: #60a5fa; /* 포인트 컬러 */
+}
+
+/* 닉네임 강조 */
+.user-nickname {
+    color: white !important;
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+/* 로그인/회원가입 폼 전용 스타일 (기존 box 스타일 상속) */
+.auth-box {
+    max-width: 28rem; /* 기존보다 약간 좁게 */
+}
+
+.auth-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.auth-link a {
+    color: #60a5fa;
+    text-decoration: underline;
+    margin-left: 0.5rem;
 }
