@@ -209,3 +209,6 @@ __marimo__/
 
 # 캐시
 tickers_cache.pkl
+
+#리포트 저장
+logs/
