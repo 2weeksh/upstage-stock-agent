@@ -2,13 +2,19 @@ import os
 import time
 import concurrent.futures
 from datetime import datetime
-from fastapi import FastAPI, Response, HTTPException, Request
+from fastapi import FastAPI, Response, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, Field
 import yfinance as yf
 
+# DB 관련 임포트
+from sqlalchemy import create_engine, Column, String, Integer
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+
+# AI 라우터 확인
 try:
     from app.api import moderator_router
     HAS_MODERATOR = True
@@ -30,10 +36,36 @@ if HAS_MODERATOR:
     app.include_router(moderator_router.router, prefix="/api/v1")
 
 # =========================================================
-# 인증 기능
+# 1. 데이터베이스 설정 (SQLite)
+# =========================================================
 
+SQLALCHEMY_DATABASE_URL = "sqlite:///./users.db"
 
-fake_users_db = {} # 임시 메모리 DB
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+    username = Column(String, primary_key=True, index=True)
+    password = Column(String)
+    nickname = Column(String)
+    joined_at = Column(String)
+
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# =========================================================
+# 2. 인증(Auth) 기능
+# =========================================================
 
 class SignupRequest(BaseModel):
     username: str = Field(..., pattern="^[A-Za-z0-9]{4,10}$")
@@ -44,40 +76,62 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+# 아이디 중복 확인 API
+@app.get("/api/auth/check-username/{username}")
+async def check_username(username: str, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.username == username).first()
+    if existing_user:
+        return {"available": False, "message": "이미 사용 중인 아이디입니다."}
+    return {"available": True, "message": "사용 가능한 아이디입니다."}
+
+# 닉네임 중복 확인 API
+@app.get("/api/auth/check-nickname/{nickname}")
+async def check_nickname(nickname: str, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.nickname == nickname).first()
+    if existing_user:
+        return {"available": False, "message": "이미 사용 중인 닉네임입니다."}
+    return {"available": True, "message": "사용 가능한 닉네임입니다."}
+
+# 회원가입
 @app.post("/api/auth/signup")
-async def signup(req: SignupRequest):
-    if req.username in fake_users_db:
+async def signup(req: SignupRequest, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.username == req.username).first()
+    if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
     
-    # 가입일 저장
     join_date = datetime.now().strftime("%Y-%m-%d")
+    new_user = User(
+        username=req.username,
+        password=req.password,
+        nickname=req.nickname,
+        joined_at=join_date
+    )
     
-    fake_users_db[req.username] = {
-        "password": req.password,
-        "nickname": req.nickname,
-        "joined_at": join_date 
-    }
-    print(f"✅회원가입 성공: ID={req.username}, Date={join_date}")
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    print(f"✅ 회원가입 성공(DB): ID={req.username}")
     return {"message": "회원가입 성공"}
 
+# 로그인
 @app.post("/api/auth/login")
-async def login(req: LoginRequest):
-    user = fake_users_db.get(req.username)
+async def login(req: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == req.username).first()
     
-    if not user or user["password"] != req.password:
+    if not user or user.password != req.password:
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 일치하지 않습니다.")
     
-    print(f"🔑로그인 성공: {req.username}")
+    print(f"🔑 로그인 성공(DB): {req.username}")
     
-    # 응답에 가입일 포함
     return {
         "token": f"access-token-{req.username}",
-        "nickname": user["nickname"],
-        "joined_at": user.get("joined_at", datetime.now().strftime("%Y-%m-%d"))
+        "nickname": user.nickname,
+        "joined_at": user.joined_at
     }
 
 # =========================================================
-# 2. 시장 데이터 로직
+# 3. 시장 데이터 로직
 # =========================================================
 
 class UserRequest(BaseModel):
@@ -179,7 +233,7 @@ async def get_kospi_data():
         return {"error": "Load Failed"}
 
 # =========================================================
-# 3. 정적 파일 & HTML 경로 설정
+# 4. 정적 파일 & HTML 경로 설정
 # =========================================================
 
 ORIGINAL_FRONTEND_PATH = "infra/frontend"
