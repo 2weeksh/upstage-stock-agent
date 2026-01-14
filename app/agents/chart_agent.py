@@ -11,52 +11,54 @@ class ChartAgent:
             self.llm = get_solar_model()
 
 
-    '''
-    def analyze(self, symbol: str, company_name: str, chart_data: str):
-        """
-        기술적 지표를 바탕으로 차트 추세를 분석하고 의견을 도출합니다.
-        """
-        system_prompt = f"""
-        당신은 데이터와 확률만을 믿는 냉철한 '차트 분석가'입니다. 
-        당신은 뉴스 분석가가 가져오는 '소문'들이 결국 차트의 추세와 지표 안에 선반영된다고 믿습니다.
-
-        당신의 토론 지침:
-        1. 데이터로 압도하세요: RSI, 이동평균선, 거래량 수치를 언급하며 "이건 물리적으로 조정이 올 수밖에 없는 구간이다"라고 선을 그으세요.
-        2. 확률적 우위를 주장하세요: "과거 10년간 이런 지표에서 상승한 확률은 10%도 안 된다"는 식으로 뉴스 분석가의 낙관론을 차단하세요.
-        3. 뉴스 무용론을 펼치세요: 호재 뉴스가 떠도 차트가 저항선에 걸려 있다면 "그 뉴스는 이미 주가에 다 녹아있다" 혹은 "설거지용 뉴스다"라고 강하게 비판하세요.
-
-        출력 형식 (반드시 1인칭 대화체로 작성):
-        1. 나의 기술적 입장: (예: "나는 데이터의 경고를 무시하고 이 종목에 뛰어드는 것에 강력히 반대합니다.")
-        2. 나의 분석 논리: (RSI 90, 이평선 괴리 등 수치를 근거로 한 냉정한 판단)
-        3. 뉴스 분석가에게 던지는 날카로운 반론: (예: "뉴스 분석가님, 사람들의 심리니 세대니 하는 추상적인 이야기 좀 그만하시죠. RSI 90.18이라는 숫자는 이미 시장이 터지기 직전이라는 명확한 경고입니다. 당신이 말하는 그 호재들, 이미 차트 고점에 다 반영되어 있는 거 안 보이십니까?")
-        """
-
-        messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=f"다음은 {company_name}의 최근 차트 지표입니다: \n\n{chart_data}")
-            ]
-
-        response = self.llm.invoke(messages)
-        return response.content
-'''
-    
     def analyze(self, company_name, ticker, chart_data, debate_context=None):
+        # 1. 기조 발언용 형식 (첫 시작 시)
+        keynote_format = """
+        ### 👤 차트 분석가 (기조 발언)
+        > **핵심 요약: {전체적인 차트 흐름 요약}**
+
+        * **📊 기술적 지표:** {RSI, 거래량 등 현재 수치}
+        * **💡 분석 근거:** {데이터를 통한 향후 방향성 예측}
+        * **🎯 투자 판단:** {매수/매도/관망}
+        ---
+        **❓ 타 에이전트 질문:** "{뉴스/재무 분석가에게 자신의 데이터와 상충될 만한 질문 던지기}"
         """
-        debate_context: 다른 에이전트의 의견이나 사회자의 질문이 담긴 텍스트
+
+        # 2. 반박/재반박용 형식 (토론 진행 시)
+        rebuttal_format = """
+        ### 👤 차트 분석가 (반박 및 재검토)
+        > **반박 요약: {상대 논리의 허점을 한 줄로 지적}**
+
+        * **🔥 상대 논리 비판:** {전달받은 토론 내용 중 기술적으로 틀린 점 지적}
+        * **📊 보완 데이터:** {자신의 차트 데이터로 상대방 논리 재반박}
+        * **📍 최종 입장:** {입장 고수 혹은 부분 수용}
+        ---
+        **💬 다음 토론 포인트:** "{사회자에게 다음으로 논의할 기술적 쟁점 제안}"
         """
+
         if debate_context:
-            # [반박 모드] 상대방의 논리를 꺾는 프롬프트
-            system_msg = f"""당신은 냉철한 차트 분석가입니다. 
+            # [반박 모드]
+            system_msg = f"""
+            "당신은 냉철한 차트 분석가입니다. 
             현재 진행 중인 토론의 내용을 듣고, 당신의 기술적 지표({chart_data})를 근거로 
-            상대방의 논리를 반박하거나 당신의 입장을 고수하세요."""
-            user_msg = f"현재 토론 상황: {debate_context}\n\n위 내용에 대해 기술적으로 반박해 주세요."
+            상대방의 논리를 반박하거나 당신의 입장을 고수하세요."
+            {rebuttal_format}"""
+            user_msg = f"현재 토론 상황: {debate_context}\n\n데이터: {chart_data}"
         else:
-            # [기조 강연 모드] 처음 의견을 내는 프롬프트
-            system_msg = "당신은 데이터와 확률을 믿는 차트 분석가입니다. 지표를 분석해 첫 의견을 주세요."
-            user_msg = f"{company_name}({ticker})의 차트 지표 분석 요청: {chart_data}"
+            # [기조 강연 모드]
+            system_msg = f"""당신은 데이터와 확률을 믿는 차트 분석가입니다. 지표를 분석해 첫 의견을 주세요.
+            {keynote_format}"""
+            user_msg = f"{company_name}({ticker}) 분석 데이터: {chart_data}"
         
         messages = [
             ("system", system_msg),
             ("user", user_msg)
         ]
         return self.llm.invoke(messages).content
+
+if __name__ == "__main__":
+    llm = get_solar_model()
+    agent = ChartAgent(llm)
+    sample_chart_data = "예시 차트 데이터: 상승 추세, 거래량 증가, RSI 70 이상"
+    result = agent.analyze("삼성전자", "005930", sample_chart_data)
+    print(result)
