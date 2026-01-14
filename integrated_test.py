@@ -192,7 +192,7 @@ async def run_multi_turn_debate(user_query: str):
     report_agent = InsightReportAgent(llm)
 
     # 6. 인사이트 리포트 생성
-    print("🎨 멘토님 취향 저격 리포트 생성 중...")
+    print("최종 리포트 생성 중...")
     insight_report = report_agent.generate_report(company_name, ticker, current_debate_history)
 
     # 7. 파일 저장
