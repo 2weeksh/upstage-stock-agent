@@ -48,6 +48,17 @@ function initUserInput() {
     });
 }
 
+const textarea = document.getElementById('userQuestion');
+const form = document.getElementById('analysisForm');
+
+textarea.addEventListener('keydown', (e) => {
+    // 엔터키이고, 쉬프트키가 눌리지 않았을 때만 제출
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // 줄바꿈 방지
+        form.dispatchEvent(new Event('submit')); // 폼 제출 이벤트 발생
+    }
+});
+
 // 뒤로가기 버튼 초기화
 function initBackButton() {
     const backBtn = document.getElementById('back-btn-container');
