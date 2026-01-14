@@ -1,47 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. 기본 정보 로드
+    // 1. 날짜 및 질문 표시
     const dateElem = document.getElementById('report-date');
     if (dateElem) {
         dateElem.innerText = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
     }
-
     const userQueryElement = document.getElementById('user-query-text');
     if (userQueryElement) {
         userQueryElement.innerText = localStorage.getItem('userQuestion') || "질문 없음";
     }
 
-    // 2. 데이터 초기화 및 뷰어 실행
+    // 2. 분석 데이터 및 뷰어 초기화
     initAnalysisData();
-    initDiscussionSystem(); // 통합 뷰어 시스템
+    initDiscussionSystem();
 
-    // 3. 차트 및 시장 데이터
+    // 3. 차트 및 시장 요약
     renderKospiChart();
     renderRealMarketData();
 });
 
 // 줄바꿈 처리 헬퍼
 function formatText(text) {
-    if (!text) return "";
+    if (!text) return "데이터 로딩 중...";
     return text.replace(/\n/g, '<br>');
 }
 
 function initAnalysisData() {
     const summaryData = localStorage.getItem('analysis_summary');
     const conclusionData = localStorage.getItem('analysis_conclusion');
-
     if(document.getElementById('res-summary')) document.getElementById('res-summary').innerHTML = formatText(summaryData);
     if(document.getElementById('res-conclusion')) document.getElementById('res-conclusion').innerHTML = formatText(conclusionData);
 }
 
 // ============================================================
-// 🤖 [통합] 토론 뷰어 시스템 (슬라이드 & 채팅)
+// 🤖 [통합] 토론 뷰어 시스템 (토글 + 탭)
 // ============================================================
 let chatLogs = [];
 let currentIndex = 0;
 
 function initDiscussionSystem() {
-    // 1. 데이터 로드
+    // 1. [NEW] 토글 버튼 (전체 접기/펼치기) 기능 복구
+    const toggleBtn = document.getElementById('toggleDiscussionBtn');
+    const wrapper = document.getElementById('discussionWrapper'); // 탭+뷰어를 감싸는 div
+    const toggleIcon = document.getElementById('toggleIcon');
 
+    if (toggleBtn && wrapper) {
+        toggleBtn.addEventListener('click', () => {
+            wrapper.classList.toggle('hidden');
+            if (toggleIcon) {
+                // 화살표 회전 애니메이션
+                toggleIcon.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // 2. 데이터 로드
     const rawHistory = localStorage.getItem('analysis_chat_history');
     if (rawHistory) {
         try {
@@ -52,44 +64,38 @@ function initDiscussionSystem() {
         }
     }
 
-    // 2. 탭 전환 로직
+    // 3. 탭 전환 로직
     const tabSlider = document.getElementById('tab-slider');
     const tabChat = document.getElementById('tab-chat');
     const viewSlider = document.getElementById('view-slider');
     const viewChat = document.getElementById('view-chat');
 
-    const activeClass = "px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-xl transition-all shadow-lg";
-    const inactiveClass = "px-6 py-3 text-base font-bold text-gray-400 bg-gray-800 rounded-xl transition-all hover:bg-gray-700 hover:text-white";
-    const activeChatClass = "px-6 py-3 text-base font-bold text-white bg-green-600 rounded-xl transition-all shadow-lg";
+    const activeBase = "flex-1 md:flex-none px-6 py-3 text-base font-bold rounded-xl transition-all shadow-lg flex justify-center items-center gap-2";
+    const activeSlider = `${activeBase} text-white bg-blue-600`;
+    const activeChat = `${activeBase} text-white bg-green-600`;
+    const inactiveClass = "flex-1 md:flex-none px-6 py-3 text-base font-bold text-gray-400 bg-gray-800 rounded-xl transition-all hover:bg-gray-700 hover:text-white flex justify-center items-center gap-2";
 
     if (tabSlider && tabChat) {
         tabSlider.addEventListener('click', () => {
-            // 탭 스타일 변경
-            tabSlider.className = activeClass;
+            tabSlider.className = activeSlider;
             tabChat.className = inactiveClass;
-
-            // 뷰 전환
             viewSlider.classList.remove('hidden');
             viewChat.classList.add('hidden');
         });
 
         tabChat.addEventListener('click', () => {
-            // 탭 스타일 변경
-            tabChat.className = activeChatClass;
+            tabChat.className = activeChat;
             tabSlider.className = inactiveClass;
-
-            // 뷰 전환
             viewChat.classList.remove('hidden');
             viewSlider.classList.add('hidden');
 
-            // 채팅 렌더링 (최초 1회)
             if (document.getElementById('chat-list').children.length === 0) {
                 renderChatView();
             }
         });
     }
 
-    // 3. 슬라이드 뷰어 초기화
+    // 4. 슬라이드 뷰어 초기화
     if (chatLogs.length > 0) {
         renderSliderLog(0);
 
@@ -100,7 +106,8 @@ function initDiscussionSystem() {
             if (currentIndex < chatLogs.length - 1) { currentIndex++; renderSliderLog(currentIndex); }
         });
     } else {
-        document.getElementById('viewer-message').innerText = "대화 기록이 없습니다.";
+        const msgEl = document.getElementById('viewer-message');
+        if(msgEl) msgEl.innerText = "대화 기록이 없습니다.";
     }
 }
 
@@ -121,42 +128,43 @@ function renderSliderLog(index) {
     const style = getAgentStyle(log.code);
 
     avatarEl.innerText = style.icon;
-    avatarEl.className = `w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4 shadow-lg text-white ${style.bg}`;
+    avatarEl.className = `w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg text-white border-2 border-gray-500 transition-colors duration-300 ${style.bg}`;
     typeEl.innerText = style.role;
     counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
 
     // 버튼 상태
-    document.getElementById('btn-prev').disabled = (index === 0);
-    document.getElementById('btn-prev').style.opacity = index === 0 ? 0.5 : 1;
-    document.getElementById('btn-next').disabled = (index === chatLogs.length - 1);
-    document.getElementById('btn-next').style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    btnPrev.disabled = (index === 0);
+    btnPrev.style.opacity = index === 0 ? 0.5 : 1;
+    btnNext.disabled = (index === chatLogs.length - 1);
+    btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
 }
 
-// [모드 2] 채팅 리스트 렌더링 (좌우 배치)
+// [모드 2] 채팅 리스트 렌더링
 function renderChatView() {
     const list = document.getElementById('chat-list');
-    list.innerHTML = ""; // 초기화
+    list.innerHTML = "";
 
     chatLogs.forEach(log => {
         const style = getAgentStyle(log.code);
         const isModerator = log.code === 'moderator';
 
-        // Flex 방향 결정 (사회자는 오른쪽, 나머지는 왼쪽)
         const rowClass = isModerator ? 'flex-row-reverse' : 'flex-row';
         const alignClass = isModerator ? 'items-end' : 'items-start';
-        const bubbleColor = isModerator ? 'bg-gray-700 text-gray-200' : 'bg-gray-800 text-white border border-gray-700';
-        const marginClass = isModerator ? 'ml-auto' : 'mr-auto';
+        // 채팅 배경: 사회자는 연한 회색, 전문가는 진한 배경
+        const bubbleColor = isModerator
+            ? 'bg-gray-600 text-white shadow-md'
+            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md';
 
-        // HTML 조립
         const row = document.createElement('div');
         row.className = `flex ${rowClass} ${alignClass} gap-3 w-full`;
 
-        // 1. 아바타 (사회자는 아바타 생략하거나 작게 표시 가능, 여기선 통일성 있게 표시)
         const avatar = document.createElement('div');
         avatar.className = `flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg text-white shadow-md ${style.bg}`;
         avatar.innerText = style.icon;
 
-        // 2. 내용물 (이름 + 말풍선)
         const content = document.createElement('div');
         content.className = `flex flex-col ${alignClass} max-w-[80%]`;
 
@@ -165,37 +173,32 @@ function renderChatView() {
         name.innerText = log.speaker;
 
         const bubble = document.createElement('div');
-        bubble.className = `px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${bubbleColor}`;
-        // 사회자는 말풍선 꼬리 방향 다르게 (선택사항)
-        if (isModerator) {
-            bubble.style.borderTopRightRadius = '0';
-        } else {
-            bubble.style.borderTopLeftRadius = '0';
-        }
+        bubble.className = `px-5 py-3 rounded-2xl text-base leading-relaxed whitespace-pre-wrap ${bubbleColor}`;
+        if (isModerator) bubble.style.borderTopRightRadius = '0';
+        else bubble.style.borderTopLeftRadius = '0';
+
         bubble.innerHTML = formatText(log.message);
 
         content.appendChild(name);
         content.appendChild(bubble);
-
         row.appendChild(avatar);
         row.appendChild(content);
         list.appendChild(row);
     });
 }
 
-// [공통] 에이전트 스타일 매핑
 function getAgentStyle(code) {
     switch (code) {
         case 'chart': return { icon: '📈', role: 'Technical Analyst', bg: 'bg-blue-600' };
         case 'finance': return { icon: '💰', role: 'Financial Analyst', bg: 'bg-green-600' };
         case 'news': return { icon: '📰', role: 'News & Sentiment', bg: 'bg-purple-600' };
-        case 'moderator': return { icon: '🎙️', role: 'Moderator', bg: 'bg-gray-600' };
+        case 'moderator': return { icon: '🎙️', role: 'Moderator', bg: 'bg-gray-700' };
         default: return { icon: '🤖', role: 'System', bg: 'bg-gray-500' };
     }
 }
 
 // ============================================================
-// 기존 차트/시장 함수 유지
+// 기존 차트/시장 함수
 // ============================================================
 async function renderKospiChart() {
     const KOSPI_API_URL = 'http://127.0.0.1:8000/kospi-data';
