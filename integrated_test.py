@@ -8,12 +8,14 @@ from app.agents.news_agent import NewsAgent
 from app.agents.finance_agent import FinanceAgent
 from app.agents.moderator_agent import ModeratorAgent
 from app.tools.chart_tools import get_chart_indicators
+from app.utils.file_utils import save_debate_log
+from app.agents.report_agent import InsightReportAgent
 
 # 주혁님의 실제 도구 함수들 임포트
 from app.tools.finance_tools import get_financial_summary
 from app.tools.search_tools import get_stock_news  # 함수명 수정 완료
 
-async def run_multi_turn_debate(user_query: str, max_turns: int =3):
+async def run_multi_turn_debate(user_query: str, max_turns: int):
     # 0. 준비 단계: 모델 및 에이전트 초기화
     llm = get_solar_model()
     chart_agent = ChartAgent(llm)
@@ -60,6 +62,12 @@ async def run_multi_turn_debate(user_query: str, max_turns: int =3):
     current_debate_history = initial_reports # 토론의 '기억' 저장소
 
     print("✅ 모든 에이전트의 기조 발언 수집 완료")
+    
+    print(f"[차트 분석가 (기조 발언)]: {chart_init}")
+    print(f"[뉴스 분석가 (기조 발언)]: {news_init}")
+    print(f"[재무 분석가 (기조 발언)]: {finance_init}")
+
+
 
     # ---------------------------------------------------------
     # 🚀 [핵심] Round 2: 재귀적 토론 루프 (Ping-Pong)
@@ -107,21 +115,51 @@ async def run_multi_turn_debate(user_query: str, max_turns: int =3):
     final_decision = moderator.summarize(company_name, current_debate_history)
 
     print("\n" + "="*60)
-    print(f"🏆 {company_name} ({ticker}) 최종 전략 보고서")
+    print(f"🏆 {company_name} ({ticker}) 최종 전략 생성")
     print(final_decision)
+
+    print("🏆 최종 전략 생성 중...")
+    final_report = moderator.summarize(company_name, current_debate_history)
+    
+    # 3. 전체 내용을 하나로 합치기 (토론 과정 + 최종 리포트)
+    total_log = f"# 🚀 {company_name} 분석 토론 로그\n\n"
+    total_log += "## 💬 토론 과정\n\n" + current_debate_history + "\n\n"
+    total_log += "--- \n" + final_report
+
+# --------------------------------------------------------
+    # 에이전트 생성
+    report_agent = InsightReportAgent(llm)
+
+    # 2. 인사이트 리포트 생성
+    print("🎨 멘토님 취향 저격 리포트 생성 중...")
+    insight_report = report_agent.generate_report(company_name, ticker, current_debate_history)
+
+    # 3. 파일 저장 (아까 만든 로그 저장 기능 활용)
+    save_debate_log(company_name, ticker, insight_report)
+
+    # 4. 결과 출력
+    print(insight_report)
+
+
+
 
 if __name__ == "__main__":
     # 1. 사용자로부터 분석할 종목명을 입력받습니다.
     user_input = input("분석하고 싶은 종목을 말씀하세요 (예: 삼성전자, AAPL): ")
     
-    # 2. 만약 입력이 비어있다면 기본값으로 실행하거나 경고를 줍니다.
-    if not user_input.strip():
-        user_input = "애플" # 테스트용 기본값
     
     # 3. 비동기 함수인 run_multi_turn_debate를 실행합니다.
     try:
-        asyncio.run(run_multi_turn_debate(user_input, max_turns=3))
+        asyncio.run(run_multi_turn_debate(user_input, max_turns=5))
     except KeyboardInterrupt:
         print("\n👋 사용자에 의해 분석이 중단되었습니다.")
     except Exception as e:
         print(f"\n❌ 실행 중 예외 발생: {e}")
+
+"""
+    # 토론 결과 저장 예시
+    final_report = moderator.summarize("삼성전자", full_history)
+
+    with open("samsung_report.md", "w", encoding="utf-8") as f:
+        f.write(final_report)
+        """
