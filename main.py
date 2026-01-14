@@ -186,6 +186,9 @@ async def mypage_page():
 async def signup_page():
     return FileResponse("infra/frontend/html/signup.html")
 
+@app.get("/history.html")
+async def history_page():
+    return FileResponse("infra/frontend/html/history.html")
 
 frontend_path = "infra/frontend"
 if os.path.exists(frontend_path):
