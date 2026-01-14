@@ -6,7 +6,7 @@ body, html {
     margin: 0;
     padding: 0;
     width: 100%;
-    /* 결과 페이지는 내용이 많으므로 스크롤 허용 */
+    /* 스크롤 허용 */
     overflow-x: hidden !important;
     overflow-y: auto !important;
     height: auto !important;
@@ -25,7 +25,7 @@ body, html {
     z-index: 10;
 }
 
-/* 홈 아이콘 */
+/* 홈 아이콘 
 .home-link {
     position: fixed; top: 25px; left: 25px; width: 30px; height: 45px;
     cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
@@ -40,7 +40,7 @@ body, html {
     font-size: 0.8rem; border-radius: 6px; white-space: nowrap; opacity: 0;
     visibility: hidden; transition: all 0.2s ease; pointer-events: none;
 }
-.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; }
+.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; } */
 
 /* 헤더 */
 .top-section { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%; }

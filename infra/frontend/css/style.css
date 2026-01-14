@@ -469,16 +469,15 @@ body, html {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* ✅ style.css 맨 마지막에 붙여넣기 */
 
 /* =========================================
-   [필수] 인증(Auth) 네비게이션 스타일
+   인증(Auth) 네비게이션 스타일
    ========================================= */
 #auth-nav {
-    position: fixed;   /* 화면에 고정 */
-    top: 25px;         /* 위에서 25px */
-    right: 25px;       /* 오른쪽에서 25px */
-    z-index: 9999;     /* 다른 요소보다 무조건 위에 */
+    position: fixed;   
+    top: 25px;         
+    right: 25px;      
+    z-index: 9999;     
     display: flex;
     gap: 1.5rem;
     align-items: center;
@@ -503,9 +502,9 @@ body, html {
     margin-right: 0.5rem;
 }
 
-/* 로그인/회원가입 폼 전용 스타일 (기존 box 스타일 상속) */
+/* 로그인/회원가입 폼 전용 스타일 */
 .auth-box {
-    max-width: 28rem; /* 기존보다 약간 좁게 */
+    max-width: 28rem; 
 }
 
 .auth-link {
@@ -520,4 +519,18 @@ body, html {
     color: #60a5fa;
     text-decoration: underline;
     margin-left: 0.5rem;
+}
+
+/* =========================================
+   커스텀 스크롤바 (History 페이지 등)
+   ========================================= */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3); /* 파란색 반투명 */
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4); /* 어두운 배경 */
 }
