@@ -38,7 +38,7 @@ function handleLogout(e) {
         localStorage.removeItem('userNickname');
         localStorage.removeItem('userJoinDate');
         alert('로그아웃 되었습니다.');
-        window.location.href = 'start.html';
+        window.location.href = '/';
     }
 }
 
@@ -57,13 +57,16 @@ async function apiLogin(username, password) {
         });
 
         if (response.ok) {
-            const data = await response.json(); 
-            if(data.token && data.nickname) {
-                localStorage.setItem('accessToken', data.token);
+            const data = await response.json();
+            if(data.access_token && data.nickname) {
+                localStorage.setItem('accessToken', data.access_token); // 여기도 수정
                 localStorage.setItem('userNickname', data.nickname);
-                if(data.joined_at) localStorage.setItem('userJoinDate', data.joined_at);
+
+                if(data.created_at) localStorage.setItem('userJoinDate', data.created_at);
+
                 return true;
             } else {
+                console.log("받은 데이터:", data); // 디버깅용 로그
                 alert('서버 응답 오류: 데이터가 불완전합니다.');
                 return false;
             }
