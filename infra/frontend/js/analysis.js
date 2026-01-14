@@ -143,6 +143,7 @@ function renderSliderLog(index) {
 }
 
 // [모드 2] 채팅 리스트 렌더링
+// [모드 2] 채팅 리스트 렌더링 (좌우 반전 적용)
 function renderChatView() {
     const list = document.getElementById('chat-list');
     list.innerHTML = "";
@@ -151,31 +152,44 @@ function renderChatView() {
         const style = getAgentStyle(log.code);
         const isModerator = log.code === 'moderator';
 
-        const rowClass = isModerator ? 'flex-row-reverse' : 'flex-row';
-        const alignClass = isModerator ? 'items-end' : 'items-start';
-        // 채팅 배경: 사회자는 연한 회색, 전문가는 진한 배경
+        // [수정됨] 위치 반전 로직
+        // 사회자(isModerator) -> 왼쪽 (flex-row, items-start)
+        // 전문가 -> 오른쪽 (flex-row-reverse, items-end)
+        const rowClass = isModerator ? 'flex-row' : 'flex-row-reverse';
+        const alignClass = isModerator ? 'items-start' : 'items-end';
+
+        // 말풍선 스타일
         const bubbleColor = isModerator
-            ? 'bg-gray-600 text-white shadow-md'
-            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md';
+            ? 'bg-gray-600 text-white shadow-md'  // 사회자
+            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md'; // 전문가
 
         const row = document.createElement('div');
         row.className = `flex ${rowClass} ${alignClass} gap-3 w-full`;
 
+        // 1. 아바타
         const avatar = document.createElement('div');
         avatar.className = `flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg text-white shadow-md ${style.bg}`;
         avatar.innerText = style.icon;
 
+        // 2. 내용물 Wrapper
         const content = document.createElement('div');
         content.className = `flex flex-col ${alignClass} max-w-[80%]`;
 
+        // 3. 이름
         const name = document.createElement('span');
         name.className = "text-xs text-gray-400 mb-1 font-bold";
         name.innerText = log.speaker;
 
+        // 4. 말풍선
         const bubble = document.createElement('div');
         bubble.className = `px-5 py-3 rounded-2xl text-base leading-relaxed whitespace-pre-wrap ${bubbleColor}`;
-        if (isModerator) bubble.style.borderTopRightRadius = '0';
-        else bubble.style.borderTopLeftRadius = '0';
+
+        // [수정됨] 말풍선 꼬리 방향 반전
+        if (isModerator) {
+            bubble.style.borderTopLeftRadius = '0';  // 사회자: 왼쪽 꼬리
+        } else {
+            bubble.style.borderTopRightRadius = '0'; // 전문가: 오른쪽 꼬리
+        }
 
         bubble.innerHTML = formatText(log.message);
 
