@@ -123,14 +123,6 @@ body, html {
     margin-bottom: 0.8rem; display: block;
 }
 
-
-
-=
-    color: white;    
-    margin-bottom: 0.5rem; 
-    line-height: 1.2;
-}
-
 .desc { color: #ffffff; font-weight: 300; line-height: 1.6; font-size: 1.1rem; }
 
 /* 섹션 제목 */
@@ -190,14 +182,8 @@ body, html {
 @media (min-width: 1024px) {
     .market-grid { grid-template-columns: repeat(4, 1fr); }
 }
-/*  2열 고정 */
 
-/* 4열 고정 */
-@media (min-width: 1024px) {
-    .market-grid { grid-template-columns: repeat(4, 1fr); }
-}
 /*  2열 고정 */
-
 @media (min-width: 600px) and (max-width: 1023px) {
     .market-grid { grid-template-columns: repeat(2, 1fr); }
 }
