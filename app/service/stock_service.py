@@ -2,6 +2,7 @@ import json
 import asyncio
 import re
 import functools
+import time
 from app.agents.ticker_agent import extract_company_name
 from app.utils.ticker_utils import get_clean_ticker
 
@@ -50,10 +51,25 @@ class StockService:
 
             loop = asyncio.get_event_loop()
 
-            # [핵심] run_in_executor 에러 방지용 래
+            # [핵심 수정] Rate Limit(429) 발생 시 재시도하는 래퍼 함수
             async def run_analysis(agent_instance, *args, **kwargs):
                 func = functools.partial(agent_instance.analyze, *args, **kwargs)
-                return await loop.run_in_executor(None, func)
+
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        # 에이전트 실행
+                        return await loop.run_in_executor(None, func)
+                    except Exception as e:
+                        # 429 Error (Rate Limit) 감지 시 대기 후 재시도
+                        if "429" in str(e) or "too_many_requests" in str(e):
+                            if attempt < max_retries - 1:
+                                wait_time = 3 * (attempt + 1)  # 3초, 6초... 늘려가며 대기
+                                print(f"⚠️ API 호출 제한 감지. {wait_time}초 대기 후 재시도합니다... ({attempt + 1}/{max_retries})")
+                                await asyncio.sleep(wait_time)
+                                continue
+                        # 그 외 에러는 바로 발생
+                        raise e
 
             # ------------------------------------------------------------------
             # [Step 0] 종목 식별 및 데이터 수집
@@ -66,8 +82,8 @@ class StockService:
                 return
 
             ticker = get_clean_ticker(refined_name)
-            yield create_msg("system", "status", f"대상 종목 티커 {refined_name} ({ticker})")
-            yield create_msg("system", "status", "대상 종목의 3대 데이터 수집 및 초기 분석을 통합 진행합니다...")
+            yield create_msg("system", "status", f"대상 종목: {refined_name} ({ticker})")
+            yield create_msg("system", "status", "3대 데이터(재무, 뉴스, 차트)를 수집 중입니다...")
 
             # 데이터 수집 (병렬)
             f_task = loop.run_in_executor(None, get_financial_summary, ticker)
@@ -130,6 +146,9 @@ class StockService:
                     "type": "opening"
                 })
 
+            # API 부하 조절을 위한 짧은 대기
+            await asyncio.sleep(1)
+
             # ------------------------------------------------------------------
             # [Step 2] 상호 토론 (Reasoning)
             # ------------------------------------------------------------------
@@ -189,6 +208,9 @@ class StockService:
                         yield create_msg(target["code"], "debate", rebuttal)
                         discussion_log.append({"speaker": target["name"], "code": target["code"], "message": rebuttal,
                                                "type": "rebuttal"})
+
+                        # API 부하 조절
+                        await asyncio.sleep(1)
 
             # ------------------------------------------------------------------
             # [Step 3] 최후 변론 (Closing)
