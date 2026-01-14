@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토론형 AI 투자 서비스</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/analysis.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+
+    <style>
+        .t-main {
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+            color: white !important;
+        }
+        .report-content .box {
+            max-width: 100% !important; 
+        }
+
+        .user-query-box {
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <a href="/" class="home-link" data-tooltip="홈으로 이동">
+            <img src="img/home.png" alt="홈으로" style="width:100%; height:100%; object-fit:contain;">
+        </a>
+        
+        <div class="top-section">
+            <header class="report-header">
+                <div class="report-meta-info">
+                    <span id="report-date">2023.00.00</span>
+                    <span class="divider">|</span>
+                    <span>Report</span>
+                    <span class="divider">|</span>
+                    <span class="status-live"><span class="dot"></span>Live Analysis</span>
+                </div>
+
+                <h1 class="t-main">투자 전략 보고서</h1>
+                
+                <p class="desc">
+                  AI 에이전트 간의 심층 토론<br>
+                  시장 흐름을 꿰뚫는 냉철한 통찰을 확인하세요.
+                </p>
+
+                <div class="agent-specs">
+                    
+                    <div class="spec-item text-blue-300 border-blue-500/30 bg-blue-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                        </svg>
+                        <span>Technical</span>
+                    </div>
+
+                    <div class="spec-item text-green-300 border-green-500/30 bg-green-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Financial</span>
+                    </div>
+
+                    <div class="spec-item text-purple-300 border-purple-500/30 bg-purple-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                        </svg>
+                        <span>News Sentiment</span>
+                    </div>
+
+                    <div class="spec-item text-red-300 border-red-500/30 bg-red-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span>Strategy</span>
+                    </div>
+
+                </div>
+            </header>
+
+            <main class="report-content">
+                <div class="user-query-wrapper">
+                    <span class="query-label">Q. 사용자 질문</span>
+                    <div class="box user-query-box">
+                        <p id="user-query-text">질문을 불러오는 중...</p>
+                    </div>
+                </div>
+
+                <section>
+                    <span class="section-title">핵심 요약</span>
+                    <div class="box ai-box">
+                        <p id="res-summary">데이터를 불러오는 중...</p>
+                    </div>
+                </section>
+
+                <section>
+                    <span class="section-title">최종 투자 의견</span>
+                    <div class="box ai-box highlight-border">
+                        <p id="res-conclusion">데이터를 불러오는 중...</p>
+                    </div>
+                    <span class="disclaimer-text">
+                        ⚠️ 본 분석 결과는 AI 예측이며, 모든 투자의 책임은 투자자 본인에게 있습니다.
+                    </span>
+                </section>
+
+                <section>
+                    <button id="toggleDiscussionBtn" class="btn-toggle">
+                        <span>에이전트 토론 보기</span>
+                        <svg class="w-6 h-6 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="discussionContent" class="discussion-wrapper hidden">
+                        <div class="box discussion-box">
+                            <p id="res-discussion" class="text-sm text-gray-400">데이터를 불러오는 중...</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <div class="section-divider market-divider"></div>
+
+        <footer class="market-section">
+            <h2 class="t-main" style="font-size: 2rem; margin-bottom: 3rem;">시장 요약</h2>
+            
+            <div class="kospi-section" id="kospi-wrapper">
+                <div class="kospi-header">
+                    <div class="kospi-title">
+                        <span class="flag-icon">🇰🇷</span> KOSPI
+                    </div>
+                    <div class="kospi-value-group">
+                        <span class="kospi-price" id="kospi-price">Loading...</span>
+                        <span class="kospi-change" id="kospi-change">--</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="kospiChart"></canvas>
+                </div>
+            </div>
+
+            <div class="market-grid" id="market-grid">
+                <div class="market-card skeleton"></div>
+                <div class="market-card skeleton"></div>
+                <div class="market-card skeleton"></div>
+                <div class="market-card skeleton"></div>
+            </div>
+
+            <p class="market-update-time">
+                Data provided by Yahoo Finance API • Updated: <span id="market-time">-</span>
+            </p>
+        </footer>
+
+    </div>
+
+    <script src="js/analysis.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+/*폰트 */
+@import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    /* 결과 페이지는 내용이 많으므로 스크롤 허용 */
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    
+    background-color: #020617 !important;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+/*2. 레이아웃*/
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* 홈 아이콘 */
+.home-link {
+    position: fixed; top: 25px; left: 25px; width: 30px; height: 45px;
+    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
+}
+.home-link:hover { transform: scale(1.1); opacity: 1; color: #93c5fd; }
+.home-link svg { width: 32px; height: 32px; display: block; }
+
+.home-link::after {
+    content: attr(data-tooltip);
+    position: absolute; top: 100%; left: 0; margin-top: 8px; padding: 6px 10px;
+    background: rgba(15, 23, 42, 0.9); border: 1px solid #334155; color: #e2e8f0;
+    font-size: 0.8rem; border-radius: 6px; white-space: nowrap; opacity: 0;
+    visibility: hidden; transition: all 0.2s ease; pointer-events: none;
+}
+.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; }
+
+/* 헤더 */
+.top-section { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%; }
+
+.report-header {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 1.5rem; width: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+    padding: 3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 2rem;
+}
+
+.report-meta-info {
+    display: flex; align-items: center; gap: 0.8rem;
+    font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; font-family: monospace;
+}
+.divider { color: #334155; }
+.status-live { color: white; display: flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+.dot {
+    width: 6px; height: 6px; background: #4ade80; border-radius: 50%;
+    box-shadow: 0 0 6px #4ade80; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%{opacity:1;} 50%{opacity:0.5;} 100%{opacity:1;} }
+
+.agent-specs { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
+.spec-item {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem;
+    background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 999px;
+    font-size: 0.8rem; color: #cbd5e1; backdrop-filter: blur(4px);
+}
+
+
+/* 본문 콘텐츠 */
+
+.report-content { width: 100%; max-width: 800px; }
+
+.section-divider {
+    width: 100%; max-width: 800px; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(96, 165, 250, 0.3), transparent);
+    margin: 3rem auto;
+}
+.market-divider { margin-top: 5rem; margin-bottom: 2rem; }
+
+.user-query-wrapper { width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-bottom: 3rem; }
+.query-label { font-size: 0.9rem; color: #93c5fd; margin-bottom: 0.5rem; margin-right: 0.5rem; font-weight: 600; }
+.user-query-box {
+    width: 50%; background: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    border-radius: 1rem 1rem 0 1rem !important;
+    margin-bottom: 0 !important; text-align: right;
+}
+
+.ai-box { border-radius: 1rem 1rem 1rem 0 !important; }
+.box {
+    background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 1rem;
+    border: 1px solid #334155; margin-bottom: 1.5rem; color: #e2e8f0;
+    line-height: 1.7; white-space: pre-line; backdrop-filter: blur(10px);
+}
+.highlight-border { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
+
+
+/* 메인 타이틀*/
+.t-main {
+    font-family: "Do Hyeon", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 3.5rem; 
+    color: white;     
+    margin-bottom: 0.5rem; 
+    line-height: 1.2;
+}
+
+.desc { color: #ffffff; font-weight: 300; line-height: 1.6; font-size: 1.1rem; }
+
+/* 섹션 제목 */
+.section-title {
+    font-size: 1.25rem; font-weight: 700; color: white;
+    margin-bottom: 0.8rem; display: block;
+}
+
+
+
+=
+    color: white;    
+    margin-bottom: 0.5rem; 
+    line-height: 1.2;
+}
+
+.desc { color: #ffffff; font-weight: 300; line-height: 1.6; font-size: 1.1rem; }
+
+/* 섹션 제목 */
+.section-title {
+    font-size: 1.25rem; font-weight: 700; color: white;
+    margin-bottom: 0.8rem; display: block;
+}
+
+.disclaimer-text { font-size: 0.85rem; color: #64748b; margin-top: -1rem; margin-bottom: 2rem; text-align: right; display: block; }
+
+/* 토글 버튼 */
+.btn-toggle {
+    display: flex; justify-content: space-between; align-items: center; width: 100%;
+    background: #1e293b; border: 1px solid #334155; padding: 1rem;
+    border-radius: 0.8rem; color: #94a3b8; cursor: pointer; transition: 0.2s;
+}
+.btn-toggle:hover { background: #334155; color: white; }
+.discussion-wrapper.hidden { display: none; }
+.discussion-box { margin-top: 1rem; background: #0f172a; font-family: monospace; font-size: 0.9rem; }
+
+
+/*4. 하단 시장 요약 (Custom Market Grid)*/
+.market-section { padding-bottom: 8rem; text-align: center; width: 100%; }
+
+/* 코스피 차트 섹션 */
+.kospi-section {
+    background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 1.5rem; padding: 2rem; max-width: 900px;
+    margin: 0 auto 3rem auto; backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.05);
+}
+.kospi-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 1.5rem; padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.kospi-title {
+    font-size: 1.5rem; font-weight: 800; color: white;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.kospi-value-group { text-align: right; }
+.kospi-price {
+    font-size: 2rem; font-weight: 800; color: white;
+    margin-right: 0.5rem;
+}
+.kospi-change {
+    font-size: 1.2rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 99px;
+}
+.chart-container { position: relative; height: 300px; width: 100%; }
+
+/* 8개 카드 그리드 */
+.market-grid {
+    display: grid; gap: 1.5rem; width: 100%; max-width: 1200px; margin: 0 auto;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+/* 4열 고정 */
+@media (min-width: 1024px) {
+    .market-grid { grid-template-columns: repeat(4, 1fr); }
+}
+/*  2열 고정 */
+
+/* 4열 고정 */
+@media (min-width: 1024px) {
+    .market-grid { grid-template-columns: repeat(4, 1fr); }
+}
+/*  2열 고정 */
+
+@media (min-width: 600px) and (max-width: 1023px) {
+    .market-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 카드 스타일 */
+.market-card {
+    background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem; padding: 1.5rem;
+    display: flex; flex-direction: column; align-items: flex-start;
+    transition: transform 0.3s, border-color 0.3s;
+    backdrop-filter: blur(10px);
+}
+.market-card:hover {
+    transform: translateY(-5px); border-color: rgba(96, 165, 250, 0.5);
+    background: rgba(30, 41, 59, 0.6);
+}
+.market-name {
+    font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.5rem; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+}
+.market-price {
+    font-size: 1.8rem; font-weight: 800; color: white;
+    margin-bottom: 0.2rem;
+}
+.market-change {
+    font-size: 1rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 99px;
+}
+.up { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.down { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+.market-update-time { margin-top: 2rem; font-size: 0.8rem; color: #475569; }
+
+/* 로딩 */
+.skeleton {
+    height: 140px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+    background-size: 200% 100%; animation: loading 1.5s infinite;
+}
+@keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
