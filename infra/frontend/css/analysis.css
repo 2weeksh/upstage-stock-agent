@@ -361,3 +361,6 @@ body, html {
     background: #334155;
     margin: 2rem 0;
 }
+.markdown-body {
+    white-space: normal !important;
+}
