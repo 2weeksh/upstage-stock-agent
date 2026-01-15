@@ -59,21 +59,6 @@ textarea.addEventListener('keydown', (e) => {
     }
 });
 
-// 뒤로가기 버튼 초기화
-function initBackButton() {
-    const backBtn = document.getElementById('back-btn-container');
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            if (window.location.pathname.includes('loading.html')) {
-                if(confirm("분석을 취소하고 돌아가시겠습니까?")) {
-                    window.location.href = 'userInput.html';
-                }
-            } else {
-                window.location.href = '/';
-            }
-        });
-    }
-}
 
 // 로딩 페이지
 function initLoadingPage() {
