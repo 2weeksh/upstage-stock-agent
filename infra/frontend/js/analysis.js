@@ -331,7 +331,10 @@ function generatePDF() {
 
 function renderMarkdown(mdText) {
     if (!mdText) return "데이터 로딩 중...";
-    return marked.parse(mdText);
+    const tempText = mdText.replace(/~/g, '@@TILDE@@');
+    let html = marked.parse(tempText);
+    html = html.replace(/@@TILDE@@/g, '~');
+    return html;
 }
 
 function initAnalysisData() {
