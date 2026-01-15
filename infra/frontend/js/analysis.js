@@ -1,4 +1,120 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 불필요한 relative 래퍼 제거
+    const relativeDiv = document.querySelector('#discussionContent .relative');
+    if (relativeDiv) {
+        const parent = relativeDiv.parentNode;
+        while (relativeDiv.firstChild) {
+            parent.insertBefore(relativeDiv.firstChild, relativeDiv);
+        }
+        parent.removeChild(relativeDiv);
+    }
+
+    // 채팅 기록 텍스트 박스 내부 불필요한 레이아웃 제거
+    const chatBox = document.querySelector('#view-chat .bg-gray-800');
+    
+    if (chatBox) {
+        // 파일 아이콘과 제목 제거
+        const header = chatBox.querySelector('.flex.items-center.gap-3.mb-4');
+        if (header) {
+            header.remove();
+        }
+        
+        // 회색 레이아웃 제거 - 채팅 컨테이너만 남기기
+        const chatContainer = chatBox.querySelector('.chat-container');
+        
+        if (chatContainer) {
+            const parent = chatBox.parentNode;
+            // CSS 스타일이 적용되도록 클래스만 추가
+            chatContainer.classList.add('chat-container');
+            
+            // 카드보기와 동일한 높이로 설정 (헤더 + 콘텐츠 + 버튼 영역 포함)
+            chatContainer.style.minHeight = '600px';
+            chatContainer.style.maxHeight = '600px';
+            
+            // 회색 레이아웃을 채팅 컨테이너로 대체
+            parent.replaceChild(chatContainer, chatBox);
+        }
+    }
+
+    // 카드보기 텍스트 박스 내부 불필요한 레이아웃 제거
+    const cardBox = document.querySelector('#view-slider .bg-blue-600\\/10');
+    if (cardBox) {
+        // 파일 아이콘과 제목 제거
+        const header = cardBox.querySelector('.flex.items-center.gap-3.mb-4');
+        if (header) {
+            header.remove();
+        }
+        
+        // 내부 콘텐츠 박스만 남기고 외부 레이아웃 제거
+        const innerCard = cardBox.querySelector('.bg-gray-900\\/40');
+        if (innerCard) {
+            const parent = cardBox.parentNode;
+            
+            // 내부 콘텐츠 박스에 메인 스타일 적용
+            innerCard.classList.add('card-viewer-container');
+            innerCard.classList.remove('bg-gray-900\\/40', 'rounded-lg', 'p-6', 'border', 'border-gray-700');
+            
+            // 새로운 구조로 재구성
+            innerCard.innerHTML = `
+                <!-- Header -->
+                <div class="card-viewer-header">
+                    <div class="card-viewer-speaker-info">
+                        <div id="viewer-avatar" class="card-viewer-avatar">🎤</div>
+                        <div class="card-viewer-speaker-details">
+                            <div id="viewer-speaker" class="card-viewer-speaker-name">Speaker</div>
+                            <div id="viewer-type" class="card-viewer-speaker-role">Role</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main -->
+                <div class="card-viewer-main">
+                    <div class="card-viewer-content">
+                        <p id="viewer-message" class="card-viewer-message">대화 내용을 불러오는 중입니다...</p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="card-viewer-footer">
+                    <div class="card-viewer-nav-info">
+                        <button id="btn-prev" class="card-nav-button">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-viewer-counter">
+                        <span id="viewer-counter">0 / 0</span>
+                    </div>
+                    <div class="card-viewer-nav-info">
+                        <button id="btn-next" class="card-nav-button primary">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 외부 레이아웃을 내부 콘텐츠 박스로 대체
+            parent.replaceChild(innerCard, cardBox);
+        }
+        
+        // 네비게이션 버튼 스타일 적용
+        const prevBtn = document.getElementById('btn-prev');
+        const nextBtn = document.getElementById('btn-next');
+        
+        if (prevBtn) {
+            prevBtn.classList.add('card-nav-button');
+            prevBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600', 'text-gray-200', 'rounded-lg', 'px-6', 'py-3');
+        }
+        
+        if (nextBtn) {
+            nextBtn.classList.add('card-nav-button', 'primary');
+            nextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'text-white', 'rounded-lg', 'px-6', 'py-3', 'shadow-lg', 'shadow-blue-900/30');
+        }
+    }
+
     // 1. 날짜 및 질문 표시
     const dateElem = document.getElementById('report-date');
     if (dateElem) {
@@ -269,49 +385,11 @@ function initDiscussionSystem() {
         }
     }
 
-    // 3. 탭 전환 로직
-    const tabSlider = document.getElementById('tab-slider');
-    const tabChat = document.getElementById('tab-chat');
-    const viewSlider = document.getElementById('view-slider');
-    const viewChat = document.getElementById('view-chat');
-
-    const activeBase = "flex-1 md:flex-none px-6 py-3 text-base font-bold rounded-xl transition-all shadow-lg flex justify-center items-center gap-2";
-    const activeSlider = `${activeBase} text-white bg-blue-600`;
-    const activeChat = `${activeBase} text-white bg-green-600`;
-    const inactiveClass = "flex-1 md:flex-none px-6 py-3 text-base font-bold text-gray-400 bg-gray-800 rounded-xl transition-all hover:bg-gray-700 hover:text-white flex justify-center items-center gap-2";
-
-    if (tabSlider && tabChat) {
-        tabSlider.addEventListener('click', () => {
-            tabSlider.className = activeSlider;
-            tabChat.className = inactiveClass;
-            viewSlider.classList.remove('hidden');
-            viewChat.classList.add('hidden');
-        });
-
-        tabChat.addEventListener('click', () => {
-            tabChat.className = activeChat;
-            tabSlider.className = inactiveClass;
-            viewChat.classList.remove('hidden');
-            viewSlider.classList.add('hidden');
-
-            if (document.getElementById('chat-list').children.length === 0) {
-                renderChatView();
-            }
-        });
-    }
-
-    // 4. 슬라이드 뷰어 초기화
+    // 3. 채팅 보기 자동 렌더링
     if (chatLogs.length > 0) {
-        renderSliderLog(0);
-
-        document.getElementById('btn-prev').addEventListener('click', () => {
-            if (currentIndex > 0) { currentIndex--; renderSliderLog(currentIndex); }
-        });
-        document.getElementById('btn-next').addEventListener('click', () => {
-            if (currentIndex < chatLogs.length - 1) { currentIndex++; renderSliderLog(currentIndex); }
-        });
+        renderChatView();
     } else {
-        const msgEl = document.getElementById('viewer-message');
+        const msgEl = document.getElementById('chat-list');
         if(msgEl) msgEl.innerText = "대화 기록이 없습니다.";
     }
 }
@@ -333,8 +411,8 @@ function renderSliderLog(index) {
 
     const style = getAgentStyle(log.code);
 
-    avatarEl.innerText = style.icon;
-    avatarEl.className = `w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg text-white border-2 border-gray-500 transition-colors duration-300 ${style.bg}`;
+    avatarEl.innerHTML = style.icon;
+    avatarEl.className = style.color;
     typeEl.innerText = style.role;
     counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
 
@@ -347,6 +425,7 @@ function renderSliderLog(index) {
     btnNext.disabled = (index === chatLogs.length - 1);
     btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
 }
+
 // [모드 2] 채팅 리스트 렌더링 (아바타 상단 고정 수정)
 function renderChatView() {
     const list = document.getElementById('chat-list');
@@ -374,8 +453,8 @@ function renderChatView() {
 
         // 아바타
         const avatar = document.createElement('div');
-        avatar.className = `flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg text-white shadow-md ${style.bg}`;
-        avatar.innerText = style.icon;
+        avatar.className = style.color;
+        avatar.innerHTML = style.icon;
 
         // 내용물 Wrapper (이름 + 말풍선 정렬은 colAlign 사용)
         const content = document.createElement('div');
@@ -397,7 +476,6 @@ function renderChatView() {
         bubble.classList.add('markdown-body');
         bubble.innerHTML = renderMarkdown(log.message);
 
-
         content.appendChild(name);
         content.appendChild(bubble);
         row.appendChild(avatar);
@@ -405,13 +483,59 @@ function renderChatView() {
         list.appendChild(row);
     });
 }
+
 function getAgentStyle(code) {
     switch (code) {
-        case 'chart': return { icon: '📈', role: 'Technical Analyst', bg: 'bg-blue-600' };
-        case 'finance': return { icon: '💰', role: 'Financial Analyst', bg: 'bg-green-600' };
-        case 'news': return { icon: '📰', role: 'News & Sentiment', bg: 'bg-purple-600' };
-        case 'moderator': return { icon: '🎙️', role: 'Moderator', bg: 'bg-gray-700' };
-        default: return { icon: '🤖', role: 'System', bg: 'bg-gray-500' };
+        case 'chart': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                    </svg>`,
+            role: 'Technical Analyst', 
+            color: 'text-red-300',
+            border: 'border-red-500/30',
+            bg: 'bg-red-500/10'
+        };
+        case 'finance': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>`,
+            role: 'Financial Analyst', 
+            color: 'text-green-300',
+            border: 'border-green-500/30',
+            bg: 'bg-green-500/10'
+        };
+        case 'news': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                    </svg>`,
+            role: 'News & Sentiment', 
+            color: 'text-yellow-300',
+            border: 'border-yellow-500/30',
+            bg: 'bg-yellow-500/10'
+        };
+        case 'moderator': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>`,
+            role: 'Moderator', 
+            color: 'text-gray-300',
+            border: 'border-gray-500/30',
+            bg: 'bg-gray-500/10'
+        };
+        default: return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>`,
+            role: 'System', 
+            color: 'text-gray-300',
+            border: 'border-gray-500/30',
+            bg: 'bg-gray-500/10'
+        };
     }
 }
 

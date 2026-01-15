@@ -69,9 +69,13 @@ body, html {
 
 .agent-specs { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
 .spec-item {
-    display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem;
-    background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 999px;
-    font-size: 0.8rem; color: #cbd5e1; backdrop-filter: blur(4px);
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 999px !important;
+    font-size: 0.8rem !important;
+    backdrop-filter: blur(4px) !important;
 }
 
 
@@ -127,33 +131,206 @@ body, html {
    [NEW] 토론 뷰어 관련 스타일 (카드형 & 채팅형)
    ============================================================ */
 
-/* 1. 슬라이드(카드) 뷰어 스타일 */
-.discussion-viewer-box {
-    position: relative;
-    min-height: 250px; /* 세로 길이 확보 */
-    padding-bottom: 70px;
+/* 카드 뷰어 컨테이너 스타일 */
+.card-viewer-container {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid #334155 !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 0 !important;
+    color: #e2e8f0 !important;
+    line-height: 1.7 !important;
+    backdrop-filter: blur(10px) !important;
+    min-height: 600px !important;
+    max-height: 600px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
-/* 카드 내용 영역 (스크롤 포함) */
-.viewer-body {
-    background: rgba(30, 41, 59, 0.5);
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(55, 65, 81, 0.5);
-
-    /* 세로 길이 제한 및 스크롤 설정 */
-    min-height: 150px;
-    max-height: 400px;
-    overflow-y: auto;
+/* 카드 뷰어 헤더 */
+.card-viewer-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-/* 2. 채팅형 뷰어 스타일 */
-#view-chat {
-    background: #2d2d2d !important; /* 요청하신 그레이 배경 */
-    padding: 25px;
-    border-radius: 12px;
-    border: 1px solid #334155;
-    /* 스크롤 없이 내용만큼 늘어나도록 설정됨 (HTML에서 overflow 제거됨) */
+.card-viewer-speaker-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0.8rem !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    border-radius: 999px !important;
+    font-size: 0.8rem !important;
+    color: #cbd5e1 !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.card-viewer-speaker-details {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+}
+
+.card-viewer-speaker-name {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+    letter-spacing: 0.025em !important;
+}
+
+.card-viewer-speaker-role {
+    display: inline-block !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    background: rgba(107, 114, 128, 0.6) !important;
+    color: #d1d5db !important;
+    border: 1px solid rgba(107, 114, 128, 0.8) !important;
+}
+
+.card-viewer-counter {
+    background: rgba(15, 23, 42, 0.8) !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+    border: 1px solid rgba(107, 114, 128, 0.6) !important;
+}
+
+.card-viewer-counter span {
+    font-size: 0.875rem !important;
+    font-family: monospace !important;
+    font-weight: 700 !important;
+    color: #60a5fa !important;
+}
+
+/* 카드 뷰어 메인 콘텐츠 */
+.card-viewer-main {
+    flex: 1 !important;
+    min-height: 200px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.card-viewer-content {
+    width: 100% !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    padding-right: 0.5rem !important;
+}
+
+.card-viewer-message {
+    color: #f3f4f6 !important;
+    font-size: 1.125rem !important;
+    line-height: 1.75 !important;
+    white-space: pre-wrap !important;
+    font-weight: 500 !important;
+}
+
+/* 카드 뷰어 푸터 */
+.card-viewer-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 1.5rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.card-viewer-nav-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+.card-viewer-page-info {
+    font-size: 0.75rem !important;
+    color: #6b7280 !important;
+    font-family: monospace !important;
+}
+
+/* 카드 뷰어 내부 콘텐츠 박스 */
+.card-content-box {
+    background: rgba(30, 41, 59, 0.4) !important;
+    border: 1px solid rgba(55, 65, 81, 0.5) !important;
+    border-radius: 0.75rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* 카드 뷰어 네비게이션 버튼 */
+.card-nav-button {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    color: #60a5fa !important;
+    padding: 0.8rem 2rem !important;
+    font-weight: 700 !important;
+    border-radius: 999px !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.card-nav-button:hover {
+    background: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+.card-nav-button:disabled {
+    background: rgba(107, 114, 128, 0.3) !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+    opacity: 0.4 !important;
+}
+
+.card-nav-button.primary {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #93c5fd !important;
+}
+
+.card-nav-button.primary:hover {
+    background: #3b82f6 !important;
+    color: white !important;
+}
+
+/* 2. 채팅형 뷰어 스타일 - 다른 .box와 일관성 */
+.chat-container {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid #334155 !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 0 !important;
+    color: #e2e8f0 !important;
+    line-height: 1.7 !important;
+    backdrop-filter: blur(10px) !important;
+    min-height: 600px !important;
+    max-height: 600px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.2rem !important;
+}
+
+/* 채팅 컨테이너 스크롤바 */
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+.chat-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+.chat-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 /* 3. 커스텀 스크롤바 디자인 (카드 보기 내부용) */

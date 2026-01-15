@@ -133,82 +133,22 @@
                 </button>
 
                 <div id="discussionWrapper" class="hidden transition-all duration-300 ease-in-out">
-
-                    <div class="flex items-center gap-3 mb-6">
-                        <button id="tab-slider"
-                                class="flex-1 md:flex-none px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                            카드 보기
-                        </button>
-                        <button id="tab-chat"
-                                class="flex-1 md:flex-none px-6 py-3 text-base font-bold text-gray-400 bg-gray-800 rounded-xl transition-all hover:bg-gray-700 hover:text-white flex justify-center items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-                            </svg>
-                            채팅 보기
-                        </button>
-                    </div>
-
                     <div id="discussionContent" class="discussion-wrapper">
-
-                        <div id="view-slider" class="box discussion-viewer-box"
-                             style="position: relative; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
-                            <div class="bg-gray-800/80 p-6 border-b border-gray-700 flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div id="viewer-avatar"
-                                         class="w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg bg-gray-600 text-white border-2 border-gray-500">
-                                        🎤
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center gap-2"><span id="viewer-speaker"
-                                                                                   class="font-bold text-xl text-white tracking-wide">Speaker</span>
-                                        </div>
-                                        <span id="viewer-type"
-                                              class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-semibold bg-gray-700 text-gray-300 border border-gray-600">Role</span>
-                                    </div>
-                                </div>
-                                <div class="bg-gray-900/50 px-3 py-1 rounded-lg border border-gray-700">
-                                    <span id="viewer-counter"
-                                          class="text-sm font-mono text-blue-400 font-bold">0 / 0</span>
-                                </div>
-                            </div>
-                            <div class="p-8 bg-gray-900/40 min-h-[300px] flex flex-col justify-center">
-                                <div class="max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
-                                    <p id="viewer-message"
-                                       class="text-gray-100 text-lg leading-loose whitespace-pre-wrap font-medium">대화
-                                        내용을 불러오는 중입니다...</p>
-                                </div>
-                            </div>
-                            <div class="bg-gray-800/80 p-4 border-t border-gray-700 flex justify-between items-center">
-                                <button id="btn-prev"
-                                        class="flex items-center gap-2 px-6 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all font-bold">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- 채팅 보기 파일 탭과 연결된 콘텐츠 -->
+                        <div id="view-chat" class="">
+                            <div class="bg-gray-800 rounded-b-xl rounded-tr-xl border border-gray-700 border-t-0 p-6">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M15 19l-7-7 7-7"></path>
+                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
-                                    이전
-                                </button>
-                                <span class="text-xs text-gray-500">Use buttons to navigate</span>
-                                <button id="btn-next"
-                                        class="flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-bold shadow-lg shadow-blue-900/30">
-                                    다음
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </button>
+                                    <h3 class="text-lg font-semibold text-white">채팅 기록</h3>
+                                </div>
+                                <div class="chat-container custom-scrollbar" style="max-height: 600px; overflow-y: auto;">
+                                    <div id="chat-list" class="flex flex-col gap-4"></div>
+                                </div>
                             </div>
                         </div>
-
-                        <div id="view-chat" class="box hidden custom-scrollbar"
-                             style="background: #2d2d2d; padding: 25px; border-radius: 12px; max-height: 800px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05);">
-                            <div id="chat-list" class="flex flex-col gap-6"></div>
-                        </div>
-
                     </div>
                 </div>
             </section>
