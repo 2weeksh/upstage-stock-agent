@@ -53,7 +53,6 @@ def signup(user: UserSignup, db: Session = Depends(get_db)):
     new_user = User(
         username=user.username,
         # [수정 3] 이메일 없이 저장 (혹은 빈 문자열로 저장)
-        email=None,
         hashed_password=get_password_hash(user.password),
         nickname=user.nickname
     )
