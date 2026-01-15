@@ -134,6 +134,7 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+
 # Environments
 .env
 .envrc
@@ -206,6 +207,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+#데이터베이스
+users.db
 
 # 캐시
 tickers_cache.pkl

@@ -1,0 +1,184 @@
+name: Build & Deploy Stock Agent
+
+on:
+  push:
+    branches: [ main, deploy ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels)
+      id: meta
+      run: |
+        # Repository name을 소문자로 변환
+        REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        echo "repo_lower=${REPO_LOWER}" >> $GITHUB_OUTPUT
+        
+        # Git SHA 짧은 버전
+        GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)
+        echo "git_sha_short=${GIT_SHA_SHORT}" >> $GITHUB_OUTPUT
+        
+        # 버전 태그 생성 (pyproject.toml이 있는 경우)
+        if [ -f pyproject.toml ]; then
+          VERSION=$(grep '^version' pyproject.toml | cut -d '"' -f2 || echo "0.1.0")
+        else
+          VERSION="0.1.0"
+        fi
+        VERSION_TAG="${VERSION}-${GIT_SHA_SHORT}"
+        echo "version_tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
+        
+        echo "Generated version tag: ${VERSION_TAG}"
+
+    - name: Build and push Backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: backend
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: |
+          ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo_lower }}-backend:latest
+          ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo_lower }}-backend:${{ steps.meta.outputs.version_tag }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: frontend
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: |
+          ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo_lower }}-frontend:latest
+          ${{ env.REGISTRY }}/${{ steps.meta.outputs.repo_lower }}-frontend:${{ steps.meta.outputs.version_tag }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/deploy'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Extract metadata
+      id: meta
+      run: |
+        REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        echo "repo_lower=${REPO_LOWER}" >> $GITHUB_OUTPUT
+        
+        GIT_SHA_SHORT=$(git rev-parse --short=7 HEAD)
+        echo "git_sha_short=${GIT_SHA_SHORT}" >> $GITHUB_OUTPUT
+        
+        if [ -f pyproject.toml ]; then
+          VERSION=$(grep '^version' pyproject.toml | cut -d '"' -f2 || echo "0.1.0")
+        else
+          VERSION="0.1.0"
+        fi
+        VERSION_TAG="${VERSION}-${GIT_SHA_SHORT}"
+        echo "version_tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
+        
+        # Repository name (for directory path)
+        REPO_NAME=$(echo "${{ github.repository }}" | awk -F '/' '{print $2}' | tr '[:upper:]' '[:lower:]')
+        echo "repo_name=${REPO_NAME}" >> $GITHUB_OUTPUT
+
+    - name: Deploy to Kubernetes
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          set -e
+          
+          # Variables
+          REPO_NAME="${{ steps.meta.outputs.repo_name }}"
+          IMAGE_BASE="ghcr.io/${{ steps.meta.outputs.repo_lower }}"
+          VERSION_TAG="${{ steps.meta.outputs.version_tag }}"
+          
+          echo "=========================================="
+          echo "Deploying Stock Agent - ${VERSION_TAG}"
+          echo "=========================================="
+          
+          # Navigate to project directory
+          cd "/home/ubuntu/deploy/${REPO_NAME}/infra/k8s/application" || {
+            echo "Error: Project directory not found"
+            exit 1
+          }
+          
+          echo "Current directory: $(pwd)"
+          echo "Deploying version: ${VERSION_TAG}"
+          
+          # Reset any previous changes
+          git checkout 04-backend.yaml 2>/dev/null || true
+          git checkout 05-frontend.yaml 2>/dev/null || true
+          
+          # Update image tags
+          echo "Updating backend image to: ${IMAGE_BASE}-backend:${VERSION_TAG}"
+          sed -i "s|image: ghcr.io/.*-backend:.*|image: ${IMAGE_BASE}-backend:${VERSION_TAG}|g" 04-backend.yaml
+          
+          echo "Updating frontend image to: ${IMAGE_BASE}-frontend:${VERSION_TAG}"
+          sed -i "s|image: ghcr.io/.*-frontend:.*|image: ${IMAGE_BASE}-frontend:${VERSION_TAG}|g" 05-frontend.yaml
+          
+          # Apply Kubernetes manifests
+          echo ""
+          echo "Applying Kubernetes manifests..."
+          kubectl apply -f 04-backend.yaml
+          kubectl apply -f 05-frontend.yaml
+          
+          # Wait for rollout
+          echo ""
+          echo "Waiting for rollout to complete..."
+          kubectl rollout status deployment/backend -n stock-agent --timeout=300s
+          kubectl rollout status deployment/frontend -n stock-agent --timeout=300s
+          
+          # Reset files for next deployment
+          git checkout 04-backend.yaml
+          git checkout 05-frontend.yaml
+          
+          echo ""
+          echo "=========================================="
+          echo "Deployment completed successfully!"
+          echo "=========================================="
+          
+          # Show current pods
+          echo ""
+          echo "Current pods:"
+          kubectl get pods -n stock-agent
+
+    - name: Deployment Status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed. Check the logs above."
+          exit 1
+        fi

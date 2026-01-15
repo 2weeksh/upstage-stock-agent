@@ -15,13 +15,23 @@ from app.tools.finance_tools import get_financial_summary
 from app.tools.search_tools import get_stock_news
 
 async def run_multi_turn_debate(user_query: str):
-    llm = get_solar_model()
+    news_llm = get_solar_model(temperature=0.3)
     
-    chart_agent = ChartAgent(llm)
-    news_agent = NewsAgent(llm)
-    finance_agent = FinanceAgent(llm)
-    moderator = ModeratorAgent(llm)
-    judge = JudgeAgent(llm)
+    chart_llm = get_solar_model(temperature=0.1)
+    
+    finance_llm = get_solar_model(temperature=0.1)
+    
+    moderator_llm = get_solar_model(temperature=0.2)
+    
+    judge_llm = get_solar_model(temperature=0.1)
+    
+    report_llm = get_solar_model(temperature=0.2)
+    
+    chart_agent = ChartAgent(chart_llm)
+    news_agent = NewsAgent(news_llm)
+    finance_agent = FinanceAgent(finance_llm)
+    moderator = ModeratorAgent(moderator_llm)
+    judge = JudgeAgent(judge_llm)
 
     print(f"\n{'='*20} Agent 토론 시스템 {'='*20}")
     
@@ -63,6 +73,10 @@ async def run_multi_turn_debate(user_query: str):
         await asyncio.sleep(3) 
 
         print(f"\n🔄 [Turn {turn_count}/{max_turns}] 사회자 Reasoning...\n")
+        
+        # 루프가 7이상 넘어가면 사회자의 Temperature를 낮춰 수렴 유도
+        if turn_count>=7:
+            moderator_llm = moderator_llm.bind(temperature = 0.1)
         
         try:
             mod_output = moderator.facilitate(company_name, current_debate_history)
@@ -155,7 +169,7 @@ async def run_multi_turn_debate(user_query: str):
         print(f"\n❌ 판결 생성 실패: {e}")
 
     # 6. 리포트 생성 및 저장
-    report_agent = InsightReportAgent(llm)
+    report_agent = InsightReportAgent(report_llm)
     print("투자 인사이트 리포트 생성 중...")
     insight_report = report_agent.generate_report(company_name, ticker, current_debate_history)
     save_debate_log(company_name, ticker, insight_report)

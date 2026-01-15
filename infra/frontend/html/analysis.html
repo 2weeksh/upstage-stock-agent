@@ -3,88 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토론형 AI 투자 서비스</title>
-    <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
-    
+    <title>StockWars</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <link rel="stylesheet" href="../css/analysis.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/analysis.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        .t-main {
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+            color: white !important;
+        }
+        .report-content .box {
+            max-width: 100% !important;
+        }
+        .user-query-box {
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        }
+    </style>
 </head>
 <body>
 
     <div class="main-container">
-        
-        <a href="/" class="home-link" data-tooltip="처음으로 돌아가기">
-            <img src="../img/home.png" alt="뒤로가기" id="back-icon">
+
+        <!--
+        <a href="/" class="home-link" data-tooltip="홈으로 이동">
+            <img src="img/home.png" alt="홈으로" style="width:100%; height:100%; object-fit:contain;">
         </a>
-        
+        -->
         <div class="top-section">
             <header class="report-header">
                 <div class="report-meta-info">
                     <span id="report-date">2023.00.00</span>
                     <span class="divider">|</span>
-                    <span>Report #AI-9421</span>
+                    <span>Report</span>
                     <span class="divider">|</span>
                     <span class="status-live"><span class="dot"></span>Live Analysis</span>
                 </div>
+
                 <h1 class="t-main">투자 전략 보고서</h1>
+
                 <p class="desc">
                   AI 에이전트 간의 심층 토론<br>
                   시장 흐름을 꿰뚫는 냉철한 통찰을 확인하세요.
                 </p>
+
                 <div class="agent-specs">
-                    <div class="spec-item"><span>Technical</span></div>
-                    <div class="spec-item"><span>Financial</span></div>
-                    <div class="spec-item"><span>News Sentiment</span></div>
-                    <div class="spec-item"><span>Strategy</span></div>
+                    <div class="spec-item text-red-300 border-red-500/30 bg-red-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                        <span>차트 분석가</span>
+                    </div>
+                    <div class="spec-item text-green-300 border-green-500/30 bg-green-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>재무 분석가</span>
+                    </div>
+                    <div class="spec-item text-yellow-300 border-yellow-500/30 bg-yellow-500/10">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        <span>뉴스 분석가</span>
+                    </div>
                 </div>
             </header>
 
             <main class="report-content">
                 <div class="user-query-wrapper">
-                    <span class="query-label">Q. 사용자 질문</span>
-                    <div class="box user-query-box"><p id="user-query-text">...</p></div>
+                    <span class="query-label">사용자 질문</span>
+                    <div class="box user-query-box">
+                        <p id="user-query-text">질문을 불러오는 중...</p>
+                    </div>
                 </div>
-                <section>
-                    <span class="section-title">핵심 요약</span>
-                    <div class="box ai-box"><p id="res-summary">...</p></div>
+
+                <section class="mb-8">
+                    <div class="flex justify-between items-center mb-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">투자 인사이트 리포트</h2>
+                            <p class="text-sm text-gray-400">AI 에이전트가 분석한 상세 리포트를 PDF로 소장하세요.</p>
+                        </div>
+                        <button id="btn-download-pdf" class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-bold shadow-lg transition-all transform hover:-translate-y-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            PDF 다운로드
+                        </button>
+                    </div>
                 </section>
+
                 <section>
                     <span class="section-title">최종 투자 의견</span>
-                    <div class="box ai-box highlight-border"><p id="res-conclusion">...</p></div>
-                    <span class="disclaimer-text">⚠️ 본 분석 결과는 AI 예측이며, 모든 투자의 책임은 투자자 본인에게 있습니다.</span>
+                    <div class="box ai-box highlight-border">
+                        <p id="res-conclusion">데이터를 불러오는 중...</p>
+                    </div>
+                    <span class="disclaimer-text">
+                        ⚠️ 본 분석 결과는 AI 예측이며, 모든 투자의 책임은 투자자 본인에게 있습니다.
+                    </span>
                 </section>
+
                 <section>
-                    <button id="toggleDiscussionBtn" class="btn-toggle">
-                        <span>에이전트 토론 보기</span>
-                        <svg class="w-6 h-6 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <button id="toggleDiscussionBtn" class="w-full flex justify-between items-center p-4 bg-gray-800 rounded-xl border border-gray-700 hover:bg-gray-700 transition-all duration-200 mb-4 group shadow-md">
+                        <span class="font-bold text-lg text-white flex items-center gap-2">
+                            에이전트 토론 다시보기
+                        </span>
+                        <svg id="toggleIcon" class="w-6 h-6 text-gray-400 transform transition-transform duration-300 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
                     </button>
-                    <div id="discussionContent" class="discussion-wrapper hidden">
-                        <div class="box discussion-box"><p id="res-discussion">...</p></div>
+
+                    <div id="discussionWrapper" class="hidden transition-all duration-300 ease-in-out">
+
+                        <div class="flex items-center gap-3 mb-6">
+                            <button id="tab-slider" class="flex-1 md:flex-none px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                카드 보기
+                            </button>
+                            <button id="tab-chat" class="flex-1 md:flex-none px-6 py-3 text-base font-bold text-gray-400 bg-gray-800 rounded-xl transition-all hover:bg-gray-700 hover:text-white flex justify-center items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                채팅 보기
+                            </button>
+                        </div>
+
+                        <div id="discussionContent" class="discussion-wrapper">
+
+                            <div id="view-slider" class="box discussion-viewer-box" style="position: relative; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="bg-gray-800/80 p-6 border-b border-gray-700 flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div id="viewer-avatar" class="w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg bg-gray-600 text-white border-2 border-gray-500">🎤</div>
+                                        <div>
+                                            <div class="flex items-center gap-2"><span id="viewer-speaker" class="font-bold text-xl text-white tracking-wide">Speaker</span></div>
+                                            <span id="viewer-type" class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-semibold bg-gray-700 text-gray-300 border border-gray-600">Role</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-900/50 px-3 py-1 rounded-lg border border-gray-700">
+                                        <span id="viewer-counter" class="text-sm font-mono text-blue-400 font-bold">0 / 0</span>
+                                    </div>
+                                </div>
+                                <div class="p-8 bg-gray-900/40 min-h-[300px] flex flex-col justify-center">
+                                     <div class="max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                                        <p id="viewer-message" class="text-gray-100 text-lg leading-loose whitespace-pre-wrap font-medium">대화 내용을 불러오는 중입니다...</p>
+                                     </div>
+                                </div>
+                                <div class="bg-gray-800/80 p-4 border-t border-gray-700 flex justify-between items-center">
+                                    <button id="btn-prev" class="flex items-center gap-2 px-6 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all font-bold"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 이전</button>
+                                    <span class="text-xs text-gray-500">Use buttons to navigate</span>
+                                    <button id="btn-next" class="flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all font-bold shadow-lg shadow-blue-900/30">다음 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+                                </div>
+                            </div>
+
+                            <div id="view-chat" class="box hidden custom-scrollbar" style="background: #2d2d2d; padding: 25px; border-radius: 12px; max-height: 800px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05);">
+                                <div id="chat-list" class="flex flex-col gap-6"></div>
+                            </div>
+
+                        </div>
                     </div>
                 </section>
             </main>
         </div>
 
+        <!--시장 요약-->
         <div class="section-divider market-divider"></div>
 
         <footer class="market-section">
             <h2 class="t-main" style="font-size: 2rem; margin-bottom: 3rem;">시장 요약</h2>
-            
+
             <div class="kospi-section" id="kospi-wrapper">
                 <div class="kospi-header">
-                    <div class="kospi-title">
-                        <span class="flag-icon">🇰🇷</span> KOSPI
-                    </div>
+                    <div class="kospi-title"><span class="flag-icon">🇰🇷</span> KOSPI</div>
                     <div class="kospi-value-group">
                         <span class="kospi-price" id="kospi-price">Loading...</span>
                         <span class="kospi-change" id="kospi-change">--</span>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="kospiChart"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="kospiChart"></canvas></div>
             </div>
 
             <div class="market-grid" id="market-grid">
@@ -94,13 +189,156 @@
                 <div class="market-card skeleton"></div>
             </div>
 
-            <p class="market-update-time">
-                Data provided by Yahoo Finance API • Updated: <span id="market-time">-</span>
-            </p>
+            <p class="market-update-time">Data provided by Yahoo Finance API • Updated: <span id="market-time">-</span></p>
         </footer>
-
     </div>
 
-    <script src="../js/analysis.js"></script>
+
+    <!--PDF-->
+    <div id="pdf-template-container" style="position: absolute; left: -9999px; top: -9999px;">
+        <div id="pdf-content" class="bg-white text-black font-sans w-[800px] p-10 relative">
+
+            <div class="flex justify-between items-end border-b-4 border-slate-800 pb-4 mb-6">
+                <div>
+                    <h1 id="pdf-title" class="text-3xl font-extrabold text-slate-900 tracking-tight">Deep Dive Report</h1>
+                    <div class="flex items-center gap-3 mt-2">
+                        <span id="pdf-symbol" class="bg-slate-800 text-white px-3 py-1 text-sm font-bold rounded">CODE</span>
+                        <span id="pdf-date" class="text-slate-500 font-medium">YYYY-MM</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">StockWars AI Analysis</div>
+                    <div id="pdf-rating-badge" class="text-3xl font-black text-slate-300">RATING</div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-8 shadow-sm">
+                <div class="grid grid-cols-4 gap-6 text-center divide-x divide-slate-200">
+                    <div>
+                        <div class="text-xs text-slate-500 font-bold uppercase mb-1">Target Price</div>
+                        <div id="pdf-target" class="text-xl font-bold text-blue-600">-</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 font-bold uppercase mb-1">Current Price</div>
+                        <div id="pdf-current" class="text-xl font-bold text-slate-800">-</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 font-bold uppercase mb-1">Upside</div>
+                        <div id="pdf-upside" class="text-xl font-bold text-red-500">-</div>
+                    </div>
+                    <div class="text-left pl-6">
+                        <div class="flex justify-between mb-1"><span class="text-xs text-slate-500 font-bold">PER</span> <span id="pdf-per" class="text-xs font-bold">-</span></div>
+                        <div class="flex justify-between mb-1"><span class="text-xs text-slate-500 font-bold">PBR</span> <span id="pdf-pbr" class="text-xs font-bold">-</span></div>
+                        <div class="flex justify-between"><span class="text-xs text-slate-500 font-bold">ROE</span> <span id="pdf-roe" class="text-xs font-bold">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-bold text-blue-700 border-b-2 border-blue-700 pb-1 mb-3 flex items-center gap-2">
+                        <span>🚀 Bull Case (매수 논리)</span>
+                    </h3>
+                    <ul id="pdf-buy-points" class="space-y-3 text-sm text-slate-700"></ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-red-600 border-b-2 border-red-600 pb-1 mb-3 flex items-center gap-2">
+                        <span>🛡️ Bear Case (리스크)</span>
+                    </h3>
+                    <ul id="pdf-sell-points" class="space-y-3 text-sm text-slate-700"></ul>
+                </div>
+            </div>
+
+            <div class="mb-8 bg-indigo-50 border border-indigo-100 rounded-lg p-5">
+                <h3 class="text-sm font-bold text-indigo-800 uppercase mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Market Consensus vs Agent View
+                </h3>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-white p-3 rounded border border-indigo-100">
+                        <span class="text-xs font-bold text-slate-400 block mb-1">MARKET VIEW</span>
+                        <p id="pdf-market-view" class="text-sm text-slate-700 font-medium">-</p>
+                    </div>
+                    <div class="bg-white p-3 rounded border border-indigo-100 shadow-sm ring-1 ring-indigo-200">
+                        <span class="text-xs font-bold text-indigo-500 block mb-1">AGENT INSIGHT</span>
+                        <p id="pdf-agent-view" class="text-sm text-slate-800 font-bold">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-slate-900 border-l-4 border-slate-800 pl-3 mb-4">💡 Key Debate Questions</h3>
+                <div id="pdf-qna-list" class="space-y-4">
+                    </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 uppercase mb-2">Valuation Logic & Peers</h3>
+                    <p id="pdf-val-method" class="text-xs text-slate-600 mb-3 italic">-</p>
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead class="bg-slate-100 text-slate-600 font-bold">
+                            <tr><th class="p-2 border-b">Company</th><th class="p-2 border-b">PER</th><th class="p-2 border-b">PBR</th></tr>
+                        </thead>
+                        <tbody id="pdf-peer-body" class="text-slate-700"></tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 uppercase mb-2">Financial Estimates</h3>
+                    <table class="w-full text-xs text-center border-collapse">
+                        <thead class="bg-slate-800 text-white font-bold">
+                            <tr id="pdf-fin-head"></tr>
+                        </thead>
+                        <tbody id="pdf-fin-body" class="text-slate-700"></tbody>
+                    </table>
+                    <p id="pdf-earnings-insight" class="text-xs text-slate-500 mt-2 leading-relaxed border-t pt-2">-</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-sm font-bold text-slate-500 uppercase mb-2">Scenario Analysis</h3>
+                <div class="overflow-hidden rounded border border-slate-200">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100">
+                            <tr><th class="p-2 font-bold text-slate-600 w-1/3">Event</th><th class="p-2 font-bold text-slate-600">Impact</th></tr>
+                        </thead>
+                        <tbody id="pdf-risk-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-white p-6 rounded-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10"><svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+                <h3 class="text-lg font-bold text-yellow-400 mb-3 flex items-center gap-2">🏁 Final Verdict & Action Plan</h3>
+
+                <div class="grid grid-cols-2 gap-6 mb-4 text-sm">
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold block mb-1">SHORT-TERM</span>
+                        <p id="pdf-short-term" class="text-slate-200">-</p>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold block mb-1">LONG-TERM</span>
+                        <p id="pdf-long-term" class="text-slate-200">-</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 p-4 rounded-lg border border-white/20 mb-4">
+                    <span class="text-xs text-yellow-400 font-bold block mb-1">ACTION PLAN</span>
+                    <p id="pdf-action-plan" class="text-sm font-bold leading-relaxed">-</p>
+                </div>
+
+                <p id="pdf-closing-thought" class="text-center text-slate-400 text-xs italic border-t border-slate-700 pt-3">
+                    "..."
+                </p>
+            </div>
+
+            <div class="mt-8 text-center text-[10px] text-slate-300">
+                Generated by StockWars AI • Not Financial Advice
+            </div>
+        </div>
+    </div>
+
+    <script src="js/analysis.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@ from langchain_upstage import ChatUpstage
 # .env 파일에 저장된 API 키를 환경 변수로 로드합니다.
 load_dotenv()
 
-def get_solar_model():
+def get_solar_model(temperature=0.1):
     api_key = os.getenv("UPSTAGE_API_KEY")
     
     if not api_key:
@@ -15,5 +15,6 @@ def get_solar_model():
     # Solar 모델 설정을 반환합니다.
     return ChatUpstage(
         api_key=api_key,
-        model="solar-pro2"
+        model="solar-pro2",
+        temperature=temperature
     )
