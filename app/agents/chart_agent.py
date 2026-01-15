@@ -55,10 +55,3 @@ class ChartAgent:
             ("user", user_msg)
         ]
         return self.llm.invoke(messages).content
-
-if __name__ == "__main__":
-    llm = get_solar_model()
-    agent = ChartAgent(llm)
-    sample_chart_data = "예시 차트 데이터: 상승 추세, 거래량 증가, RSI 70 이상"
-    result = agent.analyze("삼성전자", "005930", sample_chart_data)
-    print(result)

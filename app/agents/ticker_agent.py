@@ -9,7 +9,7 @@ def extract_company_name(user_query: str):
     # 1. Solar 모델 로드 (app/utils/llm.py의 함수 활용)
     llm = get_solar_model()
 
-    # 2. 시스템 프롬프트 설정 (주혁님이 작성하신 규칙 반영)
+    # 2. 시스템 프롬프트 설정
     system_prompt = """
     당신은 글로벌 주식 전문 비서입니다. 사용자의 질문에서 분석 대상의 **'티커(Ticker)'**만 추출하세요.
 
