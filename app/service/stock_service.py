@@ -151,7 +151,6 @@ class StockService:
             # ------------------------------------------------------------------
             yield create_msg("system", "status", "분석 내용을 바탕으로 상호 토론을 시작합니다.")
 
-            debate_rules = await loop.run_in_executor(None, self.moderator_agent.get_debate_rules)
 
             for turn in range(max_turns):
                 yield create_msg("system", "status", f"상호 토론 {turn + 1}/{max_turns} 라운드...")
@@ -187,7 +186,6 @@ class StockService:
                         forced_context = (
                             f"{current_context}\n\n"
                             f"--- [SYSTEM ALERT] ---\n"
-                            f"규칙 준수 필수:\n{debate_rules}\n"
                             f"----------------------\n"
                             f"[사회자 지시]: {inst_text}"
                         )
