@@ -38,7 +38,7 @@ class StockService:
             text_log += f"[{item['speaker']}]: {item['message']}\n\n"
         return text_log
 
-    async def handle_user_task(self, user_input: str, max_turns: int = 10):
+    async def handle_user_task(self, user_input: str, max_turns: int = 3):
         try:
             # 1. 메시지 생성 헬퍼
             def create_msg(speaker, msg_type, message, data=None):
