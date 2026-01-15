@@ -23,19 +23,25 @@ from app.utils.llm import get_solar_model
 
 class StockService:
     def __init__(self):
-        self.shared_llm = get_solar_model()
-        self.chart_agent = ChartAgent(self.shared_llm)
-        self.news_agent = NewsAgent(self.shared_llm)
-        self.finance_agent = FinanceAgent(self.shared_llm)
-        self.moderator_agent = ModeratorAgent(self.shared_llm)
-        self.judge_agent = JudgeAgent(self.shared_llm)
-        self.report_agent = InsightReportAgent(self.shared_llm)
+        self.news_llm = get_solar_model(temperature=0.3)
+        self.chart_llm = get_solar_model(temperature=0.1)
+        self.finance_llm = get_solar_model(temperature=0.1)
+        self.moderator_llm = get_solar_model(temperature=0.2)
+        self.judge_llm = get_solar_model(temperature=0.1)
+        self.report_llm = get_solar_model(temperature=0.2)
+
+        self.chart_agent = ChartAgent(self.chart_llm)
+        self.news_agent = NewsAgent(self.news_llm)
+        self.finance_agent = FinanceAgent(self.finance_llm)
+        self.moderator_agent = ModeratorAgent(self.moderator_llm)
+        self.judge_agent = JudgeAgent(self.judge_llm)
+        self.report_agent = InsightReportAgent(self.report_llm)
 
     # [헬퍼] 리스트 -> 텍스트 변환
     def _format_history_for_llm(self, history_list):
         text_log = ""
         for item in history_list:
-            text_log += f"[{item['speaker']}]: {item['message']}\n\n"
+            text_log += f"\n\n[{item['speaker']}]: {item['message']}"
         return text_log
 
     async def handle_user_task(self, user_input: str, max_turns: int = 10):
@@ -153,7 +159,12 @@ class StockService:
 
 
             for turn in range(max_turns):
-                yield create_msg("system", "status", f"상호 토론 {turn + 1}/{max_turns} 라운드...")
+                turn_count = turn + 1
+                yield create_msg("system", "status", f"상호 토론 {turn_count}/{max_turns} 라운드...")
+
+                # [추가 부분] 7라운드 이상 시 사회자의 Temperature를 낮춰 수렴 유도
+                if turn_count >= 7:
+                    self.moderator_agent.llm = self.moderator_llm.bind(temperature=0.1)
 
                 current_context = self._format_history_for_llm(discussion_log)
                 mod_output = await run_with_retry(
