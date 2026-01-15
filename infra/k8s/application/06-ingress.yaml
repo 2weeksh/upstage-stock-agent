@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: stock-agent
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+  # EC2 IP로 접속하거나, DuckDNS 도메인이 있으면 아래 host를 수정하세요
+  # 예: - host: mystock.duckdns.org
+  # 또는 host를 제거하고 IP로 직접 접속
+  - http:
+      paths:
+      # Frontend - 기본 경로
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 8002
+      
+      # Backend API - /agent 경로
+      - path: /agent
+        pathType: Prefix
+        backend:
+          service:
+            name: backend
+            port:
+              number: 8001

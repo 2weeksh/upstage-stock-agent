@@ -1,28 +1,6 @@
+/* 1. 폰트 */
+@import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-
-/* 폰트 설정 */
-@font-face {
-    font-family: 'GmarketSans';
-    font-weight: 300;
-    font-style: normal;
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff') format('woff');
-    font-display: swap;
-}
-@font-face {
-    font-family: 'GmarketSans';
-    font-weight: 500;
-    font-style: normal;
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-    font-display: swap;
-}
-@font-face {
-    font-family: 'GmarketSans';
-    font-weight: 700;
-    font-style: normal;
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
-    font-display: swap;
-}
-
 
 body, html {
     margin: 0;
@@ -32,13 +10,13 @@ body, html {
     overflow-x: hidden !important;
     overflow-y: auto !important;
     height: auto !important;
-    
+
     background-color: #020617 !important;
     color: white;
     font-family: 'Inter', sans-serif;
 }
 
-/* 레이아웃 */
+/* 2. 레이아웃 */
 .main-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -47,7 +25,7 @@ body, html {
     z-index: 10;
 }
 
-/* 홈 아이콘 */
+/* 홈 아이콘 
 .home-link {
     position: fixed; top: 25px; left: 25px; width: 30px; height: 45px;
     cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
@@ -62,15 +40,15 @@ body, html {
     font-size: 0.8rem; border-radius: 6px; white-space: nowrap; opacity: 0;
     visibility: hidden; transition: all 0.2s ease; pointer-events: none;
 }
-.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; }
+.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; } */
 
-/* 헤더 영역 */
+/* 헤더 */
 .top-section { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%; }
 
 .report-header {
     display: flex; flex-direction: column; align-items: center; text-align: center;
     gap: 1.5rem; width: 100%;
-    background-image: radial-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
     background-size: 24px 24px;
     padding: 3rem 0;
     border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -96,7 +74,8 @@ body, html {
     font-size: 0.8rem; color: #cbd5e1; backdrop-filter: blur(4px);
 }
 
-/* 본문 콘텐츠 (질문, 요약, 결론, 분석)*/
+
+/* 본문 콘텐츠 */
 .report-content { width: 100%; max-width: 800px; }
 
 .section-divider {
@@ -123,28 +102,79 @@ body, html {
 }
 .highlight-border { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
 
-/* 타이틀 */
+/* 메인 타이틀 */
 .t-main {
-    font-family: 'GmarketSans', sans-serif !important; font-weight: 700; font-size: 3rem;
-    background: linear-gradient(to right, #60a5fa, #c75b5a);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem; line-height: 1.2;
+    font-family: "Do Hyeon", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
 }
-.desc { color: #94a3b8; font-weight: 300; line-height: 1.6; font-size: 1.1rem; }
-.section-title { font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 0.8rem; display: block; }
+
+.desc { color: #ffffff; font-weight: 300; line-height: 1.6; font-size: 1.1rem; }
+
+/* 섹션 제목 */
+.section-title {
+    font-size: 1.25rem; font-weight: 700; color: white;
+    margin-bottom: 0.8rem; display: block;
+}
+
 .disclaimer-text { font-size: 0.85rem; color: #64748b; margin-top: -1rem; margin-bottom: 2rem; text-align: right; display: block; }
 
-/* 토글 버튼 */
-.btn-toggle {
-    display: flex; justify-content: space-between; align-items: center; width: 100%;
-    background: #1e293b; border: 1px solid #334155; padding: 1rem;
-    border-radius: 0.8rem; color: #94a3b8; cursor: pointer; transition: 0.2s;
-}
-.btn-toggle:hover { background: #334155; color: white; }
-.discussion-wrapper.hidden { display: none; }
-.discussion-box { margin-top: 1rem; background: #0f172a; font-family: monospace; font-size: 0.9rem; }
+/* ============================================================
+   [NEW] 토론 뷰어 관련 스타일 (카드형 & 채팅형)
+   ============================================================ */
 
-/* 시장 요약  */
+/* 1. 슬라이드(카드) 뷰어 스타일 */
+.discussion-viewer-box {
+    position: relative;
+    min-height: 250px; /* 세로 길이 확보 */
+    padding-bottom: 70px;
+}
+
+/* 카드 내용 영역 (스크롤 포함) */
+.viewer-body {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(55, 65, 81, 0.5);
+
+    /* 세로 길이 제한 및 스크롤 설정 */
+    min-height: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* 2. 채팅형 뷰어 스타일 */
+#view-chat {
+    background: #2d2d2d !important; /* 요청하신 그레이 배경 */
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    /* 스크롤 없이 내용만큼 늘어나도록 설정됨 (HTML에서 overflow 제거됨) */
+}
+
+/* 3. 커스텀 스크롤바 디자인 (카드 보기 내부용) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================================ */
+
+/* 4. 하단 시장 요약 (Custom Market Grid) */
 .market-section { padding-bottom: 8rem; text-align: center; width: 100%; }
 
 /* 코스피 차트 섹션 */
@@ -166,24 +196,23 @@ body, html {
 .kospi-value-group { text-align: right; }
 .kospi-price {
     font-size: 2rem; font-weight: 800; color: white;
-    font-family: 'Inter', sans-serif; margin-right: 0.5rem;
+    margin-right: 0.5rem;
 }
 .kospi-change {
     font-size: 1.2rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 99px;
 }
 .chart-container { position: relative; height: 300px; width: 100%; }
 
-/* 8개 카드 */
+/* 8개 카드 그리드 */
 .market-grid {
     display: grid; gap: 1.5rem; width: 100%; max-width: 1200px; margin: 0 auto;
-    /* 모바일 용 */
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
-/* PC: 4열 */
+/* 4열 고정 */
 @media (min-width: 1024px) {
     .market-grid { grid-template-columns: repeat(4, 1fr); }
 }
-/* 모바일: 2열 */
+/* 2열 고정 */
 @media (min-width: 600px) and (max-width: 1023px) {
     .market-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -206,7 +235,7 @@ body, html {
 }
 .market-price {
     font-size: 1.8rem; font-weight: 800; color: white;
-    margin-bottom: 0.2rem; font-family: 'Inter', sans-serif;
+    margin-bottom: 0.2rem;
 }
 .market-change {
     font-size: 1rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 99px;
@@ -216,7 +245,7 @@ body, html {
 
 .market-update-time { margin-top: 2rem; font-size: 0.8rem; color: #475569; }
 
-/* 로딩 */
+/* 로딩 애니메이션 (스켈레톤) */
 .skeleton {
     height: 140px;
     background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);

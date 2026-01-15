@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토론형 AI 투자 서비스</title>
-    
+    <title>StockWars</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="../css/style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    
     <style>
         /* 스크롤 허용 */
         body, html, .page-main {
@@ -65,7 +65,7 @@
         <header class="mb-20">
             <div class="badge">Next-Gen AI Analysis</div>
             <h1 class="t-main" style="line-height: 1.2;">
-                토론형 AI<br>투자 서비스
+                STOCKWARS
             </h1>
             <p class="desc">
                 각 분야의 전문 AI 에이전트가 치열하게 토론합니다.<br>
@@ -74,22 +74,35 @@
         </header>
 
         <div class="video-wrapper">
-            <video autoplay muted loop playsinline poster="../img/background.mp4">
-                <source src="../img/background.mp4" type="video/mp4">
+            <video autoplay muted loop playsinline poster="img/background.mp4">
+                <source src="img/background.mp4" type="video/mp4">
                 브라우저가 동영상을 지원하지 않습니다.
             </video>
             <div class="video-overlay-gradient"></div>
         </div>
 
         <div class="mt-24 mb-32">
-            
-            <a href="userInput.html" class="btn btn-w" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
+            <a href="#" id="startBtn" class="btn btn-w" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
                 분석 시작하기
             </a>
         </div>
 
     </div>
 
-    <script src="../js/script.js"></script>
+    <script src="js/script.js"></script>
+    
+    <script src="js/auth.js"></script>
+
+    <script>
+        document.getElementById('startBtn').addEventListener('click', (e) => {
+            e.preventDefault(); 
+            if (isLoggedIn()) {
+                window.location.href = 'userInput.html';
+            } else {
+                alert('서비스 이용을 위해 로그인이 필요합니다.');
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
 </body>
 </html>

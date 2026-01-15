@@ -1,26 +1,27 @@
 /* 폰트 설정 */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-
 @font-face {
     font-family: 'GmarketSans';
     font-weight: 300;
     font-style: normal;
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff') format('woff');
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSansLight.woff2') format('woff2');
+    font-display: swap;
 }
 @font-face {
     font-family: 'GmarketSans';
     font-weight: 500;
     font-style: normal;
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSansMedium.woff2') format('woff2');
+    font-display: swap;
 }
 @font-face {
     font-family: 'GmarketSans';
     font-weight: 700;
     font-style: normal;
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSansBold.woff2') format('woff2');
+    font-display: swap;
 }
 
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
 /* 기본 레이아웃, 배경 */
 body, html {
@@ -28,7 +29,7 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 스크롤 방지 */
+    overflow: hidden; 
 }
 
 .page-main {
@@ -94,15 +95,16 @@ body, html {
 
 /* 메인 타이틀 */
 .t-main {
-    font-family: 'Black Han Sans', sans-serif !important;
-    font-weight: 700;
-    font-size: 3.5rem;
+    font-family: "Do Hyeon", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     background: linear-gradient(to right, #60a5fa, #c75b5a);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 1.5rem;
     letter-spacing: -0.02em;
     word-break: keep-all;
+
 }
 
 @media (min-width: 768px) {
@@ -117,7 +119,7 @@ body, html {
 }
 
 .desc {
-    color: #94a3b8;
+    color: #ffffff;
     font-weight: 300;
     line-height: 1.6;
 }
@@ -322,3 +324,213 @@ body, html {
 .ml-2 { margin-left: 0.5rem; }
 .text-green-400 { color: #4ade80; }
 .text-gray-300 { color: #d1d5db; }
+
+/* ------------------------------------------------ */
+/* 카카오톡 스타일 채팅 CSS (좌우 분리 버전) */
+/* ------------------------------------------------ */
+
+.chat-container {
+    width: 100%;
+    height: 400px; /* 높이 넉넉하게 */
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem; /* 메시지 간격 */
+}
+
+.chat-container::-webkit-scrollbar { width: 6px; }
+.chat-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+/* 공통 메시지 행 스타일 */
+.chat-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 85%; /* 말풍선이 너무 길어지지 않게 */
+    animation: slideIn 0.3s ease-out;
+}
+
+/* 1. 시스템 (왼쪽 배치) */
+.chat-row.system {
+    align-self: flex-start; /* 왼쪽 정렬 */
+    flex-direction: row; /* 아이콘 -> 말풍선 */
+}
+
+/* 2. 에이전트 (오른쪽 배치) */
+.chat-row.agent {
+    align-self: flex-end; /* 오른쪽 정렬 */
+    flex-direction: row-reverse; /* 아이콘 <- 말풍선 (순서 반전) */
+}
+
+/* 프로필 아이콘 */
+.chat-profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* 텍스트 내용 박스 */
+.chat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 에이전트(오른쪽)일 때 텍스트 정렬 */
+.chat-row.agent .chat-content {
+    align-items: flex-end; /* 이름과 말풍선을 오른쪽 끝으로 */
+}
+
+/* 이름 */
+.chat-name {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0 4px;
+}
+
+/* 말풍선 공통 */
+.chat-bubble {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-break: break-word;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+/* 시스템 말풍선 (회색) */
+.chat-row.system .chat-bubble {
+    background: #334155;
+    color: #e2e8f0;
+    border-radius: 0 12px 12px 12px; /* 왼쪽 위 뾰족 */
+}
+
+/* 에이전트 말풍선 (파란색 계열) */
+.chat-row.agent .chat-bubble {
+    background: #1e40af; /* 진한 파랑 */
+    color: white;
+    border-radius: 12px 0 12px 12px; /* 오른쪽 위 뾰족 */
+}
+
+/* ------------------------------------------------ */
+/* 캐릭터별 테마 색상 (아이콘만 변경) */
+/* ------------------------------------------------ */
+
+/* 시스템 */
+.chat-row.system .chat-profile-icon { background: #475569; color: #cbd5e1; }
+
+/* 차트 (빨강) */
+.theme-chart .chat-profile-icon { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.theme-chart .chat-bubble { background: rgba(239, 68, 68, 0.2) !important; border: 1px solid #ef4444; }
+
+/* 재무 (초록) */
+.theme-finance .chat-profile-icon { background: linear-gradient(135deg, #22c55e, #15803d); }
+.theme-finance .chat-bubble { background: rgba(34, 197, 94, 0.2) !important; border: 1px solid #22c55e; }
+
+/* 뉴스 (노랑) */
+.theme-news .chat-profile-icon { background: linear-gradient(135deg, #f59e0b, #b45309); }
+.theme-news .chat-bubble { background: rgba(245, 158, 11, 0.2) !important; border: 1px solid #f59e0b; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ------------------------------------------------ */
+/* 시스템 알림 메시지 (카톡 '나갔습니다' 스타일) */
+/* ------------------------------------------------ */
+
+.chat-system-message {
+    align-self: center; /* 가운데 정렬 */
+    background: rgba(255, 255, 255, 0.1); /* 연한 반투명 배경 */
+    color: #cbd5e1; /* 연한 회색 텍스트 */
+    padding: 6px 16px; /* 둥근 알약 모양 패딩 */
+    border-radius: 999px; /* 완벽한 둥근 모서리 */
+    font-size: 0.8rem; /* 본문보다 약간 작게 */
+    text-align: center;
+    margin: 8px 0; /* 위아래 여백 */
+    max-width: 90%; /* 너무 길어지면 줄바꿈 */
+    word-break: keep-all; /* 단어 단위 줄바꿈 */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   인증(Auth) 네비게이션 스타일
+   ========================================= */
+#auth-nav {
+    position: fixed;   
+    top: 25px;         
+    right: 25px;      
+    z-index: 9999;     
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+#auth-nav a, #auth-nav span {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+#auth-nav a:hover {
+    color: #60a5fa; /* 마우스 올렸을 때 파란색 */
+}
+
+.user-nickname {
+    color: white !important;
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+/* 로그인/회원가입 폼 전용 스타일 */
+.auth-box {
+    max-width: 28rem; 
+}
+
+.auth-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.auth-link a {
+    color: #60a5fa;
+    text-decoration: underline;
+    margin-left: 0.5rem;
+}
+
+/* =========================================
+   커스텀 스크롤바 (History 페이지 등)
+   ========================================= */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3); /* 파란색 반투명 */
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4); /* 어두운 배경 */
+}
