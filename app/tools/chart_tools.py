@@ -48,3 +48,9 @@ def get_chart_indicators(symbol: str):
 
     except Exception as e:
         return f"차트 분석 도구 실행 중 오류 발생: {str(e)}"
+    
+
+if __name__ == "__main__":
+    # 과거데이터
+    print(get_chart_indicators("035720.KS"))  # 카카오
+    #print(get_chart_indicators("000660.KS"))  # SK하이닉스
