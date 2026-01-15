@@ -16,7 +16,200 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 차트 및 시장 요약
     renderKospiChart();
     renderRealMarketData();
+
+    // PDF 다운로드 버튼 이벤트 연결
+    const pdfBtn = document.getElementById('btn-download-pdf');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', generatePDF);
+    }
 });
+function generatePDF() {
+    // 1. 데이터 가져오기
+    const rawJson = localStorage.getItem('analysis_summary');
+    if (!rawJson) {
+        alert("리포트 데이터가 없습니다. 분석이 완료되었는지 확인해주세요.");
+        return;
+    }
+
+    let data;
+    try {
+        data = JSON.parse(rawJson);
+    } catch (e) {
+        console.error("JSON Error:", e);
+        alert("데이터 파싱 오류");
+        return;
+    }
+
+    // --- 2. 데이터 매핑 시작 ---
+
+    // [Header]
+    const info = data.report_info || {};
+    document.getElementById('pdf-title').innerText = info.title || "Investment Report";
+    document.getElementById('pdf-symbol').innerText = info.symbol || "UNKNOWN";
+    document.getElementById('pdf-date').innerText = info.date || new Date().toISOString().slice(0, 7);
+
+    // [Summary]
+    const summary = data.header_summary || {};
+    const metrics = summary.key_metrics || {};
+
+    // Rating Badge 처리
+    const ratingEl = document.getElementById('pdf-rating-badge');
+    ratingEl.innerText = summary.rating?.label || "N/A";
+    const rColor = summary.rating?.color;
+    if (rColor === 'red') ratingEl.className = "text-3xl font-black text-red-600";
+    else if (rColor === 'blue') ratingEl.className = "text-3xl font-black text-blue-600";
+    else ratingEl.className = "text-3xl font-black text-slate-400"; // gray
+
+    document.getElementById('pdf-target').innerText = summary.target_price ? `${Number(summary.target_price).toLocaleString()}원` : "-";
+    document.getElementById('pdf-current').innerText = summary.current_price ? `${Number(summary.current_price).toLocaleString()}원` : "-";
+    document.getElementById('pdf-upside').innerText = summary.upside_ratio || "-";
+
+    document.getElementById('pdf-per').innerText = metrics.PER || "-";
+    document.getElementById('pdf-pbr').innerText = metrics.PBR || "-";
+    document.getElementById('pdf-roe').innerText = metrics.ROE || "-";
+
+    // [Investment Thesis] - Buy vs Sell
+    const thesis = data.investment_thesis || {};
+
+    // 1) Buy Side
+    const buyList = document.getElementById('pdf-buy-points');
+    buyList.innerHTML = "";
+    if (thesis.buy_side) {
+        thesis.buy_side.forEach(item => {
+            buyList.innerHTML += `
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-500 font-bold mt-0.5">✓</span>
+                    <div>
+                        <strong class="block text-slate-800">${item.point}</strong>
+                        <span class="text-slate-600 text-xs leading-tight">${item.detail}</span>
+                    </div>
+                </li>`;
+        });
+    }
+
+    // 2) Sell Side
+    const sellList = document.getElementById('pdf-sell-points');
+    sellList.innerHTML = "";
+    if (thesis.sell_side) {
+        thesis.sell_side.forEach(item => {
+            sellList.innerHTML += `
+                <li class="flex items-start gap-2">
+                    <span class="text-red-500 font-bold mt-0.5">⚠</span>
+                    <div>
+                        <strong class="block text-slate-800">${item.point}</strong>
+                        <span class="text-slate-600 text-xs leading-tight">${item.detail}</span>
+                    </div>
+                </li>`;
+        });
+    }
+
+    // [Consensus Clash]
+    const clash = thesis.consensus_clash || {};
+    document.getElementById('pdf-market-view').innerText = clash.market_view || "-";
+    document.getElementById('pdf-agent-view').innerText = clash.agent_view || "-";
+
+    // [QnA Insights]
+    const qnaList = document.getElementById('pdf-qna-list');
+    qnaList.innerHTML = "";
+    if (data.qna_insights) {
+        data.qna_insights.forEach(qna => {
+            // Debate Context를 문자열로 합치기
+            const contextHtml = qna.debate_context.map(d =>
+                `<span class="mr-2"><b class="${d.role === '재무 분석가' ? 'text-green-600' : 'text-blue-600'}">${d.role}</b>: ${d.content}</span>`
+            ).join("<br>");
+
+            qnaList.innerHTML += `
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-2">Q. ${qna.question}</h4>
+                    <div class="text-xs text-slate-600 mb-3 pl-2 border-l-2 border-slate-300">
+                        ${contextHtml}
+                    </div>
+                    <div class="flex items-start gap-2 bg-yellow-50 p-2 rounded text-xs text-yellow-900 font-medium">
+                        <span>💡 <strong>Insight:</strong> ${qna.strategic_importance}</span>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // [Valuation Logic & Peers]
+    const valLogic = data.valuation_logic || {};
+    document.getElementById('pdf-val-method').innerText = valLogic.method || "";
+
+    const peerBody = document.getElementById('pdf-peer-body');
+    peerBody.innerHTML = "";
+    if (valLogic.peer_group) {
+        valLogic.peer_group.forEach(peer => {
+            peerBody.innerHTML += `
+                <tr class="border-b border-slate-100 last:border-0">
+                    <td class="p-2 font-bold">${peer.company}</td>
+                    <td class="p-2">${peer.per}</td>
+                    <td class="p-2">${peer.pbr}</td>
+                </tr>`;
+        });
+    }
+
+    // [Financial Estimates]
+    const financials = data.financials || {};
+    const finHead = document.getElementById('pdf-fin-head');
+    const finBody = document.getElementById('pdf-fin-body');
+
+    if (financials.columns) {
+        let hHtml = "<th></th>"; // empty corner
+        financials.columns.forEach(col => hHtml += `<th class="p-2">${col}</th>`);
+        finHead.innerHTML = hHtml;
+    }
+    if (financials.rows) {
+        finBody.innerHTML = "";
+        financials.rows.forEach(row => {
+            let rHtml = `<td class="p-2 font-bold bg-slate-50 text-left">${row.category}</td>`;
+            row.values.forEach(v => rHtml += `<td class="p-2 border-l border-slate-100">${v}</td>`);
+            finBody.innerHTML += `<tr class="border-b border-slate-200 last:border-0">${rHtml}</tr>`;
+        });
+    }
+    document.getElementById('pdf-earnings-insight').innerText = financials.earnings_insight || "";
+
+    // [Risk Scenarios]
+    const riskBody = document.getElementById('pdf-risk-body');
+    riskBody.innerHTML = "";
+    if (data.risk_scenarios) {
+        data.risk_scenarios.forEach(risk => {
+            riskBody.innerHTML += `
+                <tr>
+                    <td class="p-2 font-bold text-red-700 align-top">${risk.event}</td>
+                    <td class="p-2 text-slate-600 align-top">${risk.impact}</td>
+                </tr>`;
+        });
+    }
+
+    // [Final Verdict]
+    const verdict = data.final_verdict || {};
+    document.getElementById('pdf-short-term').innerText = verdict.short_term || "-";
+    document.getElementById('pdf-long-term').innerText = verdict.long_term || "-";
+    document.getElementById('pdf-action-plan').innerText = verdict.action_plan || "-";
+    document.getElementById('pdf-closing-thought').innerText = verdict.closing_thought ? `"${verdict.closing_thought}"` : "";
+
+
+    // --- 3. PDF 저장 실행 ---
+    const element = document.getElementById('pdf-content');
+    const btn = document.getElementById('btn-download-pdf');
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = "⏳ 생성 중...";
+    btn.disabled = true;
+
+    const opt = {
+        margin: 0,
+        filename: `${info.symbol}_Report.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().from(element).set(opt).save().then(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
 
 // 줄바꿈 처리 헬퍼
 function formatText(text) {
