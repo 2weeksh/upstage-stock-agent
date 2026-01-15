@@ -23,19 +23,24 @@ from app.utils.llm import get_solar_model
 
 class StockService:
     def __init__(self):
-        self.shared_llm = get_solar_model()
-        self.chart_agent = ChartAgent(self.shared_llm)
-        self.news_agent = NewsAgent(self.shared_llm)
-        self.finance_agent = FinanceAgent(self.shared_llm)
-        self.moderator_agent = ModeratorAgent(self.shared_llm)
-        self.judge_agent = JudgeAgent(self.shared_llm)
-        self.report_agent = InsightReportAgent(self.shared_llm)
+        self.news_llm = get_solar_model(temperature=0.3)
+        self.chart_llm = get_solar_model(temperature=0.1)
+        self.finance_llm = get_solar_model(temperature=0.1)
+        self.moderator_llm = get_solar_model(temperature=0.2)
+        self.judge_llm = get_solar_model(temperature=0.1)
+        self.report_llm = get_solar_model(temperature=0.2)
+        self.chart_agent = ChartAgent(self.chart_llm)
+        self.news_agent = NewsAgent(self.news_llm)
+        self.finance_agent = FinanceAgent(self.finance_llm)
+        self.moderator_agent = ModeratorAgent(self.moderator_llm)
+        self.judge_agent = JudgeAgent(self.judge_llm)
+        self.report_agent = InsightReportAgent(self.report_llm)
 
     # [헬퍼] 리스트 -> 텍스트 변환
     def _format_history_for_llm(self, history_list):
         text_log = ""
         for item in history_list:
-            text_log += f"[{item['speaker']}]: {item['message']}\n\n"
+            text_log += f"\n\n[{item['speaker']}]: {item['message']}"
         return text_log
 
     async def handle_user_task(self, user_input: str, max_turns: int = 10):

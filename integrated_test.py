@@ -14,23 +14,34 @@ from app.agents.report_agent import InsightReportAgent
 from app.tools.finance_tools import get_financial_summary
 from app.tools.search_tools import get_stock_news
 
-async def run_multi_turn_debate(user_query: str):
-    llm = get_solar_model()
-    
-    chart_agent = ChartAgent(llm)
-    news_agent = NewsAgent(llm)
-    finance_agent = FinanceAgent(llm)
-    moderator = ModeratorAgent(llm)
-    judge = JudgeAgent(llm)
 
-    print(f"\n{'='*20} Agent 토론 시스템 {'='*20}")
-    
+async def run_multi_turn_debate(user_query: str):
+    news_llm = get_solar_model(temperature=0.3)
+
+    chart_llm = get_solar_model(temperature=0.1)
+
+    finance_llm = get_solar_model(temperature=0.1)
+
+    moderator_llm = get_solar_model(temperature=0.2)
+
+    judge_llm = get_solar_model(temperature=0.1)
+
+    report_llm = get_solar_model(temperature=0.2)
+
+    chart_agent = ChartAgent(chart_llm)
+    news_agent = NewsAgent(news_llm)
+    finance_agent = FinanceAgent(finance_llm)
+    moderator = ModeratorAgent(moderator_llm)
+    judge = JudgeAgent(judge_llm)
+
+    print(f"\n{'=' * 20} Agent 토론 시스템 {'=' * 20}")
+
     company_name = extract_company_name(user_query)
     ticker = get_clean_ticker(company_name)
     print(f"대상: {company_name} ({ticker})")
-    
+
     f_data = get_financial_summary(ticker)
-    n_data = get_stock_news(ticker, company_name) 
+    n_data = get_stock_news(ticker, company_name)
     c_data = get_chart_indicators(ticker)
 
     agent_map = {
@@ -47,30 +58,34 @@ async def run_multi_turn_debate(user_query: str):
         agent = agent_map[role_name]
         print(f"{agent['name']} 입론 준비 중...")
         await asyncio.sleep(1)
-        
+
         stmt = agent["instance"].analyze(company_name, ticker, agent["data"])
-        print(f"\n{stmt}\n") 
+        print(f"\n{stmt}\n")
         current_debate_history += f"\n[{agent['name']} 입론]: {stmt}"
-    
+
     print("✅ 모든 입론 완료.")
 
     # 2. 상호 토론
     turn_count = 1
-    max_turns = 10 
+    max_turns = 10
     print(f"\n [Step 2: 상호 토론] 최대 {max_turns}회 진행")
 
     while turn_count <= max_turns:
-        await asyncio.sleep(3) 
+        await asyncio.sleep(3)
 
         print(f"\n🔄 [Turn {turn_count}/{max_turns}] 사회자 Reasoning...\n")
-        
+
+        # 루프가 7이상 넘어가면 사회자의 Temperature를 낮춰 수렴 유도
+        if turn_count >= 7:
+            moderator_llm = moderator_llm.bind(temperature=0.1)
+
         try:
             mod_output = moderator.facilitate(company_name, current_debate_history)
         except Exception as e:
             print(f"⚠️ 사회자 에러: {e}")
             await asyncio.sleep(3)
             continue
-        
+
         thought = re.search(r"THOUGHT:(.*?)(?=STATUS|NEXT_SPEAKER|$)", mod_output, re.DOTALL)
         status = re.search(r"STATUS:\s*\[?(TERMINATE|CONTINUE)\]?", mod_output)
         speaker = re.search(r"NEXT_SPEAKER:\s*\[?(\w+)\]?", mod_output)
@@ -90,7 +105,7 @@ async def run_multi_turn_debate(user_query: str):
             target_key_raw = speaker.group(1).strip()
             inst_text = instruction.group(1).strip()
             target_key = next((k for k in agent_map if k.lower() in target_key_raw.lower()), None)
-            
+
             if target_key:
                 target = agent_map[target_key]
                 print(f"\n지목: {target['name']}")
@@ -100,17 +115,18 @@ async def run_multi_turn_debate(user_query: str):
                     f"{current_debate_history}\n\n"
                     f"[사회자 지시]: {inst_text}"
                 )
-                
+
                 await asyncio.sleep(1)
                 try:
-                    rebuttal = target["instance"].analyze(company_name, ticker, target["data"], debate_context=forced_context)
-                    print(f"\n{rebuttal}\n") 
+                    rebuttal = target["instance"].analyze(company_name, ticker, target["data"],
+                                                          debate_context=forced_context)
+                    print(f"\n{rebuttal}\n")
                     current_debate_history += f"\n\n[사회자]: {inst_text}\n[{target['name']}]: {rebuttal}"
                 except Exception as e:
                     print(f"⚠️ 답변 실패: {e}")
             else:
                 print(f"⚠️ 발언자 매핑 실패({target_key_raw}).")
-        
+
         turn_count += 1
 
     # 3. 최후 변론
@@ -130,7 +146,7 @@ async def run_multi_turn_debate(user_query: str):
             closing_statement = agent_info["instance"].analyze(
                 company_name, ticker, agent_info["data"], debate_context=closing_context
             )
-            print(f"\n{closing_statement}\n") 
+            print(f"\n{closing_statement}\n")
             current_debate_history += f"\n[{agent_info['name']} 최후 변론]: {closing_statement}"
         except Exception as e:
             print(f"⚠️ 변론 실패: {e}")
@@ -139,13 +155,13 @@ async def run_multi_turn_debate(user_query: str):
     print(f"\n [Step 4: 최종 요약] 사회자가 토론을 정리합니다.")
     print("요약 생성 중...")
     await asyncio.sleep(3)
-    
+
     summary = moderator.summarize_debate(company_name, current_debate_history)
     print(f"\n[사회자 정리]:\n{summary}")
     current_debate_history += f"\n\n[사회자 최종 정리]: {summary}"
 
     # 5. Judge 판결
-    print(f"\n{'='*20} ⚖️ Judge Agent 판결 {'='*20}")
+    print(f"\n{'=' * 20} ⚖️ Judge Agent 판결 {'=' * 20}")
     await asyncio.sleep(5)
 
     try:
@@ -155,10 +171,11 @@ async def run_multi_turn_debate(user_query: str):
         print(f"\n❌ 판결 생성 실패: {e}")
 
     # 6. 리포트 생성 및 저장
-    report_agent = InsightReportAgent(llm)
+    report_agent = InsightReportAgent(report_llm)
     print("투자 인사이트 리포트 생성 중...")
     insight_report = report_agent.generate_report(company_name, ticker, current_debate_history)
     save_debate_log(company_name, ticker, insight_report)
+
 
 if __name__ == "__main__":
     user_input = input("분석하고 싶은 종목을 말씀하세요 (예: 삼성전자, AAPL): ")
