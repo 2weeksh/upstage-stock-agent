@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initUserInput();
-    initBackButton();
     initLoadingPage();
 });
 
