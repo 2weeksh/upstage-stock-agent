@@ -185,8 +185,6 @@ class StockService:
 
                         forced_context = (
                             f"{current_context}\n\n"
-                            f"--- [SYSTEM ALERT] ---\n"
-                            f"----------------------\n"
                             f"[사회자 지시]: {inst_text}"
                         )
 
@@ -220,8 +218,7 @@ class StockService:
                 closing_context_prompt = f"""
                 {current_context}
                 --- [SYSTEM INSTRUCTION] ---
-                지금까지의 토론 흐름을 참고하여, 
-                당신의 최종 투자의견(매수/매도/보류)을 투자자들에게 설득력 있게 전달하는 '최후 변론'을 하십시오.
+                지금까지의 토론 흐름을 참고하여, '최후 변론'을 하십시오.
                 """
 
                 closing_stmt = await run_with_retry(
@@ -236,14 +233,25 @@ class StockService:
 
                 await asyncio.sleep(2)
 
-            # ------------------------------------------------------------------
-            # [Step 4, 5, 6] 요약/판결/리포트 (여기는 discussion_log에 안 넣음)
-            # ------------------------------------------------------------------
-            yield create_msg("system", "status", "사회자가 토론을 요약 중입니다...")
-            final_context = self._format_history_for_llm(discussion_log)
-            await run_with_retry(self.moderator_agent.summarize_debate, refined_name, final_context)
 
-            yield create_msg("system", "status", "분석가가 최종 판결을 내리고 있습니다...")
+            yield create_msg("system", "status", "사회자가 토론을 요약 중입니다...")
+            current_context = self._format_history_for_llm(discussion_log)
+            summary_text = await run_with_retry(self.moderator_agent.summarize_debate, refined_name, current_context)
+            yield create_msg("moderator", "debate", summary_text)
+            discussion_log.append({
+                "speaker": "사회자",
+                "code": "moderator",
+                "message": summary_text,
+                "type": "summary"
+            })
+            final_context = self._format_history_for_llm(discussion_log)
+
+            # ------------------------------------------------------------------
+            # [Step 5, 6] 요약/판결/리포트 (여기는 discussion_log에 안 넣음)
+            # ------------------------------------------------------------------
+
+            yield create_msg("system", "status", "전략가가 최종 판결을 내리고 있습니다...")
+            # final_context에는 이제 사회자의 요약까지 포함되어 있습니다.
             final_decision = await run_with_retry(self.judge_agent.adjudicate, refined_name, final_context)
 
             yield create_msg("system", "status", "최종 리포트를 생성 중입니다...")
