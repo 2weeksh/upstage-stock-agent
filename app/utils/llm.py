@@ -6,9 +6,6 @@ from langchain_upstage import ChatUpstage
 load_dotenv()
 
 def get_solar_model():
-    """
-    Upstage Solar LLM 모델을 초기화하여 반환합니다.
-    """
     api_key = os.getenv("UPSTAGE_API_KEY")
     
     if not api_key:
