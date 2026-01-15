@@ -40,7 +40,7 @@ body, html {
     font-size: 0.8rem; border-radius: 6px; white-space: nowrap; opacity: 0;
     visibility: hidden; transition: all 0.2s ease; pointer-events: none;
 }
-.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; } */
+.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; }
 
 /* 헤더 */
 .top-section { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%; }
