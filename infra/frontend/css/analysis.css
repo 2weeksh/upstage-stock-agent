@@ -252,3 +252,50 @@ body, html {
     background-size: 200% 100%; animation: loading 1.5s infinite;
 }
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* markdown override – UI용 */
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e5e7eb; /* text-gray-200 */
+  background: transparent;
+  font-family: ui-sans-serif, system-ui;
+}
+
+/* 제목 크기 조정 */
+.markdown-body h1 { font-size: 1.25rem; margin: 1rem 0 0.5rem; }
+.markdown-body h2 { font-size: 1.1rem;  margin: 0.9rem 0 0.4rem; }
+.markdown-body h3 { font-size: 1rem;    margin: 0.8rem 0 0.3rem; }
+
+/* 문단 */
+.markdown-body p {
+  margin: 0.35rem 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.35rem 0;
+  padding-left: 1.2rem;
+}
+
+.markdown-body li {
+  margin: 0.2rem 0;
+}
+
+
+/* 표 */
+.markdown-body table {
+  font-size: 0.85rem;
+  border-collapse: collapse;
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: 0.35rem 0.5rem;
+}
+
+/* 인라인 코드 */
+.markdown-body code {
+  font-size: 0.85em;
+  padding: 0.15em 0.3em;
+}

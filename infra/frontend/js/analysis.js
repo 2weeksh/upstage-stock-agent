@@ -212,17 +212,29 @@ function generatePDF() {
 }
 
 // 줄바꿈 처리 헬퍼
-function formatText(text) {
-    if (!text) return "데이터 로딩 중...";
-    return text.replace(/\n/g, '<br>');
+
+function renderMarkdown(mdText) {
+    if (!mdText) return "데이터 로딩 중...";
+    return marked.parse(mdText);
 }
 
 function initAnalysisData() {
     const summaryData = localStorage.getItem('analysis_summary');
     const conclusionData = localStorage.getItem('analysis_conclusion');
-    if(document.getElementById('res-summary')) document.getElementById('res-summary').innerHTML = formatText(summaryData);
-    if(document.getElementById('res-conclusion')) document.getElementById('res-conclusion').innerHTML = formatText(conclusionData);
+
+    if (document.getElementById('res-summary')) {
+        const el = document.getElementById('res-summary');
+        el.classList.add('markdown-body');
+        el.innerHTML = renderMarkdown(summaryData);
+    }
+
+    if (document.getElementById('res-conclusion')) {
+        const el = document.getElementById('res-conclusion');
+        el.classList.add('markdown-body');
+        el.innerHTML = renderMarkdown(conclusionData);
+    }
 }
+
 
 // ============================================================
 // 🤖 [통합] 토론 뷰어 시스템 (토글 + 탭)
@@ -316,7 +328,8 @@ function renderSliderLog(index) {
     const counterEl = document.getElementById('viewer-counter');
 
     speakerEl.innerText = log.speaker;
-    msgEl.innerHTML = formatText(log.message);
+    msgEl.classList.add('markdown-body');
+    msgEl.innerHTML = renderMarkdown(log.message);
 
     const style = getAgentStyle(log.code);
 
@@ -381,7 +394,9 @@ function renderChatView() {
         if (isModerator) bubble.style.borderTopLeftRadius = '0';
         else bubble.style.borderTopRightRadius = '0';
 
-        bubble.innerHTML = formatText(log.message);
+        bubble.classList.add('markdown-body');
+        bubble.innerHTML = renderMarkdown(log.message);
+
 
         content.appendChild(name);
         content.appendChild(bubble);
