@@ -3,7 +3,7 @@
 **Upstage Solar LLM**을 활용한 지능형 가상 주식 투자 분석 플랫폼입니다. 3종의 특화 에이전트가 뉴스, 차트, 재무 분석을 수행하며, 토론(Debate) 과정을 통해 최종 투자 전략을 도출합니다.
 
 ## 사이트 링크
-![](http://stockwars.duckdns.org:30080/)
+(http://stockwars.duckdns.org:30080/)
 
 ## 팀원 소개
 
