@@ -68,11 +68,23 @@
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // [수정] 중복 확인 여부 검사 로직 추가
+            if (!isUsernameChecked) {
+                alert('아이디 중복확인을 해주세요.');
+                document.getElementById('username').focus();
+                return;
+            }
+
+            if (!isNicknameChecked) {
+                alert('닉네임 중복확인을 해주세요.');
+                document.getElementById('nickname').focus();
+                return;
+            }
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const nickname = document.getElementById('nickname').value;
 
-            // [수정] 별도의 조건 검사(if문) 없이 바로 서버로 전송합니다.
             const success = await apiSignup(username, password, nickname);
             
             if (success) {
