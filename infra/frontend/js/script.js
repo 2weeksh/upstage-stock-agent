@@ -43,7 +43,7 @@ function initUserInput() {
             return;
         }
         localStorage.setItem('userQuestion', question);
-        window.location.href = "../loading.html";
+        window.location.href = "/html/loading.html";
     });
 }
 

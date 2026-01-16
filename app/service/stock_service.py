@@ -23,12 +23,12 @@ from app.utils.llm import get_solar_model
 
 class StockService:
     def __init__(self):
-        self.news_llm = get_solar_model(temperature=0.3)
-        self.chart_llm = get_solar_model(temperature=0.1)
-        self.finance_llm = get_solar_model(temperature=0.1)
-        self.moderator_llm = get_solar_model(temperature=0.2)
-        self.judge_llm = get_solar_model(temperature=0.1)
-        self.report_llm = get_solar_model(temperature=0.2)
+        self.news_llm = get_solar_model()
+        self.chart_llm = get_solar_model()
+        self.finance_llm = get_solar_model()
+        self.moderator_llm = get_solar_model()
+        self.judge_llm = get_solar_model()
+        self.report_llm = get_solar_model()
 
         self.chart_agent = ChartAgent(self.chart_llm)
         self.news_agent = NewsAgent(self.news_llm)
@@ -163,8 +163,7 @@ class StockService:
                 yield create_msg("system", "status", f"상호 토론 {turn_count}/{max_turns} 라운드...")
 
                 # [추가 부분] 7라운드 이상 시 사회자의 Temperature를 낮춰 수렴 유도
-                if turn_count >= 7:
-                    self.moderator_agent.llm = self.moderator_llm.bind(temperature=0.1)
+            
 
                 current_context = self._format_history_for_llm(discussion_log)
                 mod_output = await run_with_retry(

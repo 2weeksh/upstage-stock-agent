@@ -546,7 +546,7 @@ function getAgentStyle(code) {
 // 기존 차트/시장 함수
 // ============================================================
 async function renderKospiChart() {
-    const KOSPI_API_URL = 'http://127.0.0.1:8000/kospi-data';
+    const KOSPI_API_URL = '/kospi-data';
     try {
         const response = await fetch(KOSPI_API_URL);
         const data = await response.json();
@@ -591,7 +591,7 @@ async function renderRealMarketData() {
     const grid = document.getElementById('market-grid');
     if(!grid) return;
     try {
-        const response = await fetch('http://127.0.0.1:8000/market-summary');
+        const response = await fetch('/market-summary');
         const marketData = await response.json();
         grid.innerHTML = "";
         marketData.forEach(item => {
