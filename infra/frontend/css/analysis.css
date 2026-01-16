@@ -1,4 +1,4 @@
-/*폰트 */
+/* 1. 폰트 */
 @import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
@@ -6,17 +6,53 @@ body, html {
     margin: 0;
     padding: 0;
     width: 100%;
-    /* 결과 페이지는 내용이 많으므로 스크롤 허용 */
+    /* 스크롤 허용 */
     overflow-x: hidden !important;
     overflow-y: auto !important;
     height: auto !important;
-    
+
     background-color: #020617 !important;
     color: white;
     font-family: 'Inter', sans-serif;
 }
 
-/*2. 레이아웃*/
+/* 전체화면 스크롤바 디자인 */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.6) 0%, rgba(96, 165, 250, 0.4) 100%);
+    border-radius: 6px;
+    border: 2px solid rgba(15, 23, 42, 0.8);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.8) 0%, rgba(96, 165, 250, 0.6) 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 1) 0%, rgba(96, 165, 250, 0.8) 100%);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
+}
+
+/* Firefox 스크롤바 디자인 */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.6) rgba(15, 23, 42, 0.8);
+}
+
+/* 2. 레이아웃 */
 .main-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -25,7 +61,7 @@ body, html {
     z-index: 10;
 }
 
-/* 홈 아이콘 */
+
 .home-link {
     position: fixed; top: 25px; left: 25px; width: 30px; height: 45px;
     cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
@@ -69,14 +105,17 @@ body, html {
 
 .agent-specs { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
 .spec-item {
-    display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem;
-    background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 999px;
-    font-size: 0.8rem; color: #cbd5e1; backdrop-filter: blur(4px);
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 999px !important;
+    font-size: 0.8rem !important;
+    backdrop-filter: blur(4px) !important;
 }
 
 
 /* 본문 콘텐츠 */
-
 .report-content { width: 100%; max-width: 800px; }
 
 .section-divider {
@@ -103,31 +142,14 @@ body, html {
 }
 .highlight-border { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
 
-
-/* 메인 타이틀*/
+/* 메인 타이틀 */
 .t-main {
     font-family: "Do Hyeon", sans-serif;
     font-weight: 200;
     font-style: normal;
-    font-size: 3.5rem; 
-    color: white;     
-    margin-bottom: 0.5rem; 
-    line-height: 1.2;
-}
-
-.desc { color: #ffffff; font-weight: 300; line-height: 1.6; font-size: 1.1rem; }
-
-/* 섹션 제목 */
-.section-title {
-    font-size: 1.25rem; font-weight: 700; color: white;
-    margin-bottom: 0.8rem; display: block;
-}
-
-
-
-=
-    color: white;    
-    margin-bottom: 0.5rem; 
+    font-size: 3.5rem;
+    color: white;
+    margin-bottom: 0.5rem;
     line-height: 1.2;
 }
 
@@ -141,18 +163,231 @@ body, html {
 
 .disclaimer-text { font-size: 0.85rem; color: #64748b; margin-top: -1rem; margin-bottom: 2rem; text-align: right; display: block; }
 
-/* 토글 버튼 */
-.btn-toggle {
-    display: flex; justify-content: space-between; align-items: center; width: 100%;
-    background: #1e293b; border: 1px solid #334155; padding: 1rem;
-    border-radius: 0.8rem; color: #94a3b8; cursor: pointer; transition: 0.2s;
+/* ============================================================
+   [NEW] 토론 뷰어 관련 스타일 (카드형 & 채팅형)
+   ============================================================ */
+
+/* 카드 뷰어 컨테이너 스타일 */
+.card-viewer-container {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid #334155 !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 0 !important;
+    color: #e2e8f0 !important;
+    line-height: 1.7 !important;
+    backdrop-filter: blur(10px) !important;
+    min-height: 600px !important;
+    max-height: 600px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
-.btn-toggle:hover { background: #334155; color: white; }
-.discussion-wrapper.hidden { display: none; }
-.discussion-box { margin-top: 1rem; background: #0f172a; font-family: monospace; font-size: 0.9rem; }
 
+/* 카드 뷰어 헤더 */
+.card-viewer-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
 
-/*4. 하단 시장 요약 (Custom Market Grid)*/
+.card-viewer-speaker-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0.8rem !important;
+    background: rgba(30, 41, 59, 0.5) !important;
+    border-radius: 999px !important;
+    font-size: 0.8rem !important;
+    color: #cbd5e1 !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.card-viewer-speaker-details {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+}
+
+.card-viewer-speaker-name {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+    letter-spacing: 0.025em !important;
+}
+
+.card-viewer-speaker-role {
+    display: inline-block !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    background: rgba(107, 114, 128, 0.6) !important;
+    color: #d1d5db !important;
+    border: 1px solid rgba(107, 114, 128, 0.8) !important;
+}
+
+.card-viewer-counter {
+    background: rgba(15, 23, 42, 0.8) !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+    border: 1px solid rgba(107, 114, 128, 0.6) !important;
+}
+
+.card-viewer-counter span {
+    font-size: 0.875rem !important;
+    font-family: monospace !important;
+    font-weight: 700 !important;
+    color: #60a5fa !important;
+}
+
+/* 카드 뷰어 메인 콘텐츠 */
+.card-viewer-main {
+    flex: 1 !important;
+    min-height: 200px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.card-viewer-content {
+    width: 100% !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    padding-right: 0.5rem !important;
+}
+
+.card-viewer-message {
+    color: #f3f4f6 !important;
+    font-size: 1.125rem !important;
+    line-height: 1.75 !important;
+    white-space: pre-wrap !important;
+    font-weight: 500 !important;
+}
+
+/* 카드 뷰어 푸터 */
+.card-viewer-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 1.5rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.card-viewer-nav-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+.card-viewer-page-info {
+    font-size: 0.75rem !important;
+    color: #6b7280 !important;
+    font-family: monospace !important;
+}
+
+/* 카드 뷰어 내부 콘텐츠 박스 */
+.card-content-box {
+    background: rgba(30, 41, 59, 0.4) !important;
+    border: 1px solid rgba(55, 65, 81, 0.5) !important;
+    border-radius: 0.75rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* 카드 뷰어 네비게이션 버튼 */
+.card-nav-button {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    color: #60a5fa !important;
+    padding: 0.8rem 2rem !important;
+    font-weight: 700 !important;
+    border-radius: 999px !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.card-nav-button:hover {
+    background: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+.card-nav-button:disabled {
+    background: rgba(107, 114, 128, 0.3) !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+    opacity: 0.4 !important;
+}
+
+.card-nav-button.primary {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #93c5fd !important;
+}
+
+.card-nav-button.primary:hover {
+    background: #3b82f6 !important;
+    color: white !important;
+}
+
+/* 2. 채팅형 뷰어 스타일 - 다른 .box와 일관성 */
+.chat-container {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid #334155 !important;
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 0 !important;
+    color: #e2e8f0 !important;
+    line-height: 1.7 !important;
+    backdrop-filter: blur(10px) !important;
+    min-height: 600px !important;
+    max-height: 600px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.2rem !important;
+}
+
+/* 채팅 컨테이너 스크롤바 */
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+.chat-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+.chat-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* 3. 커스텀 스크롤바 디자인 (카드 보기 내부용) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================================ */
+
+/* 4. 하단 시장 요약 (Custom Market Grid) */
 .market-section { padding-bottom: 8rem; text-align: center; width: 100%; }
 
 /* 코스피 차트 섹션 */
@@ -190,14 +425,7 @@ body, html {
 @media (min-width: 1024px) {
     .market-grid { grid-template-columns: repeat(4, 1fr); }
 }
-/*  2열 고정 */
-
-/* 4열 고정 */
-@media (min-width: 1024px) {
-    .market-grid { grid-template-columns: repeat(4, 1fr); }
-}
-/*  2열 고정 */
-
+/* 2열 고정 */
 @media (min-width: 600px) and (max-width: 1023px) {
     .market-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -230,10 +458,122 @@ body, html {
 
 .market-update-time { margin-top: 2rem; font-size: 0.8rem; color: #475569; }
 
-/* 로딩 */
+/* 로딩 애니메이션 (스켈레톤) */
 .skeleton {
     height: 140px;
     background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
     background-size: 200% 100%; animation: loading 1.5s infinite;
 }
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+/* ============================================================
+   [NEW] Markdown Styling (Dark Mode Optimized)
+   ============================================================ */
+
+.markdown-body {
+    font-size: 0.95rem;      /* 글자 크기 적절하게 조정 */
+    line-height: 1.7;        /* 줄간격: 가독성을 위해 1.6~1.7 추천 */
+    color: #e2e8f0;          /* 텍스트 색상: 밝은 회색 (가독성 UP) */
+    font-family: 'Inter', sans-serif;
+    word-break: keep-all;    /* 한글 단어 중간 끊김 방지 */
+}
+
+/* 1. 제목 스타일 (크기 및 간격 조정) */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+    color: #ffffff;
+    font-weight: 700;
+    margin-top: 1.8rem;      /* 위쪽 여백 */
+    margin-bottom: 0.8rem;   /* 아래쪽 여백 */
+    line-height: 1.3;
+}
+
+.markdown-body h1 { font-size: 1.5rem; border-bottom: 2px solid #3b82f6; padding-bottom: 0.3rem; }
+.markdown-body h2 { font-size: 1.3rem; margin-top: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3rem; }
+.markdown-body h3 { font-size: 1.15rem; color: #93c5fd; } /* 소제목은 파란색 톤 */
+.markdown-body h4 { font-size: 1rem; }
+
+/* 2. 본문 및 리스트 간격 최적화 */
+.markdown-body p {
+    margin-bottom: 1rem;     /* 문단 사이 간격 */
+}
+.markdown-body ul,
+.markdown-body ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+.markdown-body li {
+    margin-bottom: 0.3rem;   /* 리스트 아이템 간격 좁힘 */
+}
+.markdown-body li > p {
+    margin-bottom: 0.5rem;   /* 리스트 내부 문단 간격 */
+}
+
+/* 3. 강조 (Bold) */
+.markdown-body strong {
+    color: #60a5fa; /* 파란색 하이라이트 */
+    font-weight: 800;
+}
+
+/* 4. 테이블 (표) 스타일 - 잘림 방지 및 디자인 */
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background-color: rgba(30, 41, 59, 0.3); /* 테이블 배경색 */
+    border-radius: 8px;
+    overflow: hidden; /* 모서리 둥글게 */
+    display: table; /* display block 문제 해결 */
+}
+
+.markdown-body th {
+    background-color: rgba(59, 130, 246, 0.2); /* 헤더 배경 (파란색 틴트) */
+    color: #ffffff;
+    font-weight: 700;
+    padding: 12px 15px;      /* 헤더 패딩 넉넉하게 (잘림 방지) */
+    border: 1px solid #475569;
+    text-align: left;
+}
+
+.markdown-body td {
+    padding: 10px 15px;      /* 셀 패딩 */
+    border: 1px solid #475569; /* 테두리 색상 */
+    color: #cbd5e1;
+}
+
+.markdown-body tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.03); /* 줄무늬 효과 */
+}
+
+/* 5. 인용구 (Blockquote) */
+.markdown-body blockquote {
+    border-left: 4px solid #3b82f6;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    border-radius: 0 4px 4px 0;
+    color: #94a3b8;
+    font-style: normal; /* 이탤릭 제거 (가독성 위해) */
+}
+
+/* 6. 코드 블록 */
+.markdown-body code {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fca5a5; /* 붉은색 코드 */
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+/* 7. 구분선 */
+.markdown-body hr {
+    border: 0;
+    height: 1px;
+    background: #334155;
+    margin: 2rem 0;
+}
+.markdown-body {
+    white-space: normal !important;
+}

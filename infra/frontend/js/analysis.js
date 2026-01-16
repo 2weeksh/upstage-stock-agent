@@ -1,68 +1,563 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 날짜 및 질문 표시
+    // 불필요한 relative 래퍼 제거
+    const relativeDiv = document.querySelector('#discussionContent .relative');
+    if (relativeDiv) {
+        const parent = relativeDiv.parentNode;
+        while (relativeDiv.firstChild) {
+            parent.insertBefore(relativeDiv.firstChild, relativeDiv);
+        }
+        parent.removeChild(relativeDiv);
+    }
+
+    // 채팅 기록 텍스트 박스 내부 불필요한 레이아웃 제거
+    const chatBox = document.querySelector('#view-chat .bg-gray-800');
+    
+    if (chatBox) {
+        // 파일 아이콘과 제목 제거
+        const header = chatBox.querySelector('.flex.items-center.gap-3.mb-4');
+        if (header) {
+            header.remove();
+        }
+        
+        // 회색 레이아웃 제거 - 채팅 컨테이너만 남기기
+        const chatContainer = chatBox.querySelector('.chat-container');
+        
+        if (chatContainer) {
+            const parent = chatBox.parentNode;
+            // CSS 스타일이 적용되도록 클래스만 추가
+            chatContainer.classList.add('chat-container');
+            
+            // 카드보기와 동일한 높이로 설정 (헤더 + 콘텐츠 + 버튼 영역 포함)
+            chatContainer.style.minHeight = '600px';
+            chatContainer.style.maxHeight = '600px';
+            
+            // 회색 레이아웃을 채팅 컨테이너로 대체
+            parent.replaceChild(chatContainer, chatBox);
+        }
+    }
+
+    // 카드보기 텍스트 박스 내부 불필요한 레이아웃 제거
+    const cardBox = document.querySelector('#view-slider .bg-blue-600\\/10');
+    if (cardBox) {
+        // 파일 아이콘과 제목 제거
+        const header = cardBox.querySelector('.flex.items-center.gap-3.mb-4');
+        if (header) {
+            header.remove();
+        }
+        
+        // 내부 콘텐츠 박스만 남기고 외부 레이아웃 제거
+        const innerCard = cardBox.querySelector('.bg-gray-900\\/40');
+        if (innerCard) {
+            const parent = cardBox.parentNode;
+            
+            // 내부 콘텐츠 박스에 메인 스타일 적용
+            innerCard.classList.add('card-viewer-container');
+            innerCard.classList.remove('bg-gray-900\\/40', 'rounded-lg', 'p-6', 'border', 'border-gray-700');
+            
+            // 새로운 구조로 재구성
+            innerCard.innerHTML = `
+                <!-- Header -->
+                <div class="card-viewer-header">
+                    <div class="card-viewer-speaker-info">
+                        <div id="viewer-avatar" class="card-viewer-avatar">🎤</div>
+                        <div class="card-viewer-speaker-details">
+                            <div id="viewer-speaker" class="card-viewer-speaker-name">Speaker</div>
+                            <div id="viewer-type" class="card-viewer-speaker-role">Role</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main -->
+                <div class="card-viewer-main">
+                    <div class="card-viewer-content">
+                        <p id="viewer-message" class="card-viewer-message">대화 내용을 불러오는 중입니다...</p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="card-viewer-footer">
+                    <div class="card-viewer-nav-info">
+                        <button id="btn-prev" class="card-nav-button">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-viewer-counter">
+                        <span id="viewer-counter">0 / 0</span>
+                    </div>
+                    <div class="card-viewer-nav-info">
+                        <button id="btn-next" class="card-nav-button primary">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 외부 레이아웃을 내부 콘텐츠 박스로 대체
+            parent.replaceChild(innerCard, cardBox);
+        }
+        
+        // 네비게이션 버튼 스타일 적용
+        const prevBtn = document.getElementById('btn-prev');
+        const nextBtn = document.getElementById('btn-next');
+        
+        if (prevBtn) {
+            prevBtn.classList.add('card-nav-button');
+            prevBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600', 'text-gray-200', 'rounded-lg', 'px-6', 'py-3');
+        }
+        
+        if (nextBtn) {
+            nextBtn.classList.add('card-nav-button', 'primary');
+            nextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'text-white', 'rounded-lg', 'px-6', 'py-3', 'shadow-lg', 'shadow-blue-900/30');
+        }
+    }
+
+    // 1. 날짜 및 질문 표시
     const dateElem = document.getElementById('report-date');
     if (dateElem) {
-        const today = new Date();
-        dateElem.innerText = today.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        dateElem.innerText = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
     }
     const userQueryElement = document.getElementById('user-query-text');
-    const savedQuestion = localStorage.getItem('userQuestion');
-    if (userQueryElement) userQueryElement.innerText = savedQuestion || "질문 없음";
+    if (userQueryElement) {
+        userQueryElement.innerText = localStorage.getItem('userQuestion') || "질문 없음";
+    }
 
-    // 분석 데이터 표시
+    // 2. 분석 데이터 및 뷰어 초기화
     initAnalysisData();
+    initDiscussionSystem();
 
-    // 시장 요약
-    renderKospiChart();     // 코스피 그래프
-    renderRealMarketData(); // 8개 카드
+    // 3. 차트 및 시장 요약
+    renderKospiChart();
+    renderRealMarketData();
+
+    // PDF 다운로드 버튼 이벤트 연결
+    const pdfBtn = document.getElementById('btn-download-pdf');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', generatePDF);
+    }
 });
+function generatePDF() {
+    // 1. 데이터 가져오기
+    const rawJson = localStorage.getItem('analysis_summary');
+    if (!rawJson) {
+        alert("리포트 데이터가 없습니다. 분석이 완료되었는지 확인해주세요.");
+        return;
+    }
 
-function initAnalysisData() { 
+    let data;
+    try {
+        data = JSON.parse(rawJson);
+    } catch (e) {
+        console.error("JSON Error:", e);
+        alert("데이터 파싱 오류");
+        return;
+    }
+
+    // --- 2. 데이터 매핑 시작 ---
+
+    // [Header]
+    const info = data.report_info || {};
+    document.getElementById('pdf-title').innerText = info.title || "Investment Report";
+    document.getElementById('pdf-symbol').innerText = info.symbol || "UNKNOWN";
+    document.getElementById('pdf-date').innerText = info.date || new Date().toISOString().slice(0, 7);
+
+    // [Summary]
+    const summary = data.header_summary || {};
+    const metrics = summary.key_metrics || {};
+
+    // Rating Badge 처리
+    const ratingEl = document.getElementById('pdf-rating-badge');
+    ratingEl.innerText = summary.rating?.label || "N/A";
+    const rColor = summary.rating?.color;
+    if (rColor === 'red') ratingEl.className = "text-3xl font-black text-red-600";
+    else if (rColor === 'blue') ratingEl.className = "text-3xl font-black text-blue-600";
+    else ratingEl.className = "text-3xl font-black text-slate-400"; // gray
+
+    document.getElementById('pdf-target').innerText = summary.target_price ? `${Number(summary.target_price).toLocaleString()}원` : "-";
+    document.getElementById('pdf-current').innerText = summary.current_price ? `${Number(summary.current_price).toLocaleString()}원` : "-";
+    document.getElementById('pdf-upside').innerText = summary.upside_ratio || "-";
+
+    document.getElementById('pdf-per').innerText = metrics.PER || "-";
+    document.getElementById('pdf-pbr').innerText = metrics.PBR || "-";
+    document.getElementById('pdf-roe').innerText = metrics.ROE || "-";
+
+    // [Investment Thesis] - Buy vs Sell
+    const thesis = data.investment_thesis || {};
+
+    // 1) Buy Side
+    const buyList = document.getElementById('pdf-buy-points');
+    buyList.innerHTML = "";
+    if (thesis.buy_side) {
+        thesis.buy_side.forEach(item => {
+            buyList.innerHTML += `
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-500 font-bold mt-0.5">✓</span>
+                    <div>
+                        <strong class="block text-slate-800">${item.point}</strong>
+                        <span class="text-slate-600 text-xs leading-tight">${item.detail}</span>
+                    </div>
+                </li>`;
+        });
+    }
+
+    // 2) Sell Side
+    const sellList = document.getElementById('pdf-sell-points');
+    sellList.innerHTML = "";
+    if (thesis.sell_side) {
+        thesis.sell_side.forEach(item => {
+            sellList.innerHTML += `
+                <li class="flex items-start gap-2">
+                    <span class="text-red-500 font-bold mt-0.5">⚠</span>
+                    <div>
+                        <strong class="block text-slate-800">${item.point}</strong>
+                        <span class="text-slate-600 text-xs leading-tight">${item.detail}</span>
+                    </div>
+                </li>`;
+        });
+    }
+
+    // [Consensus Clash]
+    const clash = thesis.consensus_clash || {};
+    document.getElementById('pdf-market-view').innerText = clash.market_view || "-";
+    document.getElementById('pdf-agent-view').innerText = clash.agent_view || "-";
+
+    // [QnA Insights]
+    const qnaList = document.getElementById('pdf-qna-list');
+    qnaList.innerHTML = "";
+    if (data.qna_insights) {
+        data.qna_insights.forEach(qna => {
+            // Debate Context를 문자열로 합치기
+            const contextHtml = qna.debate_context.map(d =>
+                `<span class="mr-2"><b class="${d.role === '재무 분석가' ? 'text-green-600' : 'text-blue-600'}">${d.role}</b>: ${d.content}</span>`
+            ).join("<br>");
+
+            qnaList.innerHTML += `
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-slate-800 mb-2">Q. ${qna.question}</h4>
+                    <div class="text-xs text-slate-600 mb-3 pl-2 border-l-2 border-slate-300">
+                        ${contextHtml}
+                    </div>
+                    <div class="flex items-start gap-2 bg-yellow-50 p-2 rounded text-xs text-yellow-900 font-medium">
+                        <span>💡 <strong>Insight:</strong> ${qna.strategic_importance}</span>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // [Valuation Logic & Peers]
+    const valLogic = data.valuation_logic || {};
+    document.getElementById('pdf-val-method').innerText = valLogic.method || "";
+
+    const peerBody = document.getElementById('pdf-peer-body');
+    peerBody.innerHTML = "";
+    if (valLogic.peer_group) {
+        valLogic.peer_group.forEach(peer => {
+            peerBody.innerHTML += `
+                <tr class="border-b border-slate-100 last:border-0">
+                    <td class="p-2 font-bold">${peer.company}</td>
+                    <td class="p-2">${peer.per}</td>
+                    <td class="p-2">${peer.pbr}</td>
+                </tr>`;
+        });
+    }
+
+    // [Financial Estimates]
+    const financials = data.financials || {};
+    const finHead = document.getElementById('pdf-fin-head');
+    const finBody = document.getElementById('pdf-fin-body');
+
+    if (financials.columns) {
+        let hHtml = "<th></th>"; // empty corner
+        financials.columns.forEach(col => hHtml += `<th class="p-2">${col}</th>`);
+        finHead.innerHTML = hHtml;
+    }
+    if (financials.rows) {
+        finBody.innerHTML = "";
+        financials.rows.forEach(row => {
+            let rHtml = `<td class="p-2 font-bold bg-slate-50 text-left">${row.category}</td>`;
+            row.values.forEach(v => rHtml += `<td class="p-2 border-l border-slate-100">${v}</td>`);
+            finBody.innerHTML += `<tr class="border-b border-slate-200 last:border-0">${rHtml}</tr>`;
+        });
+    }
+    document.getElementById('pdf-earnings-insight').innerText = financials.earnings_insight || "";
+
+    // [Risk Scenarios]
+    const riskBody = document.getElementById('pdf-risk-body');
+    riskBody.innerHTML = "";
+    if (data.risk_scenarios) {
+        data.risk_scenarios.forEach(risk => {
+            riskBody.innerHTML += `
+                <tr>
+                    <td class="p-2 font-bold text-red-700 align-top">${risk.event}</td>
+                    <td class="p-2 text-slate-600 align-top">${risk.impact}</td>
+                </tr>`;
+        });
+    }
+
+    // [Final Verdict]
+    const verdict = data.final_verdict || {};
+    document.getElementById('pdf-short-term').innerText = verdict.short_term || "-";
+    document.getElementById('pdf-long-term').innerText = verdict.long_term || "-";
+    document.getElementById('pdf-action-plan').innerText = verdict.action_plan || "-";
+    document.getElementById('pdf-closing-thought').innerText = verdict.closing_thought ? `"${verdict.closing_thought}"` : "";
+
+
+    // --- 3. PDF 저장 실행 ---
+    const element = document.getElementById('pdf-content');
+    const btn = document.getElementById('btn-download-pdf');
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = "⏳ 생성 중...";
+    btn.disabled = true;
+
+    const opt = {
+        margin: 0,
+        filename: `${info.symbol}_Report.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().from(element).set(opt).save().then(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+// 줄바꿈 처리 헬퍼
+
+function renderMarkdown(mdText) {
+    if (!mdText) return "데이터 로딩 중...";
+    const tempText = mdText.replace(/~/g, '@@TILDE@@');
+    let html = marked.parse(tempText);
+    html = html.replace(/@@TILDE@@/g, '~');
+    return html;
+}
+
+function initAnalysisData() {
     const summaryData = localStorage.getItem('analysis_summary');
     const conclusionData = localStorage.getItem('analysis_conclusion');
-    const logData = localStorage.getItem('analysis_log');
-    if(document.getElementById('res-summary')) document.getElementById('res-summary').innerText = summaryData || "로딩 중...";
-    if(document.getElementById('res-conclusion')) document.getElementById('res-conclusion').innerText = conclusionData || "로딩 중...";
-    if(document.getElementById('res-discussion')) document.getElementById('res-discussion').innerText = logData || "로딩 중...";
-    
+
+    if (document.getElementById('res-summary')) {
+        const el = document.getElementById('res-summary');
+        el.classList.add('markdown-body');
+        el.innerHTML = renderMarkdown(summaryData);
+    }
+
+    if (document.getElementById('res-conclusion')) {
+        const el = document.getElementById('res-conclusion');
+        el.classList.add('markdown-body');
+        el.innerHTML = renderMarkdown(conclusionData);
+    }
+}
+
+
+// ============================================================
+// 🤖 [통합] 토론 뷰어 시스템 (토글 + 탭)
+// ============================================================
+let chatLogs = [];
+let currentIndex = 0;
+
+function initDiscussionSystem() {
+    // 1. [NEW] 토글 버튼 (전체 접기/펼치기) 기능 복구
     const toggleBtn = document.getElementById('toggleDiscussionBtn');
-    const discussionContent = document.getElementById('discussionContent');
-    if (toggleBtn && discussionContent) {
+    const wrapper = document.getElementById('discussionWrapper'); // 탭+뷰어를 감싸는 div
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    if (toggleBtn && wrapper) {
         toggleBtn.addEventListener('click', () => {
-            discussionContent.classList.toggle('hidden');
-            const icon = toggleBtn.querySelector('svg');
-            icon.style.transform = discussionContent.classList.contains('hidden') ? "rotate(0deg)" : "rotate(180deg)";
+            wrapper.classList.toggle('hidden');
+            if (toggleIcon) {
+                // 화살표 회전 애니메이션
+                toggleIcon.classList.toggle('rotate-180');
+            }
         });
+    }
+
+    // 2. 데이터 로드
+    const rawHistory = localStorage.getItem('analysis_chat_history');
+    if (rawHistory) {
+        try {
+            chatLogs = JSON.parse(rawHistory);
+        } catch (e) {
+            console.error("채팅 기록 파싱 실패", e);
+            chatLogs = [];
+        }
+    }
+
+    // 3. 채팅 보기 자동 렌더링
+    if (chatLogs.length > 0) {
+        renderChatView();
+    } else {
+        const msgEl = document.getElementById('chat-list');
+        if(msgEl) msgEl.innerText = "대화 기록이 없습니다.";
+    }
+}
+
+// [모드 1] 슬라이드(카드) 렌더링
+function renderSliderLog(index) {
+    const log = chatLogs[index];
+    if (!log) return;
+
+    const speakerEl = document.getElementById('viewer-speaker');
+    const typeEl = document.getElementById('viewer-type');
+    const avatarEl = document.getElementById('viewer-avatar');
+    const msgEl = document.getElementById('viewer-message');
+    const counterEl = document.getElementById('viewer-counter');
+
+    speakerEl.innerText = log.speaker;
+    msgEl.classList.add('markdown-body');
+    msgEl.innerHTML = renderMarkdown(log.message);
+
+    const style = getAgentStyle(log.code);
+
+    avatarEl.innerHTML = style.icon;
+    avatarEl.className = style.color;
+    typeEl.innerText = style.role;
+    counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
+
+    // 버튼 상태
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    btnPrev.disabled = (index === 0);
+    btnPrev.style.opacity = index === 0 ? 0.5 : 1;
+    btnNext.disabled = (index === chatLogs.length - 1);
+    btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
+}
+
+// [모드 2] 채팅 리스트 렌더링 (아바타 상단 고정 수정)
+function renderChatView() {
+    const list = document.getElementById('chat-list');
+    list.innerHTML = "";
+
+    chatLogs.forEach(log => {
+        const style = getAgentStyle(log.code);
+        const isModerator = log.code === 'moderator';
+
+        // 1. 레이아웃 방향 결정
+        // 사회자: 왼쪽(정방향) / 전문가: 오른쪽(역방향)
+        const rowClass = isModerator ? 'flex-row' : 'flex-row-reverse';
+
+        // 2. 텍스트 정렬 결정 (말풍선 내부 정렬)
+        // 사회자: 왼쪽 정렬 / 전문가: 오른쪽 정렬
+        const colAlign = isModerator ? 'items-start' : 'items-end';
+
+        const bubbleColor = isModerator
+            ? 'bg-gray-600 text-white shadow-md'
+            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md';
+
+        // 3. Row 생성 (여기서 items-start를 줘서 아바타를 무조건 위로 올림)
+        const row = document.createElement('div');
+        row.className = `flex ${rowClass} items-start gap-3 w-full`;
+
+        // 아바타
+        const avatar = document.createElement('div');
+        avatar.className = style.color;
+        avatar.innerHTML = style.icon;
+
+        // 내용물 Wrapper (이름 + 말풍선 정렬은 colAlign 사용)
+        const content = document.createElement('div');
+        content.className = `flex flex-col ${colAlign} max-w-[80%]`;
+
+        // 이름
+        const name = document.createElement('span');
+        name.className = "text-xs text-gray-400 mb-1 font-bold";
+        name.innerText = log.speaker;
+
+        // 말풍선
+        const bubble = document.createElement('div');
+        bubble.className = `px-5 py-3 rounded-2xl text-base leading-relaxed whitespace-pre-wrap ${bubbleColor}`;
+
+        // 꼬리 방향
+        if (isModerator) bubble.style.borderTopLeftRadius = '0';
+        else bubble.style.borderTopRightRadius = '0';
+
+        bubble.classList.add('markdown-body');
+        bubble.innerHTML = renderMarkdown(log.message);
+
+        content.appendChild(name);
+        content.appendChild(bubble);
+        row.appendChild(avatar);
+        row.appendChild(content);
+        list.appendChild(row);
+    });
+}
+
+function getAgentStyle(code) {
+    switch (code) {
+        case 'chart': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                    </svg>`,
+            role: 'Technical Analyst', 
+            color: 'text-red-300',
+            border: 'border-red-500/30',
+            bg: 'bg-red-500/10'
+        };
+        case 'finance': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>`,
+            role: 'Financial Analyst', 
+            color: 'text-green-300',
+            border: 'border-green-500/30',
+            bg: 'bg-green-500/10'
+        };
+        case 'news': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                    </svg>`,
+            role: 'News & Sentiment', 
+            color: 'text-yellow-300',
+            border: 'border-yellow-500/30',
+            bg: 'bg-yellow-500/10'
+        };
+        case 'moderator': return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>`,
+            role: 'Moderator', 
+            color: 'text-gray-300',
+            border: 'border-gray-500/30',
+            bg: 'bg-gray-500/10'
+        };
+        default: return { 
+            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>`,
+            role: 'System', 
+            color: 'text-gray-300',
+            border: 'border-gray-500/30',
+            bg: 'bg-gray-500/10'
+        };
     }
 }
 
 // ============================================================
-// 코스피 차트
+// 기존 차트/시장 함수
+// ============================================================
 async function renderKospiChart() {
     const KOSPI_API_URL = 'http://127.0.0.1:8000/kospi-data';
-    
     try {
         const response = await fetch(KOSPI_API_URL);
         const data = await response.json();
-        
         if (data.error) throw new Error(data.error);
 
-        // 텍스트 정보 업데이트
         document.getElementById('kospi-price').innerText = data.price;
         const changeElem = document.getElementById('kospi-change');
         changeElem.innerText = `${data.change} (${data.diff})`;
-        
-        // 색상
-        if (data.isUp) {
-            changeElem.className = "kospi-change up";
-        } else {
-            changeElem.className = "kospi-change down";
-        }
+        changeElem.className = data.isUp ? "kospi-change up" : "kospi-change down";
 
-        // 차트 그리기
         const ctx = document.getElementById('kospiChart').getContext('2d');
-        
-        // 그라디언트
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
         const color = data.isUp ? 'rgba(74, 222, 128, ' : 'rgba(239, 68, 68, ';
         gradient.addColorStop(0, color + '0.5)');
@@ -79,69 +574,36 @@ async function renderKospiChart() {
                     backgroundColor: gradient,
                     borderWidth: 2,
                     fill: true,
-                    tension: 0.3, 
-                    pointRadius: 0,
-                    pointHoverRadius: 5
+                    tension: 0.3, pointRadius: 0, pointHoverRadius: 5
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: {
-                    x: { 
-                        grid: { display: false, drawBorder: false },
-                        ticks: { color: '#64748b', maxTicksLimit: 6 } 
-                    },
-                    y: { 
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#64748b' } 
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                }
+                scales: { x: { display: false }, y: { display: false } },
+                interaction: { intersect: false, mode: 'index' }
             }
         });
-
-    } catch (error) {
-        console.error("KOSPI Chart Error:", error);
-        document.getElementById('kospi-wrapper').innerHTML = "<p style='color:gray; text-align:center; padding:2rem;'>코스피 데이터를 불러올 수 없습니다.</p>";
-    }
+    } catch (error) { console.error("KOSPI Error:", error); }
 }
-
-// ============================================================
-// 시장 요약 렌더링
 
 async function renderRealMarketData() {
     const grid = document.getElementById('market-grid');
-    const timeElem = document.getElementById('market-time');
-    if(timeElem) timeElem.innerText = new Date().toLocaleString();
-
-    const MARKET_API_URL = 'http://127.0.0.1:8000/market-summary';
-
+    if(!grid) return;
     try {
-        const response = await fetch(MARKET_API_URL);
+        const response = await fetch('http://127.0.0.1:8000/market-summary');
         const marketData = await response.json();
-
-        grid.innerHTML = ""; 
-
+        grid.innerHTML = "";
         marketData.forEach(item => {
             const card = document.createElement('div');
             card.className = 'market-card';
-            const changeClass = item.isUp ? 'up' : 'down';
-            const changeIcon = item.isUp ? '▲' : '▼';
-
             card.innerHTML = `
                 <div class="market-name"><span>${item.icon}</span> ${item.name}</div>
                 <div class="market-price">${item.price}</div>
-                <div class="market-change ${changeClass}">${changeIcon} ${item.change}</div>
+                <div class="market-change ${item.isUp ? 'up' : 'down'}">${item.isUp ? '▲' : '▼'} ${item.change}</div>
             `;
             grid.appendChild(card);
         });
-    } catch (error) {
-        console.error("Market Grid Error:", error);
-        grid.innerHTML = `<p style="color:#94a3b8; text-align:center; width:100%;">데이터 로딩 실패 (서버 연결 확인)</p>`;
-    }
+        document.getElementById('market-time').innerText = new Date().toLocaleString();
+    } catch (error) { console.error("Market Error:", error); }
 }

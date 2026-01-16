@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initUserInput();
-    initBackButton();
     initLoadingPage();
 });
 
@@ -48,21 +47,17 @@ function initUserInput() {
     });
 }
 
-// 뒤로가기 버튼 초기화
-function initBackButton() {
-    const backBtn = document.getElementById('back-btn-container');
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            if (window.location.pathname.includes('loading.html')) {
-                if(confirm("분석을 취소하고 돌아가시겠습니까?")) {
-                    window.location.href = 'userInput.html';
-                }
-            } else {
-                window.location.href = '/';
-            }
-        });
+const textarea = document.getElementById('userQuestion');
+const form = document.getElementById('analysisForm');
+
+textarea.addEventListener('keydown', (e) => {
+    // 엔터키이고, 쉬프트키가 눌리지 않았을 때만 제출
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // 줄바꿈 방지
+        form.dispatchEvent(new Event('submit')); // 폼 제출 이벤트 발생
     }
-}
+});
+
 
 // 로딩 페이지
 function initLoadingPage() {
@@ -202,10 +197,13 @@ async function fetchAnalysisResult(question) {
 // ------------------------------------------------
 
 function saveDataAndSwitchUI(data) {
-    // 데이터 로컬 스토리지 저장
+    // 1. 텍스트 데이터 저장
     localStorage.setItem('analysis_summary', data.summary || "내용 없음");
     localStorage.setItem('analysis_conclusion', data.conclusion || "내용 없음");
-    localStorage.setItem('analysis_log', data.discussion || "내용 없음");
+
+    // [중요] discussion_log 배열을 JSON 문자열로 저장 (없으면 빈 배열)
+    const chatHistory = data.discussion_log || [];
+    localStorage.setItem('analysis_chat_history', JSON.stringify(chatHistory));
 
     // 로딩 UI 숨기기
     const loadingContent = document.getElementById('loading-content');

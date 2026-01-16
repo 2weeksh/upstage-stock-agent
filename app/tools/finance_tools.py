@@ -75,3 +75,8 @@ def _get_yahoo_with_curl(ticker: str):
     except Exception as e:
         return f"❌ 야후(yfinance) 에러: {str(e)}"
 
+
+if __name__ == "__main__":
+    # 테스트 실행
+    print(get_financial_summary("035720.KS"))  # 카카오
+    #print(get_financial_summary("000660.KS"))  # SK하이닉스
