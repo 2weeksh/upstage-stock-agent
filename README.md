@@ -1,22 +1,57 @@
-# 📈 Upstage Stock Multi-Agent Debate System
+# [StockWars] (Upstage Stock Multi-Agent Debate System)
 
-**Upstage Solar LLM**과 **LangGraph**를 활용한 지능형 가상 주식 투자 분석 플랫폼입니다. 4종의 특화 에이전트가 기술적·기본적·감성적 분석을 수행하며, 토론(Debate) 과정을 통해 최종 투자 전략을 도출합니다.
+**Upstage Solar LLM**을 활용한 지능형 가상 주식 투자 분석 플랫폼입니다. 3종의 특화 에이전트가 뉴스, 차트, 재무 분석을 수행하며, 토론(Debate) 과정을 통해 최종 투자 전략을 도출합니다.
 
----
+## 팀원 소개
 
-## 🛠 기술 스택
+| 이름 | 역할 | GitHub |
+|------|------|--------|
+| 송민서 | Frontend | [@gildong]() |
+| 우서윤 | Cloud(?) | [@younghee]() |
+| 이주혁 | AI Engineer | [@2weeksh](https://github.com/2weeksh) |
+| 이현종 | Backend | [@younghee]() |
+| 정성우 | Engineer | [@younghee]() |
+
+## 프로젝트 개요
+
+프로젝트의 목적과 배경을 설명합니다.
+
+### 주요 기능
+
+- 기능 1: 설명
+- 기능 2: 설명
+- 기능 3: 설명
+
+## 기술 스택
+
+### Backend
+- Python 3.11+
+- FastAPI
+
+### Frontend
+- HTML
+- JS / CSS
+
+### AI/ML
+- Upstage Solar LLM
+- LangChain
+
+### Infrastructure ???
+- Docker
+- ...
+
+
 
 ### **AI & Orchestration**
 * **LLM**: Upstage Solar LLM (추론 및 대화 핵심 모델)
-* **Framework**: LangChain & LangGraph (멀티 에이전트 워크플로우 및 상태 관리)
-* **Search**: Tavily / DuckDuckGo API (실시간 뉴스 검색)
+* **Framework**: LangChain (멀티 에이전트 워크플로우 및 상태 관리)
+* **Search**: Tavily (실시간 뉴스 검색)
 
 ### **Data & Backend**
 * **Finance Data**: yfinance (실시간 주가 및 재무제표 데이터 확보)
 * **Technical Indicators**: Pandas, TA-Lib (이동평균선, RSI, MACD 계산)
 * **Documentation**: Swagger UI (FastAPI 기반 API 문서화)
 
-<<<<<<< HEAD
 ### **Infrastructure & DevOps**
 * **Containerization**: Docker (멀티 스테이지 빌드)
 * **Orchestration**: Kubernetes (K8s)
