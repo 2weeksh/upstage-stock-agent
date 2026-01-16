@@ -3,7 +3,7 @@
 **Upstage Solar LLM**을 활용한 지능형 가상 주식 투자 분석 플랫폼입니다. 3종의 특화 에이전트가 뉴스, 차트, 재무 분석을 수행하며, 토론(Debate) 과정을 통해 최종 투자 전략을 도출합니다.
 
 ## 사이트 링크
-[](http://stockwars.duckdns.org:30080/)
+![](http://stockwars.duckdns.org:30080/)
 
 ## 팀원 소개
 
@@ -130,7 +130,7 @@ upstage-stock-agent/
 
 본 프로젝트는 각 분야에 특화된 에이전트들이 독립적으로 분석하고, 상호 검증(Debate) 과정을 통해 객관적인 투자 전략을 도출하도록 설계되었습니다.
 
-[](https://github.com/user-attachments/assets/2eba4d5b-3816-4440-ace3-3ee77d132223)
+![단락 텍스트 (2)](https://github.com/user-attachments/assets/2eba4d5b-3816-4440-ace3-3ee77d132223)
 
 
 ### 1. 에이전트 역할 (Roles)
