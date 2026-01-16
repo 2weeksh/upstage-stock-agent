@@ -6,11 +6,11 @@
 
 | 이름 | 역할 | GitHub |
 |------|------|--------|
-| 송민서 | Frontend | [@gildong]() |
-| 우서윤 | Cloud(?) | [@younghee]() |
+| 송민서 | Frontend | [@thdalseo](https://github.com/thdalseo) |
+| 우서윤 | DevOps | [@gaejarae](https://github.com/gaejarae) |
 | 이주혁 | AI Engineer | [@2weeksh](https://github.com/2weeksh) |
-| 이현종 | Backend | [@younghee]() |
-| 정성우 | Engineer | [@younghee]() |
+| 이현종 | Backend | [@leehyunjong12](https://github.com/leehyunjong12) |
+| 정성우 | Engineer | [@Jeongseongwoo08](https://github.com/Jeongseongwoo08) |
 
 ## 프로젝트 개요
 
@@ -36,37 +36,15 @@
 - Upstage Solar LLM
 - LangChain
 
-### Infrastructure ???
+### Infrastructure 
 - Docker
-- ...
+- Kubernetes
+- GitHub Actions
+- Nginx Ingress Controller
 
-
-
-### **AI & Orchestration**
-* **LLM**: Upstage Solar LLM (추론 및 대화 핵심 모델)
-* **Framework**: LangChain (멀티 에이전트 워크플로우 및 상태 관리)
-* **Search**: Tavily (실시간 뉴스 검색)
-
-### **Data & Backend**
-* **Finance Data**: yfinance (실시간 주가 및 재무제표 데이터 확보)
-* **Technical Indicators**: Pandas, TA-Lib (이동평균선, RSI, MACD 계산)
-* **Documentation**: Swagger UI (FastAPI 기반 API 문서화)
-
-### **Infrastructure & DevOps**
-* **Containerization**: Docker (멀티 스테이지 빌드)
-* **Orchestration**: Kubernetes (K8s)
-* **CI/CD**: GitHub Actions
-* **Vector DB**: ChromaDB
-* **Web Server**: Nginx Ingress Controller
-
-=======
->>>>>>> origin/develop
-### **Environment & Tools**
-* **Language**: Python 3.11+
-* **Package Manager**: **uv** (초고속 패키지 및 가상환경 관리)
-* **Environment**: python-dotenv (API Key 보안 관리)
-
----
+## Data
+- Finance/Chart Data: yfinance
+- News Date: Tavily
 
 ## 📂 프로젝트 구조
 
@@ -76,7 +54,6 @@
 upstage-stock-agent/
 ├── .env                # API Key 관리 (Upstage, Tavily, OpenAI 등)
 ├── .gitignore          # Git 제외 파일 (.env, .venv, __pycache__ 등)
-<<<<<<< HEAD
 ├── .dockerignore       # Docker 빌드 제외 파일
 ├── pyproject.toml      # uv 패키지 및 프로젝트 의존성 관리
 ├── Dockerfile          # 멀티 스테이지 Docker 이미지 (Backend, Frontend)
@@ -92,6 +69,10 @@ upstage-stock-agent/
 │   │   ├── news_agent.py      # 뉴스/감성 분석 에이전트
 │   │   ├── finance_agent.py   # 재무제표/펀더멘탈 분석 에이전트
 │   │   ├── chart_agent.py     # 차트/기술적 분석 에이전트
+│   │   ├── judge_agnet.py     # 최종 투자 판단 에이전트 
+│   │   ├── moderator_agnet.py # 토론 사회자 에이전트
+│   │   ├── report_agent.py    # 토론 리포트 작성 에이전트
+│   │   ├── ticker_agent.py    # 종목 티커 매팅 에이전트
 │   │   └── moderator_agent.py # 사회자 및 최종 전략가
 │   │
 │   ├── tools/          # 에이전트가 데이터 수집 시 사용하는 도구들
@@ -108,11 +89,15 @@ upstage-stock-agent/
 │   ├── models/         # 데이터 스키마 (Pydantic)
 │   ├── repository/     # 외부 API 클라이언트 및 DB 접근
 │   ├── service/        # 비즈니스 로직
+│   │   └──stock_service.py #
 │   └── utils/          # 공통 유틸리티
 │
 ├── infra/              # 인프라 설정 파일
 │   ├── frontend/       # Streamlit UI 코드
-│   │   └── ui.py
+│   │   ├── css/
+│   │   ├── html/
+│   │   ├── img/
+│   │   ├── js/
 │   └── k8s/            # Kubernetes 배포 매니페스트
 │       └── application/
 │           ├── 01-namespace.yaml
@@ -130,251 +115,113 @@ upstage-stock-agent/
 └── stop_docker.sh      # Docker 컨테이너 중지 스크립트
 ```
 
----
-
-=======
-├── pyproject.toml      # uv 패키지 및 프로젝트 의존성 관리
-├── main.py             # 시스템 실행 진입점 (FastAPI 또는 CLI 실행)
-└── app/                # 실제 소스 코드 디렉토리
-    ├── agents/         # 각 에이전트의 페르소나 및 프롬프트 로직 정의
-    │   ├── __init__.py
-    │   ├── news_agent.py      # 뉴스/감성 분석 에이전트
-    │   ├── finance_agent.py   # 재무제표/펀더멘탈 분석 에이전트
-    │   ├── chart_agent.py     # 차트/기술적 분석 에이전트
-    │   └── moderator_agent.py # 사회자 및 최종 전략가 (주혁님 설계안 반영)
-    ├── tools/          # 에이전트가 데이터 수집 시 사용하는 도구들
-    │   ├── __init__.py
-    │   ├── search_tools.py    # 뉴스 검색 (Tavily/DuckDuckGo)
-    │   ├── finance_tools.py   # 주가 및 재무 정보 수집 (yfinance)
-    │   └── chart_tools.py     # 기술적 지표 계산 (TA-Lib/Pandas)
-    ├── graph/          # LangGraph를 이용한 토론 흐름 제어
-    │   ├── __init__.py
-    │   ├── state.py           # 에이전트 간 공유할 상태(State) 정의
-    │   └── workflow.py        # 토론 순서 및 로직 구성 (노드와 엣지)
-    └── utils/          # 공통 유틸리티
-        ├── __init__.py
-        └── llm.py             # LLM 모델(Solar 등) 초기화 및 설정
-```
-
->>>>>>> origin/develop
-## 🧠 프로젝트 아키텍처: 4-Agent 토론 시스템
+## 아키텍처
 
 본 프로젝트는 각 분야에 특화된 에이전트들이 독립적으로 분석하고, 상호 검증(Debate) 과정을 통해 객관적인 투자 전략을 도출하도록 설계되었습니다.
 
-### **1. 에이전트 역할 (Roles)**
+[사진 넣기]
+
+
+### 1. 에이전트 역할 (Roles)
 
 | 에이전트 | 역할 요약 | 핵심 분석 범위 |
 | :--- | :--- | :--- |
 | **차트 분석가** | 시장 심리 해석 | 이평선, RSI, MACD, 거래량 기반 단기 심리 분석 |
 | **재무 분석가** | 기업 본질 체력 평가 | 매출 성장, 수익성, 부채비율 등 중장기 안정성 평가 |
 | **뉴스 감성 분석가** | 외부 리스크 감지 | 실시간 뉴스 감성 분석, 규제 및 리스크 탐지 |
-| **사회자/전략가** | **최종 의사결정** | 토론 통제, 분석 일관성 검증 및 최종 투자 판단 |
+| **사회자/전략가** | **최종 의사결정** | 토론 통제(다음 발언자 선택), 분석 일관성 검증 및 최종 투자 판단 |
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> origin/develop
-### **2. 5단계 분석 프로세스**
+### 2. 5단계 분석 프로세스
 
 1. **개별 분석**: 각 분석 에이전트가 독립적으로 데이터를 수집하고 핵심 근거와 리스크를 도출합니다.
 2. **반론 중심 토론**: 사회자의 주도하에 서로의 주장 중 취약한 지점을 지적하고 논리적 허점을 찾는 상호 검증을 진행합니다.
 3. **사회자 판정**: 각 주장의 타당성과 반론 대응력을 평가하여 핵심 쟁점을 정리합니다.
-4. **최종 투자 판단**: 전략가가 토론 결과를 바탕으로 단기/중기 관점을 조정하여 최종 투자 등급(`BUY/HOLD/SELL`)을 명시합니다.
+4. **최종 투자 판단**: 전략가가 토론 결과를 바탕으로 단기/중기 관점을 조정하여 최종 투자 점수(`0.0~10.0`)을 명시합니다.
 5. **설명 가능한 결과 제공**: 사용자에게 최종 판단 사유와 주의해야 할 리스크 요약을 함께 제공합니다.
 
 ---
 
-## ⚙️ 설치 및 실행 방법 (Windows)
+## 설치 및 실행 방법
 
-### **사전 준비 체크**
+### 요구사항
+- Python 3.11 이상
 
-배포 전 환경을 자동으로 체크하려면:
-```cmd
-check_setup.bat
+### 1. 환경 변수 설정
+- `.env.example`을 복사하여 `.env` 생성
+- `.env` 파일에서 API 키를 실제 값으로 변경
+
+```env
+UPSTAGE_API_KEY=up_xxxxxxxxxxxxxxxxx
+SERPER_API_KEY=xxxxxxxxxxxxxxxxx
 ```
 
-<<<<<<< HEAD
-### **사전 준비**
-
-1. **API 키 발급**
-   - [Upstage Console](https://console.upstage.ai/)에서 API 키 발급
-   - (Optional) [Serper.dev](https://serper.dev/)에서 검색 API 키 발급
-
-2. **환경 변수 설정**
-   - `.env.example`을 복사하여 `.env` 생성
-   - `.env` 파일에서 API 키를 실제 값으로 변경
-   ```env
-   UPSTAGE_API_KEY=up_xxxxxxxxxxxxxxxxx
-   SERPER_API_KEY=xxxxxxxxxxxxxxxxx
-   ```
-
-### **방법 1: 로컬 환경 실행 (Windows)**
-
-```cmd
-# 실행
-start.bat
-
-# 또는 직접 실행
-python -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload
-```
-
-**접속**:
-- 메인 페이지: http://localhost:8001
-- Backend API: http://localhost:8001/api/v1/chat
-- API 문서: http://localhost:8001/docs
-- Health Check: http://localhost:8001/health
-- 시장 데이터: http://localhost:8001/market-summary
-- 코스피 데이터: http://localhost:8001/kospi-data
-
-### **방법 2: Docker 환경 실행 (Windows)**
-
-```cmd
-# 실행 (Docker Desktop 실행 필요)
-start_docker.bat
-
-# 종료
-stop_docker.bat
-
-# 또는 docker-compose 직접 사용
-docker-compose up -d --build
-docker-compose down
-```
-
-**접속**:
-- Backend API: http://localhost:8001
-- API 문서: http://localhost:8001/docs
-- Frontend: http://localhost:8002 (Streamlit - 구현 예정)
-- ChromaDB: http://localhost:8000
-
-**로그 확인**:
-```cmd
-docker-compose logs -f backend
-docker-compose logs -f frontend
-```
-
-### **방법 3: Kubernetes 배포**
-
-#### 배포 전 설정
-
-1. **GitHub Secrets 설정**
-   - Repository → Settings → Secrets and variables → Actions
-   - 다음 Secrets 추가:
-     - `EC2_HOST`: EC2 서버 IP
-     - `EC2_SSH_KEY`: EC2 SSH private key
-
-2. **Kubernetes Manifest 수정**
-   ```bash
-   # 04-backend.yaml, 05-frontend.yaml
-   image: ghcr.io/YOUR_GITHUB_USERNAME/stock-agent-backend:latest
-   # → YOUR_GITHUB_USERNAME을 실제 GitHub 계정명으로 변경
-   
-   # 06-ingress.yaml
-   host: YOUR_DUCKDNS_DOMAIN.duckdns.org
-   # → YOUR_DUCKDNS_DOMAIN을 실제 DuckDNS 도메인으로 변경
-   ```
-
-3. **EC2 서버 준비**
-   ```bash
-   # EC2에 접속
-   ssh -i your-key.pem ubuntu@your-ec2-ip
-   
-   # 프로젝트 클론
-   mkdir -p ~/deploy
-   cd ~/deploy
-   git clone https://github.com/YOUR_USERNAME/upstage-stock-agent-main.git
-   cd upstage-stock-agent-main
-   
-   # 환경 변수 설정
-   cp .env.example .env
-   vi .env  # API 키 입력
-   
-   # Secret 생성
-   kubectl create secret generic app-secret \
-     --from-env-file=.env \
-     -n stock-agent
-   
-   # 매니페스트 적용
-   cd infra/k8s/application
-   kubectl apply -f .
-   ```
-
-4. **자동 배포**
-   ```bash
-   # main 브랜치에 Push하면 자동으로 빌드/배포됩니다
-   git add .
-   git commit -m "Update application"
-   git push origin main
-   ```
-
-**접속**:
-- Frontend: http://your-duckdns-domain.duckdns.org
-- Backend API: http://your-duckdns-domain.duckdns.org/agent
-
----
-
-## 📊 결과물 예시 (Explainable Output)
-
-=======
-### **1. 환경 변수 설정**
-루트 디렉토리에 `.env` 파일을 생성하고 필요한 API 키를 입력합니다. (보안을 위해 `.gitignore`에 반드시 등록하세요.)
-
-```
-UPSTAGE_API_KEY=your_solar_api_key
-TAVILY_API_KEY=your_tavily_key
-```
-
-### **2. 의존성 설치 (uv)**
+### 2. 의존성 설치 (uv)
 본 프로젝트는 초고속 패키지 관리자 uv를 사용합니다.
 ```
 uv sync
 ```
 
-### **3. 시스템 실행** 
-```
-# 삼성전자(005930) 종목 분석 실행 예시
-uv run main.py --symbol 005930
-```
+## 결과물 예시 (Explainable Output)
 
-## 📊 결과물 예시 (Explainable Output)
->>>>>>> origin/develop
 에이전트 토론 과정을 거쳐 사용자에게 전달되는 최종 리포트 예시입니다.
 
 ```
-최종 투자 판단: HOLD
-- 판단 사유: "단기 기술적 반등 신호는 존재하나, 최근 규제 뉴스 및 재무 건전성 리스크가 충분히 해소되지 않아 관망 전략이 합리적임."
-- 핵심 리스크: "중기 추세 하락 가능성 및 외부 정책 변화 주의"
+### 1. 최종 등급
+| 최종 등급 기준표 |
+|----------------|
+| **8.0 ~ 10.0** | [강력 매수] - 압도적 호재와 상승 모멘텀 |
+| **6.0 ~ 7.9**  | [매수] - 전반적 우상향 기대 및 긍정적 지표 |
+| **4.0 ~ 5.9**  | **[중립]** - 방향성 불분명, 관망 필요 |
+| **2.0 ~ 3.9**  | [매도] - 하방 압력 존재 및 리스크 관리 필요 |
+| **0.0 ~ 1.9**  | [강력 매도] - 심각한 악재 또는 하락 추세 뚜렷 |
+
+**[최종 점수]**
+- **등급**: 중립
+- **점수**: 5.0
+
+---
+
+### 2. 등급 선정 근거
+- **긍정적 요인**:
+  - ...
+- **부정적 요인**:
+  - ...
+- **종합**: ...
+
+---
+
+### 3. 핵심 승리 논리 3가지
+**[승리 논리 1]**
+- ...
+**[승리 논리 2]**
+- ...
+**[승리 논리 3]**
+- ...
+
+---
+
+### 4. 주요 리스크
+**[주요 리스크 1]**
+- **규제 리스크**: ...
+**[주요 리스크 2]**
+- **고평가 논란**: ...
+**[주요 리스크 3]**
+- **경쟁사 압박**: ...
+
+---
+
+### 5. 구체적 트레이딩 시나리오
+- **적정 진입 가격대**: ...
+  - ...
+- **1차 목표가**: ...
+  - ...
+- **2차 목표가**: ...
+  - ...
+- **손절가 (Stop Loss)**: ...
+  - ...
 ```
 
-<<<<<<< HEAD
----
-
-## 🚀 개발 로드맵
-
-### Phase 1: Infrastructure Setup ✅
-- [x] Docker 환경 구축
-- [x] Kubernetes Manifest 작성
-- [x] CI/CD 파이프라인 구축
-
-### Phase 2: Agent Implementation (진행 중)
-- [ ] Chart Agent 구현
-- [ ] Finance Agent 구현
-- [ ] News Agent 구현
-- [ ] Moderator Agent 구현
-
-### Phase 3: Frontend Development (대기 중)
-- [ ] Streamlit UI 구현
-- [ ] 실시간 스트리밍 채팅
-- [ ] 토론 과정 시각화
-
-### Phase 4: Integration & Testing
-- [ ] Agent 통합 테스트
-- [ ] End-to-End 테스트
-- [ ] 성능 최적화
-
----
-
-## ⚠️ 주의사항
+## 주의사항
 
 - **API 호출 제한**: 실시간 데이터 수집 시 API 호출 횟수 제한(Rate Limit)에 유의하세요.
 - **보안**: `.env` 파일은 절대 GitHub에 올리지 마십시오.
@@ -382,25 +229,13 @@ uv run main.py --symbol 005930
 
 ---
 
-## 📝 라이선스
+## 라이센스
 
-이 프로젝트는 교육 목적으로 제작되었습니다.
-
----
-
-## 👥 기여자
-
-- DevOps & Infrastructure: [Your Name]
-- Agent Development: [Team Member 1]
-- Frontend Development: [Team Member 2]
+MIT License
 
 ---
 
-## 📞 문의
+## 문의
 
 프로젝트 관련 문의사항은 Issue를 통해 남겨주세요.
-=======
-## ⚠️ 주의사항
-- API 호출 제한: 실시간 데이터 수집 시 API 호출 횟수 제한(Rate Limit)에 유의하세요.
-- 보안: .env 파일은 절대 깃허브에 올리지 마십시오.
->>>>>>> origin/develop
+
