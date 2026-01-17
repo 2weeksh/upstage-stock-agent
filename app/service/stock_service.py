@@ -74,7 +74,7 @@ class StockService:
                             if attempt < max_retries - 1:
                                 wait_time = 5 * (attempt + 1)
                                 print(
-                                    f"⚠️ API 호출 제한(429) 감지. {wait_time}초 대기 후 재시도합니다... ({attempt + 1}/{max_retries})")
+                                    f"⚠️ API 호출 제한(429) 감지. {wait_time}초 대기 후 재시도합니다. ({attempt + 1}/{max_retries})")
                                 await asyncio.sleep(wait_time)
                                 continue
                         raise e
@@ -82,7 +82,7 @@ class StockService:
             # ------------------------------------------------------------------
             # [Step 0] 데이터 수집
             # ------------------------------------------------------------------
-            yield create_msg("system", "status", f"시스템이 '{user_input}' 에서 종목을 식별 중입니다...")
+            yield create_msg("system", "status", f"시스템이 '{user_input}' 에서 종목을 식별 중입니다.")
 
             refined_name = extract_company_name(user_input)
             if refined_name == "NONE":
@@ -91,7 +91,7 @@ class StockService:
 
             ticker = get_clean_ticker(refined_name)
             yield create_msg("system", "status", f"대상 종목: {refined_name} ({ticker})")
-            yield create_msg("system", "status", "3대 데이터(재무, 뉴스, 차트)를 수집 중입니다...")
+            yield create_msg("system", "status", "3대 데이터(재무, 뉴스, 차트)를 수집 중입니다.")
 
             f_task = loop.run_in_executor(None, get_financial_summary, ticker)
             n_task = loop.run_in_executor(None, get_stock_news, ticker, refined_name)
@@ -160,7 +160,7 @@ class StockService:
 
             for turn in range(max_turns):
                 turn_count = turn + 1
-                yield create_msg("system", "status", f"상호 토론 {turn_count}/{max_turns} 라운드...")
+                yield create_msg("system", "status", f"상호 토론 {turn_count}/{max_turns} 라운드")
 
                 # [추가 부분] 7라운드 이상 시 사회자의 Temperature를 낮춰 수렴 유도
                 if turn_count >= 7:
@@ -224,7 +224,7 @@ class StockService:
 
             for role_name in ["Chart", "News", "Finance"]:
                 agent = agent_map[role_name]
-                yield create_msg("system", "status", f"{agent['name']} 최후 변론 중...")
+                yield create_msg("system", "status", f"{agent['name']} 최후 변론 중")
 
                 closing_context_prompt = f"""
                 {current_context}
@@ -245,7 +245,7 @@ class StockService:
                 await asyncio.sleep(2)
 
 
-            yield create_msg("system", "status", "사회자가 토론을 요약 중입니다...")
+            yield create_msg("system", "status", "사회자가 토론을 요약 중입니다.")
             current_context = self._format_history_for_llm(discussion_log)
             summary_text = await run_with_retry(self.moderator_agent.summarize_debate, refined_name, current_context)
             yield create_msg("moderator", "debate", summary_text)
@@ -261,11 +261,11 @@ class StockService:
             # [Step 5, 6] 요약/판결/리포트 (여기는 discussion_log에 안 넣음)
             # ------------------------------------------------------------------
 
-            yield create_msg("system", "status", "전략가가 최종 판결을 내리고 있습니다...")
+            yield create_msg("system", "status", "전략가가 최종 판결을 내리고 있습니다.")
             # final_context에는 이제 사회자의 요약까지 포함되어 있습니다.
             final_decision = await run_with_retry(self.judge_agent.adjudicate, refined_name, final_context)
 
-            yield create_msg("system", "status", "최종 리포트를 생성 중입니다...")
+            yield create_msg("system", "status", "최종 리포트를 생성 중입니다.")
             insight_report = await run_with_retry(self.report_agent.generate_report, refined_name, ticker,
                                                   final_context)
 
