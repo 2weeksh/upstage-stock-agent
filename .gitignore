@@ -209,6 +209,12 @@ __marimo__/
 
 #데이터베이스
 users.db
+*.db
+
+# SQLite 임시/저널/백업 파일
+*.db-journal
+*.db-wal
+*.db-shm
 
 # 캐시
 tickers_cache.pkl
