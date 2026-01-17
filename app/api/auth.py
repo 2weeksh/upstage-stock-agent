@@ -5,9 +5,12 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
 from app.utils.security import get_password_hash, verify_password, create_access_token
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from app.utils.security import SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 # [수정 1] 이메일(email) 필드 삭제
 class UserSignup(BaseModel):
@@ -21,6 +24,25 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
+# [중요] 토큰 유효성 검사 및 유저 조회 함수
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="자격 증명을 확인할 수 없습니다.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(User).filter(User.username == username).first()
+    if user is None:
+        raise credentials_exception
+    return user
 
 # ... (중복 확인 API들은 그대로 두세요) ...
 # app/api/auth.py 의 check_username, check_nickname 수정

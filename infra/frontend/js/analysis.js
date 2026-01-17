@@ -125,6 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
         userQueryElement.innerText = localStorage.getItem('userQuestion') || "질문 없음";
     }
 
+    // ============================================================
+    // ★ [히스토리 모드 확인]
+    // ============================================================
+    const historyMode = localStorage.getItem('history_mode');
+    if (historyMode === 'true') {
+        console.log("히스토리 다시보기 모드 진입");
+        // 다시보기 모드에서는 자동 저장을 하지 않고, 저장된 데이터만 보여줍니다.
+        // 데이터 복원 로직은 initAnalysisData()와 initDiscussionSystem() 내부에서 처리됨
+    }
+
     // 2. 분석 데이터 및 뷰어 초기화
     initAnalysisData();
     initDiscussionSystem();
@@ -132,6 +142,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 차트 및 시장 요약
     renderKospiChart();
     renderRealMarketData();
+
+    // ============================================================
+    // ★ [핵심 수정] 라이브 분석 결과 자동 저장 로직 추가
+    // ============================================================
+    // 히스토리 모드가 아니고, 분석 결과(요약)가 존재할 때만 저장 시도
+    const hasSummary = localStorage.getItem('analysis_summary');
+    const currentQuestion = localStorage.getItem('userQuestion');
+
+    // 중복 저장 방지: 세션 스토리지에 마지막으로 저장한 질문을 기록해둠
+    const lastSavedQuestion = sessionStorage.getItem('last_saved_question');
+
+    if (historyMode !== 'true' && hasSummary && currentQuestion) {
+        if (currentQuestion !== lastSavedQuestion) {
+            console.log("새로운 분석 결과 감지 -> DB 저장 시도");
+            window.saveAnalysisToDB().then(() => {
+                // 저장 성공 여부와 관계없이 시도했음을 표시하여 무한 루프 방지
+                sessionStorage.setItem('last_saved_question', currentQuestion);
+            });
+        } else {
+            console.log("이미 저장된 분석 결과입니다. (저장 건너뜀)");
+        }
+    }
 
     // PDF 다운로드 버튼 이벤트 연결
     const pdfBtn = document.getElementById('btn-download-pdf');
@@ -377,14 +409,16 @@ function initDiscussionSystem() {
         });
     }
 
-    // 2. 데이터 로드
-    const rawHistory = localStorage.getItem('analysis_chat_history');
-    if (rawHistory) {
-        try {
-            chatLogs = JSON.parse(rawHistory);
-        } catch (e) {
-            console.error("채팅 기록 파싱 실패", e);
-            chatLogs = [];
+    // 데이터 로드
+    if (!chatLogs.length) {
+        const rawHistory = localStorage.getItem('analysis_chat_history');
+        if (rawHistory) {
+            try {
+                chatLogs = JSON.parse(rawHistory);
+            } catch (e) {
+                console.error("채팅 기록 파싱 실패", e);
+                chatLogs = [];
+            }
         }
     }
 
@@ -408,30 +442,38 @@ function renderSliderLog(index) {
     const msgEl = document.getElementById('viewer-message');
     const counterEl = document.getElementById('viewer-counter');
 
-    speakerEl.innerText = log.speaker;
-    msgEl.classList.add('markdown-body');
-    msgEl.innerHTML = renderMarkdown(log.message);
+    if(speakerEl) speakerEl.innerText = log.speaker;
+    if(msgEl) {
+        msgEl.classList.add('markdown-body');
+        msgEl.innerHTML = renderMarkdown(log.message);
+    }
 
-    const style = getAgentStyle(log.code);
+    if(avatarEl) {
+        const style = getAgentStyle(log.code);
+        avatarEl.innerHTML = style.icon;
+        avatarEl.className = style.color + " w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg border-2 border-gray-500";
+        if(typeEl) typeEl.innerText = style.role;
+    }
 
-    avatarEl.innerHTML = style.icon;
-    avatarEl.className = style.color;
-    typeEl.innerText = style.role;
-    counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
+    if(counterEl) counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
 
-    // 버튼 상태
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
 
-    btnPrev.disabled = (index === 0);
-    btnPrev.style.opacity = index === 0 ? 0.5 : 1;
-    btnNext.disabled = (index === chatLogs.length - 1);
-    btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
+    if(btnPrev) {
+        btnPrev.disabled = (index === 0);
+        btnPrev.style.opacity = index === 0 ? 0.5 : 1;
+    }
+    if(btnNext) {
+        btnNext.disabled = (index === chatLogs.length - 1);
+        btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
+    }
 }
 
-// [모드 2] 채팅 리스트 렌더링 (아바타 상단 고정 수정)
+// 채팅 리스트 렌더링
 function renderChatView() {
     const list = document.getElementById('chat-list');
+    if(!list) return;
     list.innerHTML = "";
 
     chatLogs.forEach(log => {
@@ -607,3 +649,38 @@ async function renderRealMarketData() {
         document.getElementById('market-time').innerText = new Date().toLocaleString();
     } catch (error) { console.error("Market Error:", error); }
 }
+
+// ============================================================
+// ★ [저장 함수] DB 저장 로직 (필수)
+// ============================================================
+window.saveAnalysisToDB = async function() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        console.log("비로그인 상태 -> 저장 안 함");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/history/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                question: localStorage.getItem('userQuestion') || "",
+                summary: localStorage.getItem('analysis_summary') || "",
+                conclusion: localStorage.getItem('analysis_conclusion') || "",
+                chat_logs: localStorage.getItem('analysis_chat_history') || "[]"
+            })
+        });
+
+        if (response.ok) {
+            console.log("✅ 히스토리 DB 저장 성공!");
+        } else {
+            console.error("❌ 저장 실패:", await response.text());
+        }
+    } catch (e) {
+        console.error("DB 저장 중 통신 에러:", e);
+    }
+};
