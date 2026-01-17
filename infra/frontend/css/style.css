@@ -30,6 +30,7 @@ body, html {
     width: 100%;
     height: 100%;
     overflow: hidden; 
+    background-color: #0c0c0c;
 }
 
 /* 전체화면 스크롤바 디자인 */
@@ -38,39 +39,38 @@ body, html {
 }
 
 ::-webkit-scrollbar-track {
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%);
+    background: linear-gradient(180deg, rgba(24, 24, 24, 0.9) 0%, rgba(37, 37, 37, 0.7) 100%);
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.6) 0%, rgba(96, 165, 250, 0.4) 100%);
+    background: linear-gradient(180deg, rgba(128, 128, 128, 0.7) 0%, rgba(96, 96, 96, 0.5) 100%);
     border-radius: 6px;
-    border: 2px solid rgba(15, 23, 42, 0.8);
+    border: 2px solid rgba(24, 24, 24, 0.8);
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 10px rgba(128, 128, 128, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.8) 0%, rgba(96, 165, 250, 0.6) 100%);
-    border-color: rgba(59, 130, 246, 0.3);
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(180deg, rgba(160, 160, 160, 0.9) 0%, rgba(128, 128, 128, 0.7) 100%);
+    border-color: rgba(160, 160, 160, 0.3);
+    box-shadow: 0 0 15px rgba(160, 160, 160, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: linear-gradient(180deg, rgba(59, 130, 246, 1) 0%, rgba(96, 165, 250, 0.8) 100%);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
+    background: linear-gradient(180deg, rgba(192, 192, 192, 1) 0%, rgba(160, 160, 160, 0.9) 100%);
+    box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
 }
 
 /* Firefox 스크롤바 디자인 */
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(59, 130, 246, 0.6) rgba(15, 23, 42, 0.8);
+    scrollbar-color: rgba(128, 128, 128, 0.7) rgba(24, 24, 24, 0.8);
 }
 
 .page-main {
-    background-color: #020617;
-    color: white;
+    background-color: #0c0c0c;
     width: 100%;
     height: 100vh; 
     display: flex;
@@ -129,12 +129,38 @@ body, html {
     margin-right: auto;
 }
 
+/* 스크롤 허용 */
+body, html, .page-main {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh;
+}
+
+/*start 페이지*/
+.landing-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.badge {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
 /* 메인 타이틀 */
 .t-main {
     font-family: "Do Hyeon", sans-serif;
     font-weight: 400;
     font-style: normal;
-    background: linear-gradient(to right, #60a5fa, #c75b5a);
+    background: linear-gradient(to right, #F9FAFB, #60A5FA);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 1.5rem;
@@ -150,22 +176,22 @@ body, html {
 .t-sub {
     font-size: 2rem;
     font-weight: 700;
-    color: #60a5fa;
+    color: #F9FAFB;
     margin-bottom: 0.5rem;
 }
 
 .desc {
-    color: #ffffff;
-    font-weight: 300;
+    color: #B0B8C1;
+    font-weight: 400;
     line-height: 1.6;
 }
 
 /* 박스, 버튼, 입력창 */
 .box {
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(37, 37, 37, 0.8);
     padding: 2rem;
     border-radius: 1.5rem;
-    border: 1px solid #1e293b;
+    border: 1px solid #252525;
     backdrop-filter: blur(10px);
     max-width: 32rem;
     width: 100%;
@@ -176,18 +202,18 @@ body, html {
     display: block;
     text-align: left;
     font-size: 0.875rem;
-    color: #cbd5e1;
+    color: #B0B8C1;
     margin-bottom: 0.6rem;
 }
 
 .input {
     width: 100%;
     height: 180px;
-    background: #0f172a;
-    border: 1px solid #334155;
+    background: #252525;
+    border: 1px solid #2D3748;
     border-radius: 1rem;
     padding: 1.25rem;
-    color: white;
+    color: #F9FAFB;
     outline: none;
     font-size: 1.1rem;
     resize: none;
@@ -195,18 +221,18 @@ body, html {
 }
 
 .input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    border-color: #60A5FA;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.2);
 }
 
 .badge {
     display: inline-block;
     padding: 0.25rem 1rem;
     margin-bottom: 1.5rem;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    border: 1px solid #252525;
     border-radius: 999px;
-    background: rgba(59, 130, 246, 0.1);
-    color: #60a5fa;
+    background: #0c0c0c;
+    color: #F9FAFB;
     font-size: 0.875rem;
 }
 
@@ -218,9 +244,9 @@ body, html {
     width: 100%;
     padding: 1rem;
     
-    background: rgba(59, 130, 246, 0.2); 
-    border: 1px solid rgba(59, 130, 246, 0.5);
-    color: #60a5fa;
+    background: transparent; 
+    border: 1px solid #60A5FA;
+    color: #F9FAFB;
     
     border-radius: 999px; 
     font-weight: 700; 
@@ -232,18 +258,17 @@ body, html {
 }
 
 .btn:hover { 
-    background: #3b82f6; 
+    background: #60A5FA; 
     color: white; 
-    border-color: #3b82f6;
+    border-color: #60A5FA;
     transform: translateY(-2px); 
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
 }
 
 .btn-w { width: auto; padding: 1rem 2.5rem; }
 
 /* 분석 중지 버튼 (빨간색) */
 .btn-stop {
-    background: rgba(239, 68, 68, 0.15); 
     color: #ef4444; 
     border: 1px solid rgba(239, 68, 68, 0.4);
     width: auto; 
@@ -253,16 +278,16 @@ body, html {
 .btn-stop:hover {
     background: rgba(239, 68, 68, 0.8); 
     color: white; 
-    border-color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.8) !important;
     box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
 }
 
 /* 결과 확인 버튼 */
 .btn-result {
     display: inline-flex; align-items: center; justify-content: center;
-    background: rgba(59, 130, 246, 0.2); 
-    border: 1px solid rgba(59, 130, 246, 0.5);
-    color: #60a5fa;
+    background: transparent; 
+    border: 1px solid #60A5FA;
+    color: #F9FAFB;
     width: auto; 
     padding: 0.8rem 2rem;
     font-weight: 700;
@@ -273,9 +298,9 @@ body, html {
     backdrop-filter: blur(4px);
 }
 .btn-result:hover {
-    background: #3b82f6;
+    background: #60A5FA;
     color: white;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
     transform: translateY(-2px);
 }
 
@@ -303,17 +328,17 @@ body, html {
 }
 
 .loading-left {
-    flex: 1; min-width: 300px; display: flex; flex-direction: column;
+    flex: 1; min-width: 250px; display: flex; flex-direction: column;
     justify-content: center; min-height: 200px;
 }
 
 .user-question-text {
-    font-size: 1.25rem; font-weight: 600; color: white;
+    font-size: 1.25rem; font-weight: 600; color: #F9FAFB;
     line-height: 1.5; word-break: break-word; margin: 0;
 }
 
 .loading-right {
-    flex: 1; min-width: 300px; display: flex; flex-direction: column;
+    flex: 2; min-width: 400px; display: flex; flex-direction: column;
     align-items: center; text-align: center; padding: 2rem;
 }
 
@@ -324,21 +349,21 @@ body, html {
 
 .spinner {
     width: 28px; height: 28px;
-    border: 3px solid rgba(59, 130, 246, 0.3);
-    border-top: 3px solid #3b82f6;
+    border: 3px solid rgba(128, 128, 128, 0.3);
+    border-top: 3px solid #808080;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
 .status-title {
-    font-size: 1.5rem; font-weight: 700; color: white;
+    font-size: 1.5rem; font-weight: 700; color: #F9FAFB;
     margin: 0; line-height: 1;
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .status-desc {
-    font-size: 1.1rem; color: #94a3b8;
+    font-size: 1.1rem; color: #B0B8C1;
     margin-bottom: 3rem; min-height: 1.5em;
     transition: opacity 0.3s;
 }
@@ -368,8 +393,8 @@ body, html {
 .chat-container {
     width: 100%;
     height: 400px; /* 높이 넉넉하게 */
-    background: rgba(15, 23, 42, 0.4);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    background: rgba(37, 37, 37, 0.4);
+    border: 1px solid #252525;
     border-radius: 1rem;
     padding: 1.5rem;
     margin-bottom: 1rem;
@@ -405,15 +430,15 @@ body, html {
 
 /* 프로필 아이콘 */
 .chat-profile-icon {
-    width: 40px;
-    height: 40px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     flex-shrink: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    background: transparent;
 }
 
 /* 텍스트 내용 박스 */
@@ -447,14 +472,15 @@ body, html {
 
 /* 시스템 말풍선 (회색) */
 .chat-row.system .chat-bubble {
-    background: #334155;
-    color: #e2e8f0;
+    background: #252525;
+    color: #B0B8C1;
+    border: 1px solid #2D3748;
     border-radius: 0 12px 12px 12px; /* 왼쪽 위 뾰족 */
 }
 
 /* 에이전트 말풍선 (파란색 계열) */
 .chat-row.agent .chat-bubble {
-    background: #1e40af; /* 진한 파랑 */
+    background: #1D9BF0; /* 진한 파랑 */
     color: white;
     border-radius: 12px 0 12px 12px; /* 오른쪽 위 뾰족 */
 }
@@ -464,18 +490,18 @@ body, html {
 /* ------------------------------------------------ */
 
 /* 시스템 */
-.chat-row.system .chat-profile-icon { background: #475569; color: #cbd5e1; }
+.chat-row.system .chat-profile-icon { background: transparent; color: #B0B8C1; }
 
 /* 차트 (빨강) */
-.theme-chart .chat-profile-icon { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.theme-chart .chat-profile-icon { background: transparent; }
 .theme-chart .chat-bubble { background: rgba(239, 68, 68, 0.2) !important; border: 1px solid #ef4444; }
 
 /* 재무 (초록) */
-.theme-finance .chat-profile-icon { background: linear-gradient(135deg, #22c55e, #15803d); }
+.theme-finance .chat-profile-icon { background: transparent; }
 .theme-finance .chat-bubble { background: rgba(34, 197, 94, 0.2) !important; border: 1px solid #22c55e; }
 
 /* 뉴스 (노랑) */
-.theme-news .chat-profile-icon { background: linear-gradient(135deg, #f59e0b, #b45309); }
+.theme-news .chat-profile-icon { background: transparent; }
 .theme-news .chat-bubble { background: rgba(245, 158, 11, 0.2) !important; border: 1px solid #f59e0b; }
 
 @keyframes slideIn {
@@ -489,7 +515,7 @@ body, html {
 .chat-system-message {
     align-self: center; /* 가운데 정렬 */
     background: rgba(255, 255, 255, 0.1); /* 연한 반투명 배경 */
-    color: #cbd5e1; /* 연한 회색 텍스트 */
+    color: #B0B8C1; /* 연한 회색 텍스트 */
     padding: 6px 16px; /* 둥근 알약 모양 패딩 */
     border-radius: 999px; /* 완벽한 둥근 모서리 */
     font-size: 0.8rem; /* 본문보다 약간 작게 */
@@ -522,18 +548,18 @@ body, html {
 }
 
 #auth-nav a, #auth-nav span {
-    color: #94a3b8;
+    color: #B0B8C1;
     text-decoration: none;
     transition: color 0.2s;
     cursor: pointer;
 }
 
 #auth-nav a:hover {
-    color: #60a5fa; /* 마우스 올렸을 때 파란색 */
+    color: #60A5FA; /* 마우스 올렸을 때 파란색 */
 }
 
 .user-nickname {
-    color: white !important;
+    color: #F9FAFB !important;
     font-weight: 700;
     margin-right: 0.5rem;
 }
@@ -548,11 +574,11 @@ body, html {
     text-align: center;
     margin-top: 1.5rem;
     font-size: 0.9rem;
-    color: #64748b;
+    color: #B0B8C1;
 }
 
 .auth-link a {
-    color: #60a5fa;
+    color: #60A5FA;
     text-decoration: underline;
     margin-left: 0.5rem;
 }
@@ -564,9 +590,9 @@ body, html {
     width: 8px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(59, 130, 246, 0.3); /* 파란색 반투명 */
+    background: rgba(128, 128, 128, 0.3); /* 회색 반투명 */
     border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.4); /* 어두운 배경 */
+    background: rgba(25, 31, 40, 0.4); /* 어두운 배경 */
 }
