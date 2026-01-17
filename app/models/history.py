@@ -2,7 +2,10 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from datetime import datetime, timedelta
 
+def get_korea_time():
+    return datetime.utcnow() + timedelta(hours=9)
 
 class History(Base):
     __tablename__ = "history"
@@ -15,7 +18,7 @@ class History(Base):
     conclusion = Column(Text)  # 결론
     chat_logs = Column(Text)  # 대화내역 (JSON 문자열)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, default=get_korea_time)
 
     # User 모델과 관계 설정
     owner = relationship("app.models.user.User", back_populates="histories")
