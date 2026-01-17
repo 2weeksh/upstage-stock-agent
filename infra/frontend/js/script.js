@@ -197,6 +197,9 @@ async function fetchAnalysisResult(question) {
 // ------------------------------------------------
 
 function saveDataAndSwitchUI(data) {
+    // [핵심] 새 분석이므로 history_mode를 false로 설정 (DB 저장 활성화)
+    localStorage.setItem('history_mode', 'false');
+    
     // 1. 텍스트 데이터 저장
     localStorage.setItem('analysis_summary', data.summary || "내용 없음");
     localStorage.setItem('analysis_conclusion', data.conclusion || "내용 없음");
