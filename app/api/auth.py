@@ -4,10 +4,11 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
-from app.utils.security import get_password_hash, verify_password, create_access_token
+from app.utils.security import get_password_hash, verify_password, create_access_token, get_current_user
+from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 # [수정 1] 이메일(email) 필드 삭제
 class UserSignup(BaseModel):
@@ -21,9 +22,6 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
-
-# ... (중복 확인 API들은 그대로 두세요) ...
-# app/api/auth.py 의 check_username, check_nickname 수정
 
 @router.get("/check-username/{username}")
 def check_username(username: str, db: Session = Depends(get_db)):
