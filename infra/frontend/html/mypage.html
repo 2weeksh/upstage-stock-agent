@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.cdnfonts.com/css/star-wars" rel="stylesheet">
 </head>
+
 <body class="page-main">
     <a href="start.html" class="t-main" style="position: fixed; top: 25px; left: 25px; z-index: 1000; font-size: 1.5rem; font-family: 'Star Wars', sans-serif; text-decoration: none; letter-spacing: -0.02em;">SToCKwars</a>
     <div class="chart-bg" id="chartBg"></div>
@@ -22,12 +24,12 @@
         </header>
 
         <div class="box auth-box" style="text-align: left;">
-            
+
             <div class="mb-6 border-b border-gray-700 pb-4">
                 <label class="label">닉네임</label>
                 <div id="my-nickname" class="text-xl text-slate-800 font-bold">로딩 중...</div>
             </div>
-            
+
             <div class="mb-8">
                 <label class="label">계정 가입일</label>
                 <div id="join-date" class="font-mono" style="color: #64748b;">2026-00-00</div>
@@ -49,11 +51,12 @@
                 window.location.href = 'login.html';
                 return;
             }
-            
+
             document.getElementById('my-nickname').innerText = localStorage.getItem('userNickname') || '알 수 없음';
             const joinDate = localStorage.getItem('userJoinDate');
             document.getElementById('join-date').innerText = joinDate || '정보 없음';
         });
     </script>
 </body>
+
 </html>

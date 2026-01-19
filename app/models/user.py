@@ -17,3 +17,5 @@ class User(Base):
     nickname = Column(String)
     created_at = Column(DateTime, default=get_korea_time)
     histories = relationship("app.models.history.History", back_populates="owner")
+
+

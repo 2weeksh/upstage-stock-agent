@@ -2,6 +2,231 @@ import json
 import asyncio
 import re
 import functools
+import traceback
+
+# [유틸 및 매니저]
+from app.agents.ticker_agent import extract_company_name
+from app.utils.ticker_utils import get_clean_ticker
+from app.utils.llm import get_solar_model
+
+# [DB 및 인제스터]
+from app.repository.chroma_db import get_vector_db
+from app.service.stock_ingestor import StockIngestor
+
+# [데이터 콜렉터]
+from app.service.dart_collector import DartCollector
+from app.service.news_collector import NewsCollector
+from app.service.chart_collector import ChartCollector
+from app.service.finance_collector import FinanceCollector
+
+# [에이전트]
+from app.agents.chart_agent import ChartAgent
+from app.agents.news_agent import NewsAgent
+from app.agents.finance_agent import FinanceAgent
+from app.agents.moderator_agent import ModeratorAgent
+from app.agents.judge_agent import JudgeAgent
+from app.agents.report_agent import InsightReportAgent
+
+class StockService:
+    def __init__(self):
+        # 1. 공통 사용 LLM 초기화
+        self.news_llm = get_solar_model(temperature=0.3)
+        self.chart_llm = get_solar_model(temperature=0.1)
+        self.finance_llm = get_solar_model(temperature=0.1)
+        self.moderator_llm = get_solar_model(temperature=0.2)
+        self.judge_llm = get_solar_model(temperature=0.1)
+        self.report_llm = get_solar_model(temperature=0.2)
+
+        # 2. 데이터 콜렉터 초기화
+        self.dart_collector = DartCollector()
+        self.news_collector = NewsCollector()
+        self.chart_collector = ChartCollector()
+        self.finance_collector = FinanceCollector()
+
+        # 3. 상태와 무관한 공통 에이전트 초기화
+        self.moderator_agent = ModeratorAgent(self.moderator_llm)
+        self.judge_agent = JudgeAgent(self.judge_llm)
+        self.report_agent = InsightReportAgent(self.report_llm)
+
+    def _format_history_for_llm(self, history_list):
+        text_log = ""
+        for item in history_list:
+            if item.get('message'):
+                text_log += f"\n\n[{item['speaker']}]: {item['message']}"
+        return text_log
+
+    async def handle_user_task(self, user_input: str, max_turns: int = 10):
+        try:
+            # 메시지 생성 헬퍼 (프론트엔드 규격 유지)
+            def create_msg(speaker, msg_type, message, data=None):
+                return json.dumps({
+                    "type": msg_type,
+                    "speaker": speaker,
+                    "message": message,
+                    "data": data
+                }) + "\n"
+
+            loop = asyncio.get_event_loop()
+
+            async def run_with_retry(func, *args, **kwargs):
+                wrapped_func = functools.partial(func, *args, **kwargs)
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        return await loop.run_in_executor(None, wrapped_func)
+                    except Exception as e:
+                        if "429" in str(e) and attempt < max_retries - 1:
+                            await asyncio.sleep(5 * (attempt + 1))
+                            continue
+                        raise e
+
+            # ------------------------------------------------------------------
+            # [Step 0] 종목 식별 및 DB 연결
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", "종목을 식별 중입니다...")
+            refined_name = extract_company_name(user_input)
+            if refined_name == "NONE":
+                yield create_msg("system", "error", "종목을 찾을 수 없습니다.")
+                return
+
+            ticker = get_clean_ticker(refined_name)
+            pure_ticker = ticker.split('.')[0] # 005930.KS -> 005930
+
+            # 종목 전용 DB 및 인제스터 준비
+            db = get_vector_db(pure_ticker)
+            ingestor = StockIngestor(db)
+
+            # ------------------------------------------------------------------
+            # [Step 1] 데이터 수집 및 지식 베이스 주입
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", f"'{refined_name}'의 최신 데이터를 수집하여 지식 베이스를 갱신합니다.")
+
+            # 병렬 데이터 수집
+            d_task = loop.run_in_executor(None, self.dart_collector.get_latest_report_text, pure_ticker, refined_name)
+            n_task = loop.run_in_executor(None, self.news_collector.fetch_news, pure_ticker, refined_name)
+            c_task = loop.run_in_executor(None, self.chart_collector.fetch_technical_data, ticker, refined_name)
+            f_task = loop.run_in_executor(None, self.finance_collector.fetch_financial_summary, ticker, refined_name)
+
+            (dart_text, dart_title), n_docs, c_docs, f_docs = await asyncio.gather(d_task, n_task, c_task, f_task)
+
+            # DB 주입 (DART는 보존, 나머지는 최신화)
+            ingestor.ingest_dart_data(pure_ticker, refined_name, dart_text, dart_title)
+            ingestor.ingest_news_data(pure_ticker, refined_name, n_docs)
+            ingestor.ingest_chart_data(pure_ticker, refined_name, c_docs)
+            ingestor.ingest_finance_data(pure_ticker, refined_name, f_docs)
+
+            # ------------------------------------------------------------------
+            # [Step 2] 에이전트 런타임 생성 (Retriever 주입)
+            # ------------------------------------------------------------------
+            # 이제 DB가 준비되었으므로 각 에이전트에게 db(retriever)를 전달하여 생성합니다.
+            finance_agent = FinanceAgent("재무 분석가", "Finance", db)
+            news_agent = NewsAgent("뉴스 분석가", "News", db)
+            chart_agent = ChartAgent("차트 분석가", "Chart", db)
+
+            agent_map = {
+                "Finance": {"instance": finance_agent, "name": "재무 분석가", "code": "finance"},
+                "News": {"instance": news_agent, "name": "뉴스 분석가", "code": "news"},
+                "Chart": {"instance": chart_agent, "name": "차트 분석가", "code": "chart"}
+            }
+
+            discussion_log = []
+
+            # ------------------------------------------------------------------
+            # [Step 3] 전문가 기조 발언 (Opening)
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", "전문가들이 지식 베이스를 바탕으로 분석을 시작합니다.")
+
+            async def run_agent_analyze(tag, agent_info):
+                # 에이전트 내부에서 RAG 검색을 수행하므로 ticker 정보만 넘깁니다.
+                res = await run_with_retry(agent_info["instance"].analyze, refined_name, pure_ticker, debug = True)
+                return tag, res
+
+            opening_tasks = [
+                run_agent_analyze("Finance", agent_map["Finance"]),
+                run_agent_analyze("News", agent_map["News"]),
+                run_agent_analyze("Chart", agent_map["Chart"])
+            ]
+
+            for completed_task in asyncio.as_completed(opening_tasks):
+                tag, stmt = await completed_task
+                info = agent_map[tag]
+                yield create_msg(info["code"], "debate", stmt)
+                discussion_log.append({"speaker": info["name"], "code": info["code"], "message": stmt, "type": "opening"})
+
+            # ------------------------------------------------------------------
+            # [Step 4] 상호 토론 (Reasoning)
+            # ------------------------------------------------------------------
+            for turn in range(max_turns):
+                yield create_msg("system", "status", f"상호 토론 진행 중 ({turn+1}/{max_turns})")
+
+                current_context = self._format_history_for_llm(discussion_log)
+                mod_output = await run_with_retry(self.moderator_agent.facilitate, refined_name, current_context)
+
+                # 사회자 판단 파싱
+                status_match = re.search(r"STATUS:\s*\[?(TERMINATE|CONTINUE)\]?", mod_output)
+                speaker_match = re.search(r"NEXT_SPEAKER:\s*\[?(\w+)\]?", mod_output)
+                instruction_match = re.search(r"INSTRUCTION:\s*(.*)", mod_output, re.DOTALL)
+
+                if status_match and "TERMINATE" in status_match.group(1):
+                    break
+
+                if speaker_match and instruction_match:
+                    target_key_raw = speaker_match.group(1).strip()
+                    inst_text = instruction_match.group(1).strip()
+
+                    yield create_msg("moderator", "debate", inst_text)
+                    discussion_log.append({"speaker": "사회자", "code": "moderator", "message": inst_text, "type": "instruction"})
+
+                    target_key = next((k for k in agent_map if k.lower() in target_key_raw.lower()), None)
+                    if target_key:
+                        target = agent_map[target_key]
+                        rebuttal = await run_with_retry(
+                            target["instance"].analyze, 
+                            refined_name, pure_ticker, 
+                            debate_context=f"[사회자 지시]: {inst_text}\n\n[이전 토론 맥락]: {current_context}"
+                        )
+                        yield create_msg(target["code"], "debate", rebuttal)
+                        discussion_log.append({"speaker": target["name"], "code": target["code"], "message": rebuttal, "type": "rebuttal"})
+
+            # ------------------------------------------------------------------
+            # [Step 5] 요약 및 판결 (Finalize)
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", "토론을 요약하고 최종 리포트를 생성합니다.")
+            
+            final_context = self._format_history_for_llm(discussion_log)
+            
+            # 1. 사회자 요약
+            summary = await run_with_retry(self.moderator_agent.summarize_debate, refined_name, final_context)
+            yield create_msg("moderator", "debate", summary)
+            
+            # 2. 판사 최종 판결
+            decision = await run_with_retry(self.judge_agent.adjudicate, refined_name, final_context)
+            
+            # 3. 리포트 생성
+            report = await run_with_retry(self.report_agent.generate_report, refined_name, pure_ticker, final_context)
+
+            # [최종 결과 전송]
+            result_data = {
+                "summary": report,
+                "conclusion": decision,
+                "discussion_log": discussion_log
+            }
+            yield create_msg("system", "result", "토론이 완료되었습니다.", data=result_data)
+
+        except Exception as e:
+            traceback.print_exc()
+            yield create_msg("system", "error", f"분석 중 오류 발생: {str(e)}")
+
+
+
+
+
+
+'''
+import json
+import asyncio
+import re
+import functools
 import time
 from app.agents.ticker_agent import extract_company_name
 from app.utils.ticker_utils import get_clean_ticker
@@ -284,3 +509,4 @@ class StockService:
             import traceback
             traceback.print_exc()
             yield create_msg("system", "error", f"시스템 오류: {str(e)}")
+'''

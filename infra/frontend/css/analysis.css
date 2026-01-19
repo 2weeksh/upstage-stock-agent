@@ -2,7 +2,8 @@
 @import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -115,6 +116,8 @@ body, html {
 .user-query-box #user-query-text {
     color: #1e293b;
 }
+
+
 .t-main.market-section {
     font-size: 2rem;
     margin-bottom: 3rem;
@@ -125,6 +128,7 @@ body, html {
     left: -9999px;
     top: -9999px;
 }
+
 ::-webkit-scrollbar {
     width: 12px;
 }
@@ -171,11 +175,27 @@ body, html {
 
 
 .home-link {
-    position: fixed; top: 25px; left: 25px; width: 30px; height: 45px;
-    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    width: 30px;
+    height: 45px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: transform 0.2s ease;
 }
-.home-link:hover { transform: scale(1.1); opacity: 1; color: #93c5fd; }
-.home-link svg { width: 32px; height: 32px; display: block; }
+
+.home-link:hover {
+    transform: scale(1.1);
+    opacity: 1;
+    color: #93c5fd;
+}
+
+.home-link svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+}
 
 .home-link::after {
     content: attr(data-tooltip);
@@ -185,10 +205,21 @@ body, html {
     font-size: 0.8rem; border-radius: 6px; white-space: nowrap; opacity: 0;
     visibility: hidden; transition: all 0.2s ease; pointer-events: none;
 }
-.home-link:hover::after { opacity: 1; visibility: visible; margin-top: 12px; }
+
+.home-link:hover::after {
+    opacity: 1;
+    visibility: visible;
+    margin-top: 12px;
+}
 
 /* 헤더 */
-.top-section { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%; }
+.top-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
 
 .report-header {
     display: flex; flex-direction: column; align-items: center; text-align: center;
@@ -197,12 +228,61 @@ body, html {
     background-size: 24px 24px;
     padding: 3rem 0;
     border-bottom: 1px solid rgba(0,0,0,0.05);
+
     margin-bottom: 2rem;
 }
 
 .report-meta-info {
-    display: flex; align-items: center; gap: 0.8rem;
-    font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    font-family: monospace;
+}
+
+.divider {
+    color: #2D3748;
+}
+
+.status-live {
+    color: #F9FAFB;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #4ade80;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.agent-specs {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
 }
 .divider { color: #cbd5e1; }
 .status-live { color: #1e293b; display: flex; align-items: center; gap: 0.4rem; font-weight: 600; }
@@ -212,7 +292,6 @@ body, html {
 }
 @keyframes pulse { 0%{opacity:1;} 50%{opacity:0.5;} 100%{opacity:1;} }
 
-.agent-specs { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
 .spec-item {
     display: flex;
     align-items: center;
@@ -265,14 +344,18 @@ body, html {
 }
 
 /* 본문 콘텐츠 */
-.report-content { width: 100%; max-width: 800px; }
+.report-content {
+    width: 100%;
+    max-width: 800px;
+}
 
 .section-divider {
-    width: 100%; max-width: 800px; height: 1px;
+    width: 100%;
+    max-width: 800px;
+    height: 1px;
     background: linear-gradient(to right, transparent, rgba(29, 155, 240, 0.3), transparent);
     margin: 3rem auto;
 }
-.market-divider { margin-top: 5rem; margin-bottom: 2rem; }
 
 .user-query-wrapper { width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-bottom: 3rem; }
 .query-label { font-size: 0.9rem; color: #6886b3; margin-bottom: 0.5rem; margin-right: 0.5rem; font-weight: 600; }
@@ -302,6 +385,7 @@ body, html {
     font-style: normal;
     font-size: 3.5rem;
     color: #1e293b;
+    color: #F9FAFB;
     margin-bottom: 0.5rem;
     line-height: 1.2;
 }
@@ -314,7 +398,14 @@ body, html {
     margin-bottom: 0.8rem; display: block;
 }
 
-.disclaimer-text { font-size: 0.85rem; color: #64748b; margin-top: -1rem; margin-bottom: 2rem; text-align: right; display: block; }
+.disclaimer-text {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+    text-align: right;
+    display: block;
+}
 
 /* ============================================================
     토론 뷰어 관련 스타일 채팅형)
@@ -330,17 +421,21 @@ body, html {
     max-height: 600px;
     overflow-y: auto;
 }
+
 .chat-container::-webkit-scrollbar {
     width: 8px;
 }
+
 .chat-container::-webkit-scrollbar-track {
     background: rgba(241, 245, 249, 0.8);
     border-radius: 4px;
 }
+
 .chat-container::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, 0.4);
     border-radius: 4px;
 }
+
 .chat-container::-webkit-scrollbar-thumb:hover {
     background: rgba(100, 116, 139, 0.5);
 }
@@ -366,8 +461,10 @@ body, html {
 .markdown-body h4 {
     color: #1e293b;
     font-weight: 700;
-    margin-top: 1.8rem;      /* 위쪽 여백 */
-    margin-bottom: 0.8rem;   /* 아래쪽 여백 */
+    margin-top: 1.8rem;
+    /* 위쪽 여백 */
+    margin-bottom: 0.8rem;
+    /* 아래쪽 여백 */
     line-height: 1.3;
 }
 
@@ -378,18 +475,24 @@ body, html {
 
 /* 2. 본문 및 리스트 간격 최적화 */
 .markdown-body p {
-    margin-bottom: 1rem;     /* 문단 사이 간격 */
+    margin-bottom: 1rem;
+    /* 문단 사이 간격 */
 }
+
 .markdown-body ul,
 .markdown-body ol {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
 }
+
 .markdown-body li {
-    margin-bottom: 0.3rem;   /* 리스트 아이템 간격 좁힘 */
+    margin-bottom: 0.3rem;
+    /* 리스트 아이템 간격 좁힘 */
 }
-.markdown-body li > p {
-    margin-bottom: 0.5rem;   /* 리스트 내부 문단 간격 */
+
+.markdown-body li>p {
+    margin-bottom: 0.5rem;
+    /* 리스트 내부 문단 간격 */
 }
 
 /* 3. 강조 (Bold) */
@@ -455,6 +558,7 @@ body, html {
     background: #e2e8f0;
     margin: 2rem 0;
 }
+
 .markdown-body {
     white-space: normal !important;
 }
@@ -463,13 +567,16 @@ body, html {
 #chat-list .markdown-body table {
     background-color: transparent;
 }
+
 #chat-list .markdown-body th {
     background-color: transparent;
     color: #1F2937;
 }
+
 #chat-list .markdown-body td {
     color: #1F2937;
 }
+
 #chat-list .markdown-body blockquote {
     background: transparent;
     color: #1F2937;
@@ -620,6 +727,7 @@ body, html {
 .down { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
 
 .market-update-time { margin-top: 2rem; font-size: 0.8rem; color: #64748b; }
+
 
 /* 로딩 애니메이션 (스켈레톤) */
 .skeleton {
