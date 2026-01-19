@@ -70,26 +70,31 @@ class StockService:
 
             async def run_with_retry(func, *args, **kwargs):
                 wrapped_func = functools.partial(func, *args, **kwargs)
-                max_retries = 3
+                max_retries = 5
                 for attempt in range(max_retries):
                     try:
                         return await loop.run_in_executor(None, wrapped_func)
                     except Exception as e:
-                        if "429" in str(e) and attempt < max_retries - 1:
-                            await asyncio.sleep(5 * (attempt + 1))
-                            continue
+                        if "429" in str(e) or "too_many_requests" in str(e):
+                            if attempt < max_retries - 1:
+                                wait_time = 5 * (attempt + 1)
+                                print(
+                                    f"⚠️ API 호출 제한(429) 감지. {wait_time}초 대기 후 재시도합니다. ({attempt + 1}/{max_retries})")
+                                await asyncio.sleep(wait_time)
+                                continue
                         raise e
 
             # ------------------------------------------------------------------
             # [Step 0] 종목 식별 및 DB 연결
             # ------------------------------------------------------------------
-            yield create_msg("system", "status", "종목을 식별 중입니다...")
+            yield create_msg("system", "status", f"시스템이 '{user_input}' 에서 종목을 식별 중입니다.")
             refined_name = extract_company_name(user_input)
             if refined_name == "NONE":
                 yield create_msg("system", "error", "종목을 찾을 수 없습니다.")
                 return
 
             ticker = get_clean_ticker(refined_name)
+            yield create_msg("system", "status", f"대상 종목: {refined_name} ({ticker})")
             pure_ticker = ticker.split('.')[0] # 005930.KS -> 005930
 
             # 종목 전용 DB 및 인제스터 준비
@@ -134,6 +139,13 @@ class StockService:
             # ------------------------------------------------------------------
             # [Step 3] 전문가 기조 발언 (Opening)
             # ------------------------------------------------------------------
+            opening_log = {
+                "speaker": "사회자", "code": "moderator",
+                "message": "지금부터 토론을 시작합니다. 각 전문가는 분석 결과를 발표해주세요.",
+                "type": "opening"
+            }
+            discussion_log.append(opening_log)
+
             yield create_msg("system", "status", "전문가들이 지식 베이스를 바탕으로 분석을 시작합니다.")
 
             async def run_agent_analyze(tag, agent_info):
@@ -150,14 +162,28 @@ class StockService:
             for completed_task in asyncio.as_completed(opening_tasks):
                 tag, stmt = await completed_task
                 info = agent_map[tag]
+                if tag == "Chart":
+                    yield create_msg("chart", "status", "기술적 지표 분석 완료. 추세를 확인했습니다.")
+                elif tag == "News":
+                    yield create_msg("news", "status", "시장 심리 및 뉴스 분석 완료. 트렌드를 파악했습니다.")
+                elif tag == "Finance":
+                    yield create_msg("finance", "status", "기업 가치 및 재무 건전성 평가를 마쳤습니다.")
+
                 yield create_msg(info["code"], "debate", stmt)
                 discussion_log.append({"speaker": info["name"], "code": info["code"], "message": stmt, "type": "opening"})
 
+            await asyncio.sleep(2)
             # ------------------------------------------------------------------
             # [Step 4] 상호 토론 (Reasoning)
             # ------------------------------------------------------------------
+            yield create_msg("system", "status", "분석 내용을 바탕으로 상호 토론을 시작합니다.")
             for turn in range(max_turns):
-                yield create_msg("system", "status", f"상호 토론 진행 중 ({turn+1}/{max_turns})")
+                yield create_msg("system", "status", f"상호 토론 {turn +1}/{max_turns} 라운드")
+
+                # [추가 부분] 7라운드 이상 시 사회자의 Temperature를 낮춰 수렴 유도
+                if turn >= 7:
+                    self.moderator_agent.llm = self.moderator_llm.bind(temperature=0.1)
+
 
                 current_context = self._format_history_for_llm(discussion_log)
                 mod_output = await run_with_retry(self.moderator_agent.facilitate, refined_name, current_context)
@@ -168,6 +194,7 @@ class StockService:
                 instruction_match = re.search(r"INSTRUCTION:\s*(.*)", mod_output, re.DOTALL)
 
                 if status_match and "TERMINATE" in status_match.group(1):
+                    yield create_msg("system", "status", "사회자가 토론 종료를 선언했습니다.")
                     break
 
                 if speaker_match and instruction_match:
@@ -180,24 +207,61 @@ class StockService:
                     target_key = next((k for k in agent_map if k.lower() in target_key_raw.lower()), None)
                     if target_key:
                         target = agent_map[target_key]
+                        yield create_msg(target['code'], "status", f"{target['name']}가 반박 의견을 제시합니다.")
                         rebuttal = await run_with_retry(
                             target["instance"].analyze, 
-                            refined_name, pure_ticker, 
+                            refined_name, pure_ticker,
                             debate_context=f"[사회자 지시]: {inst_text}\n\n[이전 토론 맥락]: {current_context}"
                         )
                         yield create_msg(target["code"], "debate", rebuttal)
                         discussion_log.append({"speaker": target["name"], "code": target["code"], "message": rebuttal, "type": "rebuttal"})
+                        await asyncio.sleep(2)
+            # ------------------------------------------------------------------
+            # [Step 5] 최후 변론 (Closing)
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", "최후 변론을 진행합니다.")
+            closing_msg = {"speaker": "사회자", "code": "moderator", "message": "토론을 마치겠습니다. 최후 변론을 해주세요.",
+                           "type": "closing"}
+            discussion_log.append(closing_msg)
+            current_context = self._format_history_for_llm(discussion_log)
+
+            for role_name in ["Chart", "News", "Finance"]:
+                agent = agent_map[role_name]
+
+                closing_context_prompt = f"""
+                {current_context}
+                --- [SYSTEM INSTRUCTION] ---
+                지금까지의 토론 흐름을 참고하여, '최후 변론'을 하십시오.
+                """
+
+                closing_stmt = await run_with_retry(
+                    agent["instance"].analyze,
+                    refined_name, ticker,
+                    debate_context=closing_context_prompt
+                )
+                yield create_msg(agent['code'], "status", "최후 변론을 마쳤습니다.")
+                yield create_msg(agent["code"], "debate", closing_stmt)
+                discussion_log.append(
+                    {"speaker": agent["name"], "code": agent["code"], "message": closing_stmt, "type": "closing"})
+
+                await asyncio.sleep(2)
+            yield create_msg("system", "status", "사회자가 토론을 요약 중입니다.")
+            current_context = self._format_history_for_llm(discussion_log)
+            summary_text = await run_with_retry(self.moderator_agent.summarize_debate, refined_name, current_context)
+            yield create_msg("moderator", "debate", summary_text)
+            discussion_log.append({
+                "speaker": "사회자",
+                "code": "moderator",
+                "message": summary_text,
+                "type": "summary"
+            })
 
             # ------------------------------------------------------------------
-            # [Step 5] 요약 및 판결 (Finalize)
+            # [Step 6] 요약 및 판결 (Finalize)
             # ------------------------------------------------------------------
-            yield create_msg("system", "status", "토론을 요약하고 최종 리포트를 생성합니다.")
-            
+            yield create_msg("system", "status", "최종 투자 의견 및 최종 리포트를 생성합니다.")
+
             final_context = self._format_history_for_llm(discussion_log)
-            
-            # 1. 사회자 요약
-            summary = await run_with_retry(self.moderator_agent.summarize_debate, refined_name, final_context)
-            yield create_msg("moderator", "debate", summary)
             
             # 2. 판사 최종 판결
             decision = await run_with_retry(self.judge_agent.adjudicate, refined_name, final_context)
