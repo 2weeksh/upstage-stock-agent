@@ -90,19 +90,19 @@ function renderHistoryList(groupedData) {
         // 1. 날짜 헤더 생성
         const header = document.createElement('div');
         header.className = 'flex justify-center mb-4 mt-8 first:mt-2';
-        header.innerHTML = `<span class="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full border border-gray-700 font-mono">${date}</span>`;
+        header.innerHTML = `<span class="bg-white text-slate-500 text-xs px-3 py-1 rounded-full border border-slate-200 font-mono shadow-sm">${date}</span>`;
         listEl.appendChild(header);
 
         // 2. 카드 아이템 생성
         groupedData[date].forEach(item => {
             const card = document.createElement('div');
             // 스타일: 깔끔한 박스 형태
-            card.className = 'box cursor-pointer hover:border-blue-500 transition-all group mb-3 p-5 bg-gray-900 border border-gray-700 rounded-lg shadow-sm hover:shadow-md hover:bg-gray-800';
+            card.className = 'box cursor-pointer hover:border-[#6886b3] transition-all group mb-3 p-5 bg-white border border-[#6886b3] rounded-lg shadow-sm hover:shadow-md hover:bg-slate-50';
 
             // [수정] 오직 질문만 표시 (요약/의견 삭제됨)
             card.innerHTML = `
                 <div class="flex justify-between items-center w-full">
-                    <p class="text-white text-lg font-bold line-clamp-1 flex-1 pr-4">${item.question}</p>
+                    <p class="text-slate-800 text-lg font-bold line-clamp-1 flex-1 pr-4">${item.question}</p>
                     <span class="text-gray-500 group-hover:text-blue-400 transition-colors transform group-hover:translate-x-1 duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </span>

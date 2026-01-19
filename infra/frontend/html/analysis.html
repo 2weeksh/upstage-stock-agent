@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockWars</title>
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -20,9 +19,10 @@
 
     <style>
         .t-main {
-            background: none !important;
-            -webkit-text-fill-color: initial !important;
-            color: white !important;
+            background: linear-gradient(to right, #1e293b, #6886b3) !important;
+            background-clip: text !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
         }
         .report-content .box {
             max-width: 100% !important;
@@ -60,16 +60,16 @@
             </p>
 
             <div class="agent-specs">
-                <div class="spec-item text-red-300 border-red-500/30 bg-red-500/10">
-                    <img src="../img/chart.png" class="w-4 h-4 mr-1.5" alt="차트">
+                <div class="spec-item spec-chart">
+                    <img src="../img/chart.png" class="w-4 h-4" alt="차트">
                     <span>차트 분석가</span>
                 </div>
-                <div class="spec-item text-green-300 border-green-500/30 bg-green-500/10">
-                    <img src="../img/finance.png" class="w-4 h-4 mr-1.5" alt="재무">
+                <div class="spec-item spec-finance">
+                    <img src="../img/finance.png" class="w-4 h-4" alt="재무">
                     <span>재무 분석가</span>
                 </div>
-                <div class="spec-item text-yellow-300 border-yellow-500/30 bg-yellow-500/10">
-                    <img src="../img/news.png" class="w-4 h-4 mr-1.5" alt="뉴스">
+                <div class="spec-item spec-news">
+                    <img src="../img/news.png" class="w-4 h-4" alt="뉴스">
                     <span>뉴스 분석가</span>
                 </div>
             </div>
@@ -84,10 +84,10 @@
             </div>
 
             <section class="mb-8">
-                <div class="flex justify-between items-center mb-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+                <div class="flex justify-between items-center mb-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <div>
-                        <h2 class="text-xl font-bold text-white mb-1">투자 인사이트 리포트</h2>
-                        <p class="text-sm text-gray-400">AI 에이전트가 분석한 상세 리포트를 PDF로 소장하세요.</p>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">투자 인사이트 리포트</h2>
+                        <p class="text-sm text-slate-500">AI 에이전트가 분석한 상세 리포트를 PDF로 소장하세요.</p>
                     </div>
                     <button id="btn-download-pdf" class="btn btn-w">
                         <img src="../img/download.png" class="btn-icon" alt="다운로드">
@@ -117,15 +117,12 @@
                     <div id="discussionContent" class="discussion-wrapper">
                         <!-- 채팅 보기 파일 탭과 연결된 콘텐츠 -->
                         <div id="view-chat" class="">
-                            <div class="bg-gray-800 rounded-b-xl rounded-tr-xl border border-gray-700 border-t-0 p-6">
+                            <div class="bg-white rounded-b-xl rounded-tr-xl border border-slate-200 border-t-0 p-6 shadow-sm">
                                 <div class="flex items-center gap-3 mb-4">
-                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                    <h3 class="text-lg font-semibold text-white">채팅 기록</h3>
+                                    
+                                    
                                 </div>
-                                <div class="chat-container custom-scrollbar" style="max-height: 600px; overflow-y: auto;">
+                                <div class="chat-container custom-scrollbar">
                                     <div id="chat-list" class="flex flex-col gap-4"></div>
                                 </div>
                             </div>

@@ -1,13 +1,13 @@
-mypage.html
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockWars</title>
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="page-main">
@@ -23,12 +23,12 @@ mypage.html
             
             <div class="mb-6 border-b border-gray-700 pb-4">
                 <label class="label">닉네임</label>
-                <div id="my-nickname" class="text-xl text-white font-bold">로딩 중...</div>
+                <div id="my-nickname" class="text-xl text-slate-800 font-bold">로딩 중...</div>
             </div>
             
             <div class="mb-8">
                 <label class="label">계정 가입일</label>
-                <div id="join-date" class="text-blue-400 font-mono">2026-00-00</div>
+                <div id="join-date" class="font-mono" style="color: #64748b;">2026-00-00</div>
             </div>
 
             <button onclick="location.href='history.html'" class="btn">
