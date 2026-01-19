@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockWars</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/star-wars" rel="stylesheet">
+    
+</head>
+<body class="page-main">
+
+    <div class="chart-bg" id="chartBg" style="position: fixed;"></div>
+
+    <div class="landing-container" style="display: flex; flex-direction: column; align-items: center; height: 100vh; padding-top: 5rem;">
+        
+        <header style="text-align: center; margin-bottom: 1rem;">
+            <span style="display: inline-block; font-size: 0.75rem; color: #64748b; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 500; margin-bottom: 0.5rem;">✦ Next-Gen AI Analysis ✦</span>
+            <h1 class="t-main" style="line-height: 1.2; font-family: 'Star Wars', sans-serif; padding: 0 1rem;">
+                SToCKwars
+            </h1>
+        </header>
+
+        <!-- 타이틀 아래 비디오 -->
+        <div style="width: 100%; max-width: 600px; border-radius: 1rem; overflow: hidden; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); margin-bottom: 1.5rem;">
+            <video autoplay muted loop playsinline style="width: 100%; display: block;">
+                <source src="img/video.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- 버튼 (비디오 바로 아래) -->
+        <div>
+            <a href="#" id="startBtn" class="btn btn-w" style="font-size: 1.2rem; padding: 1rem 2.5rem;">
+                분석 시작하기
+            </a>
+        </div>
+
+    </div>
+
+    <script src="js/script.js"></script>
+    
+    <script src="js/auth.js"></script>
+
+    <script>
+        document.getElementById('startBtn').addEventListener('click', (e) => {
+            e.preventDefault(); 
+            if (isLoggedIn()) {
+                window.location.href = 'userInput.html';
+            } else {
+                alert('서비스 이용을 위해 로그인이 필요합니다.');
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

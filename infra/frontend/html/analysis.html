@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockWars</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/analysis.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/star-wars" rel="stylesheet">
+
+    <style>
+        .t-main {
+            background: linear-gradient(to right, #1e293b, #6886b3) !important;
+            background-clip: text !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        .report-content .box {
+            max-width: 100% !important;
+        }
+        .user-query-box {
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+
+        
+        <a href="start.html" class="t-main" style="position: fixed; top: 25px; left: 25px; z-index: 1000; font-size: 1.5rem; font-family: 'Star Wars', sans-serif; text-decoration: none; letter-spacing: -0.02em;">SToCKwars</a>
+        
+        <div class="top-section">
+            <header class="report-header">
+                <div class="report-meta-info">
+                    <span id="report-date">2023.00.00</span>
+                    <span class="divider">|</span>
+                    <span>Report</span>
+                    <span class="divider">|</span>
+                    <span class="status-live"><span class="dot"></span>Live Analysis</span>
+                </div>
+
+            <h1 class="t-main">투자 전략 보고서</h1>
+
+            <p class="desc">
+                AI 에이전트 간의 심층 토론<br>
+                시장 흐름을 꿰뚫는 냉철한 통찰을 확인하세요.
+            </p>
+
+            <div class="agent-specs">
+                <div class="spec-item spec-chart">
+                    <img src="../img/chart.png" class="w-4 h-4" alt="차트">
+                    <span>차트 분석가</span>
+                </div>
+                <div class="spec-item spec-finance">
+                    <img src="../img/finance.png" class="w-4 h-4" alt="재무">
+                    <span>재무 분석가</span>
+                </div>
+                <div class="spec-item spec-news">
+                    <img src="../img/news.png" class="w-4 h-4" alt="뉴스">
+                    <span>뉴스 분석가</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="report-content">
+            <div class="user-query-wrapper">
+                <span class="query-label">사용자 질문</span>
+                <div class="box user-query-box">
+                    <p id="user-query-text">질문을 불러오는 중...</p>
+                </div>
+            </div>
+
+            <section class="mb-8">
+                <div class="flex justify-between items-center mb-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">투자 인사이트 리포트</h2>
+                        <p class="text-sm text-slate-500">AI 에이전트가 분석한 상세 리포트를 PDF로 소장하세요.</p>
+                    </div>
+                    <button id="btn-download-pdf" class="btn btn-w">
+                        <img src="../img/download.png" class="btn-icon" alt="다운로드">
+                        PDF 다운로드
+                    </button>
+                </div>
+            </section>
+
+            <section>
+                <span class="section-title">최종 투자 의견</span>
+                <div class="box ai-box highlight-border">
+                    <div id="res-conclusion">데이터를 불러오는 중...</div>
+                </div>
+                <span class="disclaimer-text">
+                        ⚠️ 본 분석 결과는 AI 예측이며, 모든 투자의 책임은 투자자 본인에게 있습니다.
+                    </span>
+            </section>
+
+            <section>
+                <div class="flex justify-start mb-4">
+                    <button id="toggleDiscussionBtn" class="btn btn-w">
+                        에이전트 토론 다시보기
+                    </button>
+                </div>
+
+                <div id="discussionWrapper" class="hidden transition-all duration-300 ease-in-out">
+                    <div id="discussionContent" class="discussion-wrapper">
+                        <!-- 채팅 보기 파일 탭과 연결된 콘텐츠 -->
+                        <div id="view-chat" class="">
+                            <div class="bg-white rounded-b-xl rounded-tr-xl border border-slate-200 border-t-0 p-6 shadow-sm">
+                                <div class="flex items-center gap-3 mb-4">
+                                    
+                                    
+                                </div>
+                                <div class="chat-container custom-scrollbar">
+                                    <div id="chat-list" class="flex flex-col gap-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!--시장 요약-->
+    <div class="section-divider market-divider"></div>
+
+    <footer class="market-section">
+        <h2 class="t-main" style="font-size: 2rem; margin-bottom: 3rem;">시장 요약</h2>
+
+        <div class="kospi-section" id="kospi-wrapper">
+            <div class="kospi-header">
+                <div class="kospi-title"><span class="flag-icon">🇰🇷</span> KOSPI</div>
+                <div class="kospi-value-group">
+                    <span class="kospi-price" id="kospi-price">Loading...</span>
+                    <span class="kospi-change" id="kospi-change">--</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="kospiChart"></canvas>
+            </div>
+        </div>
+
+        <div class="market-grid" id="market-grid">
+            <div class="market-card skeleton"></div>
+            <div class="market-card skeleton"></div>
+            <div class="market-card skeleton"></div>
+            <div class="market-card skeleton"></div>
+        </div>
+
+        <p class="market-update-time">Data provided by Yahoo Finance API • Updated: <span id="market-time">-</span></p>
+    </footer>
+</div>
+
+
+<!--PDF-->
+<div id="pdf-template-container" style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="pdf-content" class="bg-white text-slate-800 font-sans w-[800px] min-h-[1100px] p-12 relative subpixel-antialiased">
+
+        <div class="flex justify-between items-start border-b border-slate-200 pb-6 mb-8">
+            <div>
+                <h1 id="pdf-title" class="text-3xl font-extrabold text-slate-900 tracking-tight">Deep Dive Report</h1>
+                <div class="flex items-center gap-3 mt-2">
+                    <span id="pdf-symbol"
+                          class="bg-slate-800 text-white px-3 py-1 text-sm font-bold rounded">CODE</span>
+                    <span id="pdf-date" class="text-slate-500 font-medium">YYYY-MM</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Investment Rating</div>
+                <div id="pdf-rating-badge" class="text-3xl font-black text-blue-600 tracking-tighter">BUY</div>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 mb-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+            <div class="grid grid-cols-4 gap-8 divide-x divide-slate-200">
+                <div class="text-center pr-4">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Target Price</div>
+                    <div id="pdf-target" class="text-2xl font-bold text-slate-900 tracking-tight">-</div>
+                </div>
+                <div class="text-center px-4">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Current Price</div>
+                    <div id="pdf-current" class="text-2xl font-bold text-slate-700 tracking-tight">-</div>
+                </div>
+                <div class="text-center px-4">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Upside Potential</div>
+                    <div id="pdf-upside" class="text-2xl font-bold text-emerald-600 tracking-tight">-</div>
+                </div>
+                <div class="pl-8 flex flex-col justify-center gap-1.5">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-slate-400">PER</span>
+                        <span id="pdf-per" class="text-xs font-bold text-slate-700">-</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-slate-400">PBR</span>
+                        <span id="pdf-pbr" class="text-xs font-bold text-slate-700">-</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-slate-400">ROE</span>
+                        <span id="pdf-roe" class="text-xs font-bold text-slate-700">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <div class="bg-emerald-50/50 rounded-xl p-5 border border-emerald-100/50">
+                <h3 class="text-sm font-bold text-emerald-700 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    Bull Case
+                </h3>
+                <ul id="pdf-buy-points" class="space-y-2 text-xs text-slate-700 leading-relaxed marker:text-emerald-500 list-disc list-inside"></ul>
+            </div>
+            <div class="bg-rose-50/50 rounded-xl p-5 border border-rose-100/50">
+                <h3 class="text-sm font-bold text-rose-700 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+                    Bear Case
+                </h3>
+                <ul id="pdf-sell-points" class="space-y-2 text-xs text-slate-700 leading-relaxed marker:text-rose-500 list-disc list-inside"></ul>
+            </div>
+        </div>
+
+        <div class="mb-8 relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-slate-100"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <span class="bg-white px-3 text-xs font-bold text-slate-400 uppercase tracking-widest">Market Perspective</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="p-4 rounded-lg border border-slate-100 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-400 block mb-2 uppercase tracking-wider">Wall St. Consensus</span>
+                <p id="pdf-market-view" class="text-sm text-slate-600 font-medium leading-relaxed">-</p>
+            </div>
+            <div class="p-4 rounded-lg border border-indigo-100 bg-indigo-50/30 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-indigo-100 rounded-bl-full -mr-8 -mt-8 opacity-50"></div>
+                <span class="text-[10px] font-bold text-indigo-600 block mb-2 uppercase tracking-wider relative z-10">AI Agent Insight</span>
+                <p id="pdf-agent-view" class="text-sm text-slate-800 font-bold leading-relaxed relative z-10">-</p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h3 class="text-sm font-bold text-slate-900 mb-3 pl-3 border-l-4 border-slate-900 uppercase">Key Debate Questions</h3>
+            <div id="pdf-qna-list" class="space-y-3 pl-3"></div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-8 mb-8">
+            <div class="col-span-5">
+                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Peer Valuation</h3>
+                <p id="pdf-val-method" class="text-[10px] text-slate-500 mb-3 italic">-</p>
+                <div class="overflow-hidden rounded-lg border border-slate-200">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 pl-3 w-1/2">Company</th>
+                                <th class="p-2 text-center">PER</th>
+                                <th class="p-2 text-center">PBR</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pdf-peer-body" class="divide-y divide-slate-100 text-slate-700 font-medium"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-span-7">
+                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Financial Estimates</h3>
+                <div class="overflow-hidden rounded-lg border border-slate-200 mb-2">
+                    <table class="w-full text-xs text-center">
+                        <thead class="bg-slate-900 text-white font-semibold">
+                            <tr id="pdf-fin-head"></tr>
+                        </thead>
+                        <tbody id="pdf-fin-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                    </table>
+                </div>
+                <p id="pdf-earnings-insight" class="text-[10px] text-slate-500 leading-normal pl-1 border-l-2 border-slate-300">-</p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Scenario Analysis</h3>
+            <div class="overflow-hidden rounded-lg border border-slate-200">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="p-2 pl-3 font-semibold text-slate-500 w-1/3">Event / Risk</th>
+                            <th class="p-2 font-semibold text-slate-500">Projected Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdf-risk-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white text-slate-900 p-8 rounded-2xl border-2 border-slate-800 relative overflow-hidden">
+            
+            <h3 class="text-base font-bold text-slate-900 mb-6 flex items-center gap-2 border-b border-slate-200 pb-4">
+                <span class="text-blue-600">⚡</span> Final Verdict & Action Plan
+            </h3>
+
+            <div class="grid grid-cols-2 gap-8 mb-6 text-sm">
+                <div>
+                    <span class="text-[10px] text-slate-500 font-bold tracking-widest block mb-2">SHORT-TERM STRATEGY</span>
+                    <p id="pdf-short-term" class="text-slate-700 font-medium leading-relaxed">-</p>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-500 font-bold tracking-widest block mb-2">LONG-TERM STRATEGY</span>
+                    <p id="pdf-long-term" class="text-slate-700 font-medium leading-relaxed">-</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-100 p-5 rounded-xl border border-slate-200 mb-6">
+                <span class="text-[10px] text-blue-600 font-bold tracking-widest block mb-2">EXECUTABLE ACTION PLAN</span>
+                <p id="pdf-action-plan" class="text-sm font-bold leading-relaxed text-slate-900">-</p>
+            </div>
+
+            <p id="pdf-closing-thought" class="text-center text-slate-500 text-xs italic font-medium">
+                "..."
+            </p>
+        </div>
+
+        <div class="mt-8 flex justify-between items-center text-[10px] text-slate-300 border-t border-slate-100 pt-4">
+            <span>Generated by StockWars AI</span>
+            <span>Not Financial Advice • For Information Purposes Only</span>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/analysis.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
