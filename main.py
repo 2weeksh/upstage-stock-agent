@@ -4,15 +4,14 @@ import concurrent.futures
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.requests import Request
-from fastapi.exceptions import RequestValidationError
+from fastapi.responses import FileResponse
 import yfinance as yf
-
+from fastapi.exceptions import RequestValidationError
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
 from app.core.database import engine, Base
-from app.api import auth, chat, history
+from app.api import auth, chat
 import app.models.user
-import app.models.history
 
 app = FastAPI()
 
@@ -41,7 +40,6 @@ app.add_middleware(
 # 3. 라우터 등록
 app.include_router(auth.router)
 app.include_router(chat.router, prefix="/api/v1")
-app.include_router(history.router)
 
 # ==========================================
 # 시장 데이터 캐싱 및 로직

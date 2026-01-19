@@ -18,7 +18,7 @@ def get_stock_news(ticker: str, company_name: str):
     if not tavily_api_key:
         return "⚠️ TAVILY_API_KEY가 설정되지 않았습니다. .env 파일에 API 키를 추가해주세요."
     
-    # 최신 뉴스 10건을 검색하도록 설정합니다.
+    # 최신 뉴스 5건을 검색하도록 설정합니다.
     search = TavilySearchResults(k=10, api_key=tavily_api_key)
     
     # 검색 쿼리: 종목 코드와 기업명을 섞어 정확한 결과를 유도합니다.

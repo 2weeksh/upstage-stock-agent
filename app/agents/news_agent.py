@@ -1,99 +1,12 @@
 from app.utils.llm import get_solar_model
-from app.agents.base_agent import BaseAgent
 
-class NewsAgent(BaseAgent):
-    def __init__(self, name, role, retriever):
-        super().__init__(name, role, retriever, category="news")
-
-
-    # [수정] debug=False 인자를 추가합니다.
-    def analyze(self, company_name, ticker, debate_context=None, debug=False):
-        # 1. RAG 검색: 리포트에서 최신 이슈 및 심리 관련 내용 추출
-        query = f"{company_name} {ticker} 최신 이슈 신제품 시장 점유율 투자 심리 호재 악재"
-        
-        # [수정] _get_context 대신 부모의 _get_dual_context를 호출하고 debug 값을 넘겨줍니다.
-        news_data = self._get_dual_context(query, debug=debug)
-
-        # 1. 기조 발언 형식
-        keynote_format = """
-        임의로 이모티콘을 사용하지 마시오.
-
-        ### 👤 뉴스 분석가 (입론)
-        > **핵심 요약: {최신 뉴스 테마와 시장 심리 요약}**
-
-        * ** 주요 이슈:** {최근 공시, 신제품, 글로벌 매크로 뉴스 등}
-        * ** 심리 분석:** {시장이 해당 이슈를 어떻게 받아들이고 있는지 분석}
-        * ** 투자 판단:** {성장 모멘텀에 기반한 투자 의견}
-        ---
-        ** 타 에이전트 질문:** "{재무/차트 분석가에게 숫자가 담지 못하는 미래 가치에 대해 질문}"
-        """
-
-        # 2. 반박/재반박 형식
-        rebuttal_format = """
-        임의로 이모티콘을 사용하지 마시오.
-
-        [토론 사고(Thinking) 가이드]
-        답변 작성 전 **반드시 다음 3단계**를 머릿속으로 거치십시오:
-        1. [비판적 사고]: 상대방의 말에서 데이터 해석 오류나 논리적 허점이 무엇인지 간파하십시오.
-        2. [논리적 방어]: 당신이 가진 뉴스 데이터가 내 주장을 어떻게 뒷받침하는지 재확인하십시오.
-        3. [유연한 결론]: 상대의 지적이 맞다면 인정하고 뷰를 수정하되, 아니라면 당신의 논리를 더 강력하게 어필하십시오.
-
-        위 사고 과정을 거친 뒤, 전문가의 화법으로 대답하십시오:
-
-        ### 👤 뉴스 분석가 (반박 및 재검토)
-        > **한 줄 요약: {전체 주장을 관통하는 핵심 문장}**
-
-        {가이드에 따라 뉴스 데이터를 근거로 사회자의 지시에 대답하는 내용}
-        
-        ---
-        ** 다음 토론 포인트:** "{사회자에게 향후 예상되는 대외 논의 제안}"
-        """
-
-        # 3. 최후 변론 형식
-        closing_format = """
-        임의로 이모티콘을 사용하지 마시오.
-
-        ### 👤 뉴스 분석가 (최후 변론)
-
-        * ** 시장의 큰 그림:** {차트와 재무를 넘어선, 시장을 움직이는 거대한 재료(Material) 요약}
-        * ** 뉴스/심리 결론:** {대중의 기대감과 공포를 종합한 최종 판단}
-        * ** 투자자 행동 가이드:** {뉴스 흐름에 따른 기민한 대응 전략}
-        """
-
-        if debate_context:
-            if "최후 변론" in debate_context:
-                # [최후 변론 모드]
-                system_msg = f"""당신은 뉴스 분석가입니다. 
-                지금까지의 토론을 정리하고, 학습한 후에 뉴스 데이터와 시장 심리에 기반한 최종 입장을 밝히십시오.
-                반드시 아래 형식을 지키고, 제목을 임의로 변경하지 마십시오.
-                {closing_format}"""
-                user_msg = f"토론 기록: {debate_context}\n\n최종 투자의견을 제시하세요."
-            else:
-                # [반박 모드]
-                system_msg = f"""당신은 '뉴스 분석가'입니다. 
-                현재 논의에서 뉴스 및 시장 환경 관점에서 보완이 필요하다고 판단되는 부분을 최신 뉴스 데이터({news_data})를 근거로 가이드에 따라 논리적으로 대답하세요.
-                
-                {rebuttal_format}"""
-                user_msg = f"현재 토론 상황: {debate_context}\n\n위 주장에 대해 시장 트렌드 관점에서 대답하세요."
-
+class NewsAgent:
+    def __init__(self, llm=None):
+        if llm:
+            self.llm = llm
         else:
-            # [기조 발언 모드]
-            system_msg = f"""당신은 시장 뉴스와 투자 심리를 해석하는 뉴스 분석가입니다.
-            최근 뉴스 흐름({news_data})에서 투자 판단에 기여할 수 있는 시장 및 심리적 요소를 정리하십시오.
-            {keynote_format}"""
-            user_msg = f"{company_name}({ticker}) 분석 시작."
+            self.llm = get_solar_model()
 
-        return self.llm.invoke([("system", system_msg), ("user", user_msg)]).content
-
-
-
-
-
-
-
-
-
-    '''
     def analyze(self, company_name, ticker, news_data, debate_context=None):
         # 1. 기조 발언 형식
         keynote_format = """
@@ -166,4 +79,3 @@ class NewsAgent(BaseAgent):
 
         messages = [("system", system_msg), ("user", user_msg)]
         return self.llm.invoke(messages).content
-    '''

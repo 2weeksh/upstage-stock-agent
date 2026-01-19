@@ -107,11 +107,11 @@ async function fetchAnalysisResult(question) {
 
         // 백엔드에서 보낸 speaker 코드에 따라 매핑
         if (speakerCode === 'chart') {
-            config = { type: 'agent', name: '차트 분석가', icon: '<img src="img/chart.png" class="agent-icon" alt="차트">', theme: 'theme-chart' };
+            config = { type: 'agent', name: '차트 분석가', icon: '📈', theme: 'theme-chart' };
         } else if (speakerCode === 'finance') {
-            config = { type: 'agent', name: '재무 분석가', icon: '<img src="img/finance.png" class="agent-icon" alt="재무">', theme: 'theme-finance' };
+            config = { type: 'agent', name: '재무 분석가', icon: '💰', theme: 'theme-finance' };
         } else if (speakerCode === 'news') {
-            config = { type: 'agent', name: '뉴스 분석가', icon: '<img src="img/news.png" class="agent-icon" alt="뉴스">', theme: 'theme-news' };
+            config = { type: 'agent', name: '뉴스 분석가', icon: '📰', theme: 'theme-news' };
         }
         // system인 경우는 기본값 유지
 
@@ -197,9 +197,6 @@ async function fetchAnalysisResult(question) {
 // ------------------------------------------------
 
 function saveDataAndSwitchUI(data) {
-    // [핵심] 새 분석이므로 history_mode를 false로 설정 (DB 저장 활성화)
-    localStorage.setItem('history_mode', 'false');
-    
     // 1. 텍스트 데이터 저장
     localStorage.setItem('analysis_summary', data.summary || "내용 없음");
     localStorage.setItem('analysis_conclusion', data.conclusion || "내용 없음");

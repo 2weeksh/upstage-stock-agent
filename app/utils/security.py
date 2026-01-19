@@ -35,15 +35,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        # 토큰의 sub(subject)에 username을 넣었으므로 그대로 가져옵니다.
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    # [수정] DB 조회 기준 변경 (User.email -> User.username)
-    user = db.query(User).filter(User.username == username).first()
+    user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
     return user

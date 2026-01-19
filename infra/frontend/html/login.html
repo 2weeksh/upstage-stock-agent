@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockWars</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.cdnfonts.com/css/star-wars" rel="stylesheet">
 </head>
-
 <body class="page-main">
-    <a href="start.html" class="t-main" style="position: fixed; top: 25px; left: 25px; z-index: 1000; font-size: 1.5rem; font-family: 'Star Wars', sans-serif; text-decoration: none; letter-spacing: -0.02em;">SToCKwars</a>
     <div class="chart-bg" id="chartBg"></div>
 
     <main class="wrapper">
@@ -21,17 +18,17 @@
         </header>
 
         <form id="loginForm" class="box auth-box">
-
+            
             <div class="mb-4">
                 <label class="label">아이디</label>
                 <input type="text" id="username" class="input" style="height: 50px;" required>
             </div>
-
+            
             <div class="mb-6">
                 <label class="label">비밀번호</label>
                 <input type="password" id="password" class="input" style="height: 50px;" required>
             </div>
-
+            
             <button type="submit" class="btn">로그인</button>
 
             <div class="auth-link">
@@ -55,5 +52,4 @@
         });
     </script>
 </body>
-
 </html>
