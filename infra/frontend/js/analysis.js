@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const relativeDiv = document.querySelector('#discussionContent .relative');
     if (relativeDiv) {
         const parent = relativeDiv.parentNode;
@@ -10,23 +10,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const chatBox = document.querySelector('#view-chat .bg-gray-800');
-    
+
     if (chatBox) {
         const header = chatBox.querySelector('.flex.items-center.gap-3.mb-4');
         if (header) {
             header.remove();
         }
-        
+
         const chatContainer = chatBox.querySelector('.chat-container');
-        
+
         if (chatContainer) {
             const parent = chatBox.parentNode;
             chatContainer.classList.add('chat-container');
-            
+
             // 카드보기와 동일한 높이로 설정 (헤더 + 콘텐츠 + 버튼 영역 포함)
             chatContainer.style.minHeight = '700px';
             chatContainer.style.maxHeight = '700px';
-            
+
             parent.replaceChild(chatContainer, chatBox);
         }
     }
@@ -348,10 +348,9 @@ function initDiscussionSystem() {
         renderChatView();
     } else {
         const msgEl = document.getElementById('chat-list');
-        if(msgEl) msgEl.innerText = "대화 기록이 없습니다.";
+        if (msgEl) msgEl.innerText = "대화 기록이 없습니다.";
     }
 }
-
 
 // [모드 1] 슬라이드(카드) 렌더링
 function renderSliderLog(index) {
@@ -364,29 +363,29 @@ function renderSliderLog(index) {
     const msgEl = document.getElementById('viewer-message');
     const counterEl = document.getElementById('viewer-counter');
 
-    if(speakerEl) speakerEl.innerText = log.speaker;
-    if(msgEl) {
+    if (speakerEl) speakerEl.innerText = log.speaker;
+    if (msgEl) {
         msgEl.classList.add('markdown-body');
         msgEl.innerHTML = renderMarkdown(log.message);
     }
 
-    if(avatarEl) {
+    if (avatarEl) {
         const style = getAgentStyle(log.code);
         avatarEl.innerHTML = style.icon;
         avatarEl.className = style.color + " w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg border-2 border-gray-500";
-        if(typeEl) typeEl.innerText = style.role;
+        if (typeEl) typeEl.innerText = style.role;
     }
 
-    if(counterEl) counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
+    if (counterEl) counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
 
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
 
-    if(btnPrev) {
+    if (btnPrev) {
         btnPrev.disabled = (index === 0);
         btnPrev.style.opacity = index === 0 ? 0.5 : 1;
     }
-    if(btnNext) {
+    if (btnNext) {
         btnNext.disabled = (index === chatLogs.length - 1);
         btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
     }
@@ -395,7 +394,7 @@ function renderSliderLog(index) {
 // 채팅 리스트 렌더링 (아이콘 상단 고정 수정)
 function renderChatView() {
     const list = document.getElementById('chat-list');
-    if(!list) return;
+    if (!list) return;
     list.innerHTML = "";
 
     chatLogs.forEach(log => {
@@ -454,50 +453,49 @@ function renderChatView() {
 
 function getAgentStyle(code) {
     switch (code) {
-        case 'chart': return { 
+        case 'chart': return {
             icon: `<img src="img/chart.png" alt="차트 분석가" class="w-8 h-8 mr-1.5">`,
-            role: 'Technical Analyst', 
+            role: 'Technical Analyst',
             color: 'text-red-300',
             border: 'border-red-500/30',
             bg: 'bg-red-500/10'
         };
-        case 'finance': return { 
+        case 'finance': return {
             icon: `<img src="img/finance.png" alt="재무 분석가" class="w-8 h-8 mr-1.5">`,
-            role: 'Financial Analyst', 
+            role: 'Financial Analyst',
             color: 'text-green-300',
             border: 'border-green-500/30',
             bg: 'bg-green-500/10'
         };
-        case 'news': return { 
+        case 'news': return {
             icon: `<img src="img/news.png" alt="뉴스 분석가" class="w-8 h-8 mr-1.5">`,
-            role: 'News Analyst', 
+            role: 'News Analyst',
             color: 'text-blue-300',
             border: 'border-blue-500/30',
             bg: 'bg-blue-500/10'
         };
-        case 'moderator': return { 
+        case 'moderator': return {
             icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
                     </svg>`,
-            role: 'Moderator', 
+            role: 'Moderator',
             color: 'text-gray-300',
             border: 'border-gray-500/30',
             bg: 'bg-gray-500/10'
         };
-        default: return { 
+        default: return {
             icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                     </svg>`,
-            role: 'System', 
+            role: 'System',
             color: 'text-gray-300',
             border: 'border-gray-500/30',
             bg: 'bg-gray-500/10'
         };
     }
 }
-
 
 // ============================================================
 // 기존 차트/시장 함수
@@ -546,7 +544,7 @@ async function renderKospiChart() {
 
 async function renderRealMarketData() {
     const grid = document.getElementById('market-grid');
-    if(!grid) return;
+    if (!grid) return;
     try {
         const response = await fetch('http://127.0.0.1:8000/market-summary');
         const marketData = await response.json();
@@ -568,7 +566,7 @@ async function renderRealMarketData() {
 // ============================================================
 // ★ [저장 함수] DB 저장 로직 (필수)
 // ============================================================
-window.saveAnalysisToDB = async function() {
+window.saveAnalysisToDB = async function () {
     const token = localStorage.getItem('accessToken');
     if (!token) {
         console.log("비로그인 상태 -> 저장 안 함");

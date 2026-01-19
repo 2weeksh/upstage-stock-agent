@@ -76,7 +76,7 @@ function initLoadingPage() {
     const stopBtn = document.getElementById('stopBtn');
     if (stopBtn) {
         stopBtn.addEventListener('click', () => {
-            if(confirm("분석을 중지하고 돌아가시겠습니까?")) {
+            if (confirm("분석을 중지하고 돌아가시겠습니까?")) {
                 window.location.href = 'userInput.html';
             }
         });
@@ -199,7 +199,7 @@ async function fetchAnalysisResult(question) {
 function saveDataAndSwitchUI(data) {
     // [핵심] 새 분석이므로 history_mode를 false로 설정 (DB 저장 활성화)
     localStorage.setItem('history_mode', 'false');
-    
+
     // 1. 텍스트 데이터 저장
     localStorage.setItem('analysis_summary', data.summary || "내용 없음");
     localStorage.setItem('analysis_conclusion', data.conclusion || "내용 없음");
@@ -216,6 +216,6 @@ function saveDataAndSwitchUI(data) {
     const successContent = document.getElementById('success-content');
     if (successContent) {
         successContent.classList.remove('hidden');
-        successContent.style.display = 'flex'; 
+        successContent.style.display = 'flex';
     }
 }

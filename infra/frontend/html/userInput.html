@@ -2,21 +2,25 @@ UserInput.html
 
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockWars</title>
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body, html, .page-main {
+        body,
+        html,
+        .page-main {
             overflow: hidden !important;
             height: 100vh !important;
         }
     </style>
 </head>
+
 <body class="page-main">
 
     <div class="chart-bg" id="chartBg"></div>
@@ -30,16 +34,15 @@ UserInput.html
         <form id="analysisForm" class="box">
             <div class="mb-6">
                 <label class="label">질문 입력</label>
-                <textarea id="userQuestion" 
-                    placeholder="예: 엔비디아 지금 매수해도 될까?" 
-                    class="input" required></textarea>
+                <textarea id="userQuestion" placeholder="예: 엔비디아 지금 매수해도 될까?" class="input" required></textarea>
             </div>
             <button type="submit" class="btn">전략 토론 시작하기</button>
         </form>
     </main>
-    
+
     <script src="../js/script.js"></script>
-    
+
     <script src="../js/auth.js"></script>
 </body>
+
 </html>

@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (usernameInput) {
         usernameInput.addEventListener('input', () => {
             isUsernameChecked = false;
-            if(usernameMsg) usernameMsg.innerText = ""; // 메시지도 초기화
+            if (usernameMsg) usernameMsg.innerText = ""; // 메시지도 초기화
         });
     }
 
     if (nicknameInput) {
         nicknameInput.addEventListener('input', () => {
             isNicknameChecked = false;
-            if(nicknameMsg) nicknameMsg.innerText = ""; // 메시지도 초기화
+            if (nicknameMsg) nicknameMsg.innerText = ""; // 메시지도 초기화
         });
     }
 });
@@ -53,7 +53,7 @@ function renderAuthNav() {
 // 2. 로그아웃 처리
 function handleLogout(e) {
     e.preventDefault();
-    if(confirm('로그아웃 하시겠습니까?')) {
+    if (confirm('로그아웃 하시겠습니까?')) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userNickname');
         localStorage.removeItem('userJoinDate');
@@ -78,11 +78,11 @@ async function apiLogin(username, password) {
 
         if (response.ok) {
             const data = await response.json();
-            if(data.access_token && data.nickname) {
+            if (data.access_token && data.nickname) {
                 localStorage.setItem('accessToken', data.access_token); // 여기도 수정
                 localStorage.setItem('userNickname', data.nickname);
 
-                if(data.created_at) localStorage.setItem('userJoinDate', data.created_at);
+                if (data.created_at) localStorage.setItem('userJoinDate', data.created_at);
 
                 return true;
             } else {

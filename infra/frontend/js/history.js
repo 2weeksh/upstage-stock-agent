@@ -124,6 +124,6 @@ function viewAnalysis(item) {
 
     // ★ 핵심: 다시보기 모드 ON
     localStorage.setItem('history_mode', 'true');
-    
+
     window.location.href = 'analysis.html';
 }
