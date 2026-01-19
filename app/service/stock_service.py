@@ -259,7 +259,7 @@ class StockService:
                     refined_name, ticker,
                     debate_context=closing_context_prompt
                 )
-                yield create_msg(agent['code'], "status", "최후 변론을 마쳤습니다.")
+                yield create_msg(agent['code'], "status", f"{agent['name']}가 최후 변론을 마쳤습니다.")
                 yield create_msg(agent["code"], "debate", closing_stmt)
                 discussion_log.append(
                     {"speaker": agent["name"], "code": agent["code"], "message": closing_stmt, "type": "closing"})
