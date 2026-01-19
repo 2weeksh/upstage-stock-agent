@@ -1,0 +1,598 @@
+/* 폰트 설정 */
+@font-face {
+    font-family: 'GmarketSans';
+    font-weight: 300;
+    font-style: normal;
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSansLight.woff2') format('woff2');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'GmarketSans';
+    font-weight: 500;
+    font-style: normal;
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSansMedium.woff2') format('woff2');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'GmarketSans';
+    font-weight: 700;
+    font-style: normal;
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSansBold.woff2') format('woff2');
+    font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+/* 기본 레이아웃, 배경 */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+    background-color: #0c0c0c;
+}
+
+/* 전체화면 스크롤바 디자인 */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, rgba(24, 24, 24, 0.9) 0%, rgba(37, 37, 37, 0.7) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(128, 128, 128, 0.7) 0%, rgba(96, 96, 96, 0.5) 100%);
+    border-radius: 6px;
+    border: 2px solid rgba(24, 24, 24, 0.8);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(128, 128, 128, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(160, 160, 160, 0.9) 0%, rgba(128, 128, 128, 0.7) 100%);
+    border-color: rgba(160, 160, 160, 0.3);
+    box-shadow: 0 0 15px rgba(160, 160, 160, 0.4);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, rgba(192, 192, 192, 1) 0%, rgba(160, 160, 160, 0.9) 100%);
+    box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+}
+
+/* Firefox 스크롤바 디자인 */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.7) rgba(24, 24, 24, 0.8);
+}
+
+.page-main {
+    background-color: #0c0c0c;
+    width: 100%;
+    height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-family: 'Inter', sans-serif;
+}
+
+/* 배경 애니메이션 */
+.chart-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+.candle {
+    position: absolute;
+    width: 3px;
+    bottom: -150px;
+    animation: riseUp 10s infinite linear;
+}
+
+.candle::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 1px;
+    width: 1px;
+    height: calc(100% + 24px);
+    background: inherit;
+}
+
+@keyframes riseUp {
+    0% { transform: translateY(0); opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(-1100px); opacity: 0; }
+}
+
+/* 텍스트 및 컨테이너 */
+.wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding: 0 1.5rem;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 2.5rem;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 스크롤 허용 */
+body, html, .page-main {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh;
+}
+
+/*start 페이지*/
+.landing-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.badge {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+/* 메인 타이틀 */
+.t-main {
+    font-family: "Do Hyeon", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    background: linear-gradient(to right, #F9FAFB, #60A5FA);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+    word-break: keep-all;
+
+}
+
+@media (min-width: 768px) {
+    .t-main { font-size: 5rem; }
+}
+
+.t-sub {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #F9FAFB;
+    margin-bottom: 0.5rem;
+}
+
+.desc {
+    color: #B0B8C1;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* 박스, 버튼, 입력창 */
+.box {
+    background: rgba(37, 37, 37, 0.8);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    border: 1px solid #252525;
+    backdrop-filter: blur(10px);
+    max-width: 32rem;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.label {
+    display: block;
+    text-align: left;
+    font-size: 0.875rem;
+    color: #B0B8C1;
+    margin-bottom: 0.6rem;
+}
+
+.input {
+    width: 100%;
+    height: 180px;
+    background: #252525;
+    border: 1px solid #2D3748;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    color: #F9FAFB;
+    outline: none;
+    font-size: 1.1rem;
+    resize: none;
+    transition: 0.2s;
+}
+
+.input:focus {
+    border-color: #60A5FA;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.2);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #252525;
+    border-radius: 999px;
+    background: #0c0c0c;
+    color: #F9FAFB;
+    font-size: 0.875rem;
+}
+
+/* 버튼 스타일 (파란색) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem;
+    
+    background: transparent; 
+    border: 1px solid #60A5FA;
+    color: #F9FAFB;
+    
+    border-radius: 999px; 
+    font-weight: 700; 
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    cursor: pointer; 
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+}
+
+.btn:hover { 
+    background: #60A5FA; 
+    color: white; 
+    border-color: #60A5FA;
+    transform: translateY(-2px); 
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.btn-w { width: auto; padding: 1rem 2.5rem; }
+
+/* 분석 중지 버튼 (빨간색) */
+.btn-stop {
+    color: #ef4444; 
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    width: auto; 
+    padding: 0.8rem 2rem;
+}
+
+.btn-stop:hover {
+    background: rgba(239, 68, 68, 0.8); 
+    color: white; 
+    border-color: rgba(239, 68, 68, 0.8) !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+/* 결과 확인 버튼 */
+.btn-result {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; 
+    border: 1px solid #60A5FA;
+    color: #F9FAFB;
+    width: auto; 
+    padding: 0.8rem 2rem;
+    font-weight: 700;
+    border-radius: 999px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+}
+.btn-result:hover {
+    background: #60A5FA;
+    color: white;
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+    transform: translateY(-2px);
+}
+
+/* 아이콘 애니메이션 */
+.icon {
+    width: 1.25rem; height: 1.25rem;
+    margin-left: 0.5rem;
+    transform: translateY(2px);
+    transition: 0.2s;
+}
+.btn:hover .icon { transform: translateX(4px) translateY(2px); }
+
+/* 뒤로가기 버튼 */
+#back-btn-container {
+    position: fixed; top: 25px; left: 25px; width: 45px; height: 45px;
+    cursor: pointer; z-index: 1000; transition: transform 0.2s ease;
+}
+#back-btn-container:hover { transform: scale(1.1); }
+#back-icon { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* 로딩 페이지  */
+.loading-wrapper {
+    display: flex; gap: 2rem; width: 100%; max-width: 64rem; padding: 0 2rem;
+    align-items: center; justify-content: center; flex-wrap: wrap;
+}
+
+.loading-left {
+    flex: 1; min-width: 250px; display: flex; flex-direction: column;
+    justify-content: center; min-height: 200px;
+}
+
+.user-question-text {
+    font-size: 1.25rem; font-weight: 600; color: #F9FAFB;
+    line-height: 1.5; word-break: break-word; margin: 0;
+}
+
+.loading-right {
+    flex: 2; min-width: 400px; display: flex; flex-direction: column;
+    align-items: center; text-align: center; padding: 2rem;
+}
+
+.loading-status-header {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-bottom: 1.5rem;
+}
+
+.spinner {
+    width: 28px; height: 28px;
+    border: 3px solid rgba(128, 128, 128, 0.3);
+    border-top: 3px solid #808080;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.status-title {
+    font-size: 1.5rem; font-weight: 700; color: #F9FAFB;
+    margin: 0; line-height: 1;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.status-desc {
+    font-size: 1.1rem; color: #B0B8C1;
+    margin-bottom: 3rem; min-height: 1.5em;
+    transition: opacity 0.3s;
+}
+
+.success-icon-wrapper {
+    width: 28px; height: 28px;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* 유틸리티 클래스 */
+.hidden { display: none !important; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-8 { margin-bottom: 2rem; }
+.ml-2 { margin-left: 0.5rem; }
+.text-green-400 { color: #4ade80; }
+.text-gray-300 { color: #d1d5db; }
+
+/* ------------------------------------------------ */
+/* 카카오톡 스타일 채팅 CSS (좌우 분리 버전) */
+/* ------------------------------------------------ */
+
+.chat-container {
+    width: 100%;
+    height: 400px; /* 높이 넉넉하게 */
+    background: rgba(37, 37, 37, 0.4);
+    border: 1px solid #252525;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem; /* 메시지 간격 */
+}
+
+.chat-container::-webkit-scrollbar { width: 6px; }
+.chat-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+/* 공통 메시지 행 스타일 */
+.chat-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 85%; /* 말풍선이 너무 길어지지 않게 */
+    animation: slideIn 0.3s ease-out;
+}
+
+/* 1. 시스템 (왼쪽 배치) */
+.chat-row.system {
+    align-self: flex-start; /* 왼쪽 정렬 */
+    flex-direction: row; /* 아이콘 -> 말풍선 */
+}
+
+/* 2. 에이전트 (오른쪽 배치) */
+.chat-row.agent {
+    align-self: flex-end; /* 오른쪽 정렬 */
+    flex-direction: row-reverse; /* 아이콘 <- 말풍선 (순서 반전) */
+}
+
+/* 프로필 아이콘 */
+.chat-profile-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    background: transparent;
+}
+
+/* 텍스트 내용 박스 */
+.chat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 에이전트(오른쪽)일 때 텍스트 정렬 */
+.chat-row.agent .chat-content {
+    align-items: flex-end; /* 이름과 말풍선을 오른쪽 끝으로 */
+}
+
+/* 이름 */
+.chat-name {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0 4px;
+}
+
+/* 말풍선 공통 */
+.chat-bubble {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-break: break-word;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+/* 시스템 말풍선 (회색) */
+.chat-row.system .chat-bubble {
+    background: #252525;
+    color: #B0B8C1;
+    border: 1px solid #2D3748;
+    border-radius: 0 12px 12px 12px; /* 왼쪽 위 뾰족 */
+}
+
+/* 에이전트 말풍선 (파란색 계열) */
+.chat-row.agent .chat-bubble {
+    background: #1D9BF0; /* 진한 파랑 */
+    color: white;
+    border-radius: 12px 0 12px 12px; /* 오른쪽 위 뾰족 */
+}
+
+/* ------------------------------------------------ */
+/* 캐릭터별 테마 색상 (아이콘만 변경) */
+/* ------------------------------------------------ */
+
+/* 시스템 */
+.chat-row.system .chat-profile-icon { background: transparent; color: #B0B8C1; }
+
+/* 차트 (빨강) */
+.theme-chart .chat-profile-icon { background: transparent; }
+.theme-chart .chat-bubble { background: rgba(239, 68, 68, 0.2) !important; border: 1px solid #ef4444; }
+
+/* 재무 (초록) */
+.theme-finance .chat-profile-icon { background: transparent; }
+.theme-finance .chat-bubble { background: rgba(34, 197, 94, 0.2) !important; border: 1px solid #22c55e; }
+
+/* 뉴스 (노랑) */
+.theme-news .chat-profile-icon { background: transparent; }
+.theme-news .chat-bubble { background: rgba(245, 158, 11, 0.2) !important; border: 1px solid #f59e0b; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ------------------------------------------------ */
+/* 시스템 알림 메시지 (카톡 '나갔습니다' 스타일) */
+/* ------------------------------------------------ */
+
+.chat-system-message {
+    align-self: center; /* 가운데 정렬 */
+    background: rgba(255, 255, 255, 0.1); /* 연한 반투명 배경 */
+    color: #B0B8C1; /* 연한 회색 텍스트 */
+    padding: 6px 16px; /* 둥근 알약 모양 패딩 */
+    border-radius: 999px; /* 완벽한 둥근 모서리 */
+    font-size: 0.8rem; /* 본문보다 약간 작게 */
+    text-align: center;
+    margin: 8px 0; /* 위아래 여백 */
+    max-width: 90%; /* 너무 길어지면 줄바꿈 */
+    word-break: keep-all; /* 단어 단위 줄바꿈 */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   인증(Auth) 네비게이션 스타일
+   ========================================= */
+#auth-nav {
+    position: fixed;   
+    top: 25px;         
+    right: 25px;      
+    z-index: 9999;     
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+#auth-nav a, #auth-nav span {
+    color: #B0B8C1;
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+#auth-nav a:hover {
+    color: #60A5FA; /* 마우스 올렸을 때 파란색 */
+}
+
+.user-nickname {
+    color: #F9FAFB !important;
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+/* 로그인/회원가입 폼 전용 스타일 */
+.auth-box {
+    max-width: 28rem; 
+}
+
+.auth-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #B0B8C1;
+}
+
+.auth-link a {
+    color: #60A5FA;
+    text-decoration: underline;
+    margin-left: 0.5rem;
+}
+
+/* =========================================
+   커스텀 스크롤바 (History 페이지 등)
+   ========================================= */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3); /* 회색 반투명 */
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(25, 31, 40, 0.4); /* 어두운 배경 */
+}
