@@ -5,10 +5,12 @@ class ChartAgent(BaseAgent):
     def __init__(self, name, role, retriever):
         super().__init__(name, role, retriever, category= "chart")
 
-    def analyze(self, company_name, ticker, debate_context=None):
+    def analyze(self, company_name, ticker, debate_context=None, debug=False):
         # 1. RAG 검색: 리포트 내의 가격 지표 및 기술적 코멘트 추출
         query = f"{company_name} {ticker} 목표주가 적정주가 지지선 저항선 거래량 추세 분석"
-        chart_data = self._get_context(query, category="chart")
+        
+        
+        chart_data = self._get_dual_context(query, debug=debug)
 
         # 1. 기조 발언
         keynote_format = """

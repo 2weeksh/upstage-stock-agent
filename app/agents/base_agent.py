@@ -80,6 +80,7 @@ class BaseAgent:
         """자식 클래스에서 구현할 프롬프트 생성 추상 메서드"""
         raise NotImplementedError("자식 클래스에서 create_prompt를 구현해야 합니다.")
 
+
     def analyze(self, company_name, ticker, debate_context=None, debug=False):
         """
         에이전트가 이중 검색된 지식을 바탕으로 분석을 수행합니다.

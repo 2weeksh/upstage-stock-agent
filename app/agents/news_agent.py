@@ -6,10 +6,13 @@ class NewsAgent(BaseAgent):
         super().__init__(name, role, retriever, category="news")
 
 
-    def analyze(self, company_name, ticker, debate_context=None):
+    # [수정] debug=False 인자를 추가합니다.
+    def analyze(self, company_name, ticker, debate_context=None, debug=False):
         # 1. RAG 검색: 리포트에서 최신 이슈 및 심리 관련 내용 추출
         query = f"{company_name} {ticker} 최신 이슈 신제품 시장 점유율 투자 심리 호재 악재"
-        news_data = self._get_context(query, category="news")
+        
+        # [수정] _get_context 대신 부모의 _get_dual_context를 호출하고 debug 값을 넘겨줍니다.
+        news_data = self._get_dual_context(query, debug=debug)
 
         # 1. 기조 발언 형식
         keynote_format = """

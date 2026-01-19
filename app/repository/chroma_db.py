@@ -21,15 +21,15 @@ def get_vector_db(ticker: str):
     
 
     # Chroma 컬렉션 이름은 반드시 알파벳으로 시작해야 하므로 'ticker_'를 붙여줍니다.
-    clean_ticker = ticker.replace(',', '_').upper()
-    collection_name = f"ticker_{clean_ticker.replace('.', '_')}"
+    clean_ticker = ticker.replace('.', '_').upper()
+    collection_name = f"ticker_{clean_ticker}"
 
     # 3. Chroma DB 객체 생성 및 반환
     # 폴더가 없으면 새로 생성하고, 있으면 기존 데이터를 로드합니다.
     vector_db = Chroma(
-        persist_directory=collection_name,
+        persist_directory=CHROMA_PATH,
         embedding_function=embeddings,
-        collection_name=CHROMA_PATH
+        collection_name=collection_name
     )
     
     print(f"DB 연결 완료 | 물리 경로: {CHROMA_PATH} | 컬렉션: {collection_name}")

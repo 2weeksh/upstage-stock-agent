@@ -6,11 +6,11 @@ class FinanceAgent(BaseAgent):
     def __init__(self, name, role, retriever):
         super().__init__(name, role, retriever, category="finance")
 
-    def analyze(self, company_name, ticker, debate_context=None):
+    def analyze(self, company_name, ticker, debate_context=None, debug=False):
         # 1. RAG를 통해 PDF에서 재무 데이터 추출 (공식 보고서 필터링)
         # 질문 내용에 따라 유동적으로 검색 Query 생성
         query = f"{company_name} {ticker} 재무제표 영업이익 부채비율 가치평가"
-        finance_data = self._get_context(query, category="common") 
+        finance_data = self._get_dual_context(query, debug=debug) 
 
         # 1. 기조 발언 형식
         keynote_format = """
