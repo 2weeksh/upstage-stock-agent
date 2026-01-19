@@ -5,11 +5,16 @@ from datetime import datetime, timedelta
 def get_historical_chart_indicators(symbol: str, target_date: str):
     """
     특정 과거 날짜(target_date)를 기준으로 기술적 지표를 계산합니다.
+<<<<<<< HEAD
     주의: target_date의 종가를 포함한 일봉 데이터를 가져옵니다.
     따라서 '장 시작 직전'의 상황을 시뮬레이션하려면 target_date를 '하루 전'으로 설정해야 합니다.
     target_date 형식: 'YYYY-MM-DD'
     """
     
+=======
+    target_date 형식: 'YYYY-MM-DD'
+    """
+>>>>>>> 6482c8e3a29de456261bdf2e425a48ccdbfa2d25
     ticker_symbol = symbol
     
     try:
@@ -61,6 +66,7 @@ def get_historical_chart_indicators(symbol: str, target_date: str):
         return f"과거 차트 분석 중 오류 발생: {str(e)}"
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     # --- [시나리오 1: 카카오 고점 식별] ---
     # 실제 기준일: 2021-06-24 (오전에 매도 여부 판단)
     # 차트 데이터: 24일 장 시작 직전 데이터 = 23일 종가 데이터 사용
@@ -84,3 +90,7 @@ if __name__ == "__main__":
     hynix_chart = get_historical_chart_indicators("000660.KS", "2023-01-31")
     print(hynix_chart)
     # 기대 논리: RSI가 30에 가까워야 함 (기술적 매수 신호)
+=======
+    print(get_historical_chart_indicators("035720.KS", "2021-06-24")) # 카카오 고점일
+    # print(get_historical_chart_indicators("000660.KS", "2023-02-01")) # SK하이닉스 저점일
+>>>>>>> 6482c8e3a29de456261bdf2e425a48ccdbfa2d25

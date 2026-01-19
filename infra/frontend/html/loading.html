@@ -1,5 +1,8 @@
+loading.html
+
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +10,16 @@
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body,
+        html,
+        .page-main {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+    </style>
 </head>
+
 <body>
 
     <main class="page-main">
@@ -24,7 +36,8 @@
 
             <div class="loading-right">
 
-                <div id="loading-content" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div id="loading-content"
+                    style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                     <div class="loading-status-header">
                         <div class="spinner"></div>
                         <h2 class="status-title">다중 에이전트 분석 진행 중</h2>
@@ -42,7 +55,7 @@
                         <div class="success-icon-wrapper">
                             <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                      d="M5 13l4 4L19 7"></path>
+                                    d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
                         <h2 class="status-title text-green-400">분석이 완료되었습니다</h2>
@@ -52,18 +65,16 @@
                         AI 에이전트들의 토론 결과를 확인하세요.
                     </p>
 
-                    <a href="analysis.html" class="btn btn-result">
+                    <a href="analysis.html" class="btn btn-result" onclick="localStorage.removeItem('history_mode');">
                         결과 리포트 확인하기
                     </a>
                 </div>
-
             </div>
-
         </div>
-
     </main>
 
     <script src="../js/script.js"></script>
     <script src="js/auth.js"></script>
 </body>
+
 </html>

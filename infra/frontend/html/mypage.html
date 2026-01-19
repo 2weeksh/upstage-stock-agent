@@ -1,5 +1,8 @@
+mypage.html
+
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="page-main">
     <div class="chart-bg" id="chartBg"></div>
 
@@ -18,12 +22,12 @@
         </header>
 
         <div class="box auth-box" style="text-align: left;">
-            
+
             <div class="mb-6 border-b border-gray-700 pb-4">
                 <label class="label">닉네임</label>
                 <div id="my-nickname" class="text-xl text-white font-bold">로딩 중...</div>
             </div>
-            
+
             <div class="mb-8">
                 <label class="label">계정 가입일</label>
                 <div id="join-date" class="text-blue-400 font-mono">2026-00-00</div>
@@ -45,11 +49,12 @@
                 window.location.href = 'login.html';
                 return;
             }
-            
+
             document.getElementById('my-nickname').innerText = localStorage.getItem('userNickname') || '알 수 없음';
             const joinDate = localStorage.getItem('userJoinDate');
             document.getElementById('join-date').innerText = joinDate || '정보 없음';
         });
     </script>
 </body>
+
 </html>

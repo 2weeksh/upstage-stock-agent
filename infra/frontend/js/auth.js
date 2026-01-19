@@ -1,7 +1,27 @@
 const AUTH_API_BASE = '/api/auth';
 
+let isUsernameChecked = false;
+let isNicknameChecked = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     renderAuthNav();
+    const usernameInput = document.getElementById('username');
+    const nicknameInput = document.getElementById('nickname');
+    const usernameMsg = document.getElementById('username-msg');
+    const nicknameMsg = document.getElementById('nickname-msg');
+    if (usernameInput) {
+        usernameInput.addEventListener('input', () => {
+            isUsernameChecked = false;
+            if (usernameMsg) usernameMsg.innerText = ""; // 메시지도 초기화
+        });
+    }
+
+    if (nicknameInput) {
+        nicknameInput.addEventListener('input', () => {
+            isNicknameChecked = false;
+            if (nicknameMsg) nicknameMsg.innerText = ""; // 메시지도 초기화
+        });
+    }
 });
 
 // 1. 우측 상단 네비게이션
@@ -33,7 +53,7 @@ function renderAuthNav() {
 // 2. 로그아웃 처리
 function handleLogout(e) {
     e.preventDefault();
-    if(confirm('로그아웃 하시겠습니까?')) {
+    if (confirm('로그아웃 하시겠습니까?')) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userNickname');
         localStorage.removeItem('userJoinDate');
@@ -58,11 +78,11 @@ async function apiLogin(username, password) {
 
         if (response.ok) {
             const data = await response.json();
-            if(data.access_token && data.nickname) {
+            if (data.access_token && data.nickname) {
                 localStorage.setItem('accessToken', data.access_token); // 여기도 수정
                 localStorage.setItem('userNickname', data.nickname);
 
-                if(data.created_at) localStorage.setItem('userJoinDate', data.created_at);
+                if (data.created_at) localStorage.setItem('userJoinDate', data.created_at);
 
                 return true;
             } else {
@@ -113,7 +133,8 @@ async function handleCheckUsername() {
     const regex = /^[A-Za-z0-9]{4,10}$/;
     if (!regex.test(username)) {
         msgBox.innerText = "아이디 규칙(영문+숫자, 4~10자)에 맞지 않습니다.";
-        msgBox.style.color = "#ef4444"; 
+        msgBox.style.color = "#ef4444";
+        isUsernameChecked = false;
         return;
     }
 
@@ -122,14 +143,21 @@ async function handleCheckUsername() {
         const data = await response.json();
 
         msgBox.innerText = data.message;
-        msgBox.style.color = data.available ? "#4ade80" : "#ef4444";
+
+        if (data.available) {
+            msgBox.style.color = "#4ade80";
+            isUsernameChecked = true; // [수정 4] 사용 가능할 때만 true 설정
+        } else {
+            msgBox.style.color = "#ef4444";
+            isUsernameChecked = false;
+        }
+
     } catch (error) {
         console.error(error);
         alert("서버 오류가 발생했습니다.");
+        isUsernameChecked = false;
     }
 }
-
-// 7. 닉네임 중복 확인
 async function handleCheckNickname() {
     const nicknameInput = document.getElementById('nickname');
     const msgBox = document.getElementById('nickname-msg');
@@ -138,6 +166,7 @@ async function handleCheckNickname() {
     if (nickname.length < 2) {
         msgBox.innerText = "닉네임은 2글자 이상이어야 합니다.";
         msgBox.style.color = "#ef4444";
+        isNicknameChecked = false; // [수정 5] 실패 시 확인 상태 false
         return;
     }
 
@@ -146,9 +175,18 @@ async function handleCheckNickname() {
         const data = await response.json();
 
         msgBox.innerText = data.message;
-        msgBox.style.color = data.available ? "#4ade80" : "#ef4444";
+
+        if (data.available) {
+            msgBox.style.color = "#4ade80";
+            isNicknameChecked = true; // [수정 6] 사용 가능할 때만 true 설정
+        } else {
+            msgBox.style.color = "#ef4444";
+            isNicknameChecked = false;
+        }
+
     } catch (error) {
         console.error(error);
         alert("서버 오류가 발생했습니다.");
+        isNicknameChecked = false;
     }
 }

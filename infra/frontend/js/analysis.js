@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 불필요한 relative 래퍼 제거
+
     const relativeDiv = document.querySelector('#discussionContent .relative');
     if (relativeDiv) {
         const parent = relativeDiv.parentNode;
@@ -9,111 +9,28 @@ document.addEventListener('DOMContentLoaded', () => {
         parent.removeChild(relativeDiv);
     }
 
-    // 채팅 기록 텍스트 박스 내부 불필요한 레이아웃 제거
     const chatBox = document.querySelector('#view-chat .bg-gray-800');
-    
+
     if (chatBox) {
-        // 파일 아이콘과 제목 제거
         const header = chatBox.querySelector('.flex.items-center.gap-3.mb-4');
         if (header) {
             header.remove();
         }
-        
-        // 회색 레이아웃 제거 - 채팅 컨테이너만 남기기
+
         const chatContainer = chatBox.querySelector('.chat-container');
-        
+
         if (chatContainer) {
             const parent = chatBox.parentNode;
-            // CSS 스타일이 적용되도록 클래스만 추가
             chatContainer.classList.add('chat-container');
-            
+
             // 카드보기와 동일한 높이로 설정 (헤더 + 콘텐츠 + 버튼 영역 포함)
-            chatContainer.style.minHeight = '600px';
-            chatContainer.style.maxHeight = '600px';
-            
-            // 회색 레이아웃을 채팅 컨테이너로 대체
+            chatContainer.style.minHeight = '700px';
+            chatContainer.style.maxHeight = '700px';
+
             parent.replaceChild(chatContainer, chatBox);
         }
     }
-
-    // 카드보기 텍스트 박스 내부 불필요한 레이아웃 제거
     const cardBox = document.querySelector('#view-slider .bg-blue-600\\/10');
-    if (cardBox) {
-        // 파일 아이콘과 제목 제거
-        const header = cardBox.querySelector('.flex.items-center.gap-3.mb-4');
-        if (header) {
-            header.remove();
-        }
-        
-        // 내부 콘텐츠 박스만 남기고 외부 레이아웃 제거
-        const innerCard = cardBox.querySelector('.bg-gray-900\\/40');
-        if (innerCard) {
-            const parent = cardBox.parentNode;
-            
-            // 내부 콘텐츠 박스에 메인 스타일 적용
-            innerCard.classList.add('card-viewer-container');
-            innerCard.classList.remove('bg-gray-900\\/40', 'rounded-lg', 'p-6', 'border', 'border-gray-700');
-            
-            // 새로운 구조로 재구성
-            innerCard.innerHTML = `
-                <!-- Header -->
-                <div class="card-viewer-header">
-                    <div class="card-viewer-speaker-info">
-                        <div id="viewer-avatar" class="card-viewer-avatar">🎤</div>
-                        <div class="card-viewer-speaker-details">
-                            <div id="viewer-speaker" class="card-viewer-speaker-name">Speaker</div>
-                            <div id="viewer-type" class="card-viewer-speaker-role">Role</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Main -->
-                <div class="card-viewer-main">
-                    <div class="card-viewer-content">
-                        <p id="viewer-message" class="card-viewer-message">대화 내용을 불러오는 중입니다...</p>
-                    </div>
-                </div>
-                
-                <!-- Footer -->
-                <div class="card-viewer-footer">
-                    <div class="card-viewer-nav-info">
-                        <button id="btn-prev" class="card-nav-button">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="card-viewer-counter">
-                        <span id="viewer-counter">0 / 0</span>
-                    </div>
-                    <div class="card-viewer-nav-info">
-                        <button id="btn-next" class="card-nav-button primary">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // 외부 레이아웃을 내부 콘텐츠 박스로 대체
-            parent.replaceChild(innerCard, cardBox);
-        }
-        
-        // 네비게이션 버튼 스타일 적용
-        const prevBtn = document.getElementById('btn-prev');
-        const nextBtn = document.getElementById('btn-next');
-        
-        if (prevBtn) {
-            prevBtn.classList.add('card-nav-button');
-            prevBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600', 'text-gray-200', 'rounded-lg', 'px-6', 'py-3');
-        }
-        
-        if (nextBtn) {
-            nextBtn.classList.add('card-nav-button', 'primary');
-            nextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'text-white', 'rounded-lg', 'px-6', 'py-3', 'shadow-lg', 'shadow-blue-900/30');
-        }
-    }
 
     // 1. 날짜 및 질문 표시
     const dateElem = document.getElementById('report-date');
@@ -125,6 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
         userQueryElement.innerText = localStorage.getItem('userQuestion') || "질문 없음";
     }
 
+    // ============================================================
+    // ★ [히스토리 모드 확인]
+    // ============================================================
+    const historyMode = localStorage.getItem('history_mode');
+    if (historyMode === 'true') {
+        console.log("히스토리 다시보기 모드 진입");
+        // 다시보기 모드에서는 자동 저장을 하지 않고, 저장된 데이터만 보여줍니다.
+        // 데이터 복원 로직은 initAnalysisData()와 initDiscussionSystem() 내부에서 처리됨
+    }
+
     // 2. 분석 데이터 및 뷰어 초기화
     initAnalysisData();
     initDiscussionSystem();
@@ -132,6 +59,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 차트 및 시장 요약
     renderKospiChart();
     renderRealMarketData();
+
+    // ============================================================
+    // ★ [핵심 수정] 라이브 분석 결과 자동 저장 로직 추가
+    // ============================================================
+    // 히스토리 모드가 아니고, 분석 결과(요약)가 존재할 때만 저장 시도
+    const hasSummary = localStorage.getItem('analysis_summary');
+    const currentQuestion = localStorage.getItem('userQuestion');
+
+    // 중복 저장 방지: 세션 스토리지에 마지막으로 저장한 질문을 기록해둠
+    const lastSavedQuestion = sessionStorage.getItem('last_saved_question');
+
+    // 디버깅 로그
+    console.log("=== DB 저장 조건 체크 ===");
+    console.log("historyMode:", historyMode);
+    console.log("hasSummary:", !!hasSummary);
+    console.log("currentQuestion:", currentQuestion);
+    console.log("lastSavedQuestion:", lastSavedQuestion);
+
+    if (historyMode !== 'true' && hasSummary && currentQuestion) {
+        if (currentQuestion !== lastSavedQuestion) {
+            console.log("✅ 새로운 분석 결과 감지 -> DB 저장 시도");
+            window.saveAnalysisToDB().then(() => {
+                // 저장 성공 여부와 관계없이 시도했음을 표시하여 무한 루프 방지
+                sessionStorage.setItem('last_saved_question', currentQuestion);
+            });
+        } else {
+            console.log("⏭️ 이미 저장된 분석 결과입니다. (저장 건너뜀)");
+        }
+    } else {
+        console.log("❌ 저장 조건 미충족 - historyMode가 true이거나 데이터 없음");
+    }
 
     // PDF 다운로드 버튼 이벤트 연결
     const pdfBtn = document.getElementById('btn-download-pdf');
@@ -354,46 +312,43 @@ function initAnalysisData() {
     }
 }
 
+// ============================================================
+// 토론 뷰어 시스템 (토글 + 탭)
 
-// ============================================================
-// 🤖 [통합] 토론 뷰어 시스템 (토글 + 탭)
-// ============================================================
 let chatLogs = [];
 let currentIndex = 0;
 
 function initDiscussionSystem() {
-    // 1. [NEW] 토글 버튼 (전체 접기/펼치기) 기능 복구
+    //토글 버튼 (전체 접기/펼치기) 기능 복구
     const toggleBtn = document.getElementById('toggleDiscussionBtn');
     const wrapper = document.getElementById('discussionWrapper'); // 탭+뷰어를 감싸는 div
     const toggleIcon = document.getElementById('toggleIcon');
 
+    //토글
     if (toggleBtn && wrapper) {
         toggleBtn.addEventListener('click', () => {
             wrapper.classList.toggle('hidden');
-            if (toggleIcon) {
-                // 화살표 회전 애니메이션
-                toggleIcon.classList.toggle('rotate-180');
-            }
         });
     }
 
     // 2. 데이터 로드
-    const rawHistory = localStorage.getItem('analysis_chat_history');
-    if (rawHistory) {
-        try {
-            chatLogs = JSON.parse(rawHistory);
-        } catch (e) {
-            console.error("채팅 기록 파싱 실패", e);
-            chatLogs = [];
+    if (!chatLogs.length) {
+        const rawHistory = localStorage.getItem('analysis_chat_history');
+        if (rawHistory) {
+            try {
+                chatLogs = JSON.parse(rawHistory);
+            } catch (e) {
+                console.error("채팅 기록 파싱 실패", e);
+                chatLogs = [];
+            }
         }
     }
-
     // 3. 채팅 보기 자동 렌더링
     if (chatLogs.length > 0) {
         renderChatView();
     } else {
         const msgEl = document.getElementById('chat-list');
-        if(msgEl) msgEl.innerText = "대화 기록이 없습니다.";
+        if (msgEl) msgEl.innerText = "대화 기록이 없습니다.";
     }
 }
 
@@ -408,30 +363,38 @@ function renderSliderLog(index) {
     const msgEl = document.getElementById('viewer-message');
     const counterEl = document.getElementById('viewer-counter');
 
-    speakerEl.innerText = log.speaker;
-    msgEl.classList.add('markdown-body');
-    msgEl.innerHTML = renderMarkdown(log.message);
+    if (speakerEl) speakerEl.innerText = log.speaker;
+    if (msgEl) {
+        msgEl.classList.add('markdown-body');
+        msgEl.innerHTML = renderMarkdown(log.message);
+    }
 
-    const style = getAgentStyle(log.code);
+    if (avatarEl) {
+        const style = getAgentStyle(log.code);
+        avatarEl.innerHTML = style.icon;
+        avatarEl.className = style.color + " w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg border-2 border-gray-500";
+        if (typeEl) typeEl.innerText = style.role;
+    }
 
-    avatarEl.innerHTML = style.icon;
-    avatarEl.className = style.color;
-    typeEl.innerText = style.role;
-    counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
+    if (counterEl) counterEl.innerText = `${index + 1} / ${chatLogs.length}`;
 
-    // 버튼 상태
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
 
-    btnPrev.disabled = (index === 0);
-    btnPrev.style.opacity = index === 0 ? 0.5 : 1;
-    btnNext.disabled = (index === chatLogs.length - 1);
-    btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
+    if (btnPrev) {
+        btnPrev.disabled = (index === 0);
+        btnPrev.style.opacity = index === 0 ? 0.5 : 1;
+    }
+    if (btnNext) {
+        btnNext.disabled = (index === chatLogs.length - 1);
+        btnNext.style.opacity = index === chatLogs.length - 1 ? 0.5 : 1;
+    }
 }
 
-// [모드 2] 채팅 리스트 렌더링 (아바타 상단 고정 수정)
+// 채팅 리스트 렌더링 (아이콘 상단 고정 수정)
 function renderChatView() {
     const list = document.getElementById('chat-list');
+    if (!list) return;
     list.innerHTML = "";
 
     chatLogs.forEach(log => {
@@ -447,8 +410,8 @@ function renderChatView() {
         const colAlign = isModerator ? 'items-start' : 'items-end';
 
         const bubbleColor = isModerator
-            ? 'bg-gray-600 text-white shadow-md'
-            : 'bg-gray-900 text-gray-100 border border-gray-600 shadow-md';
+            ? 'bg-white text-gray-800 shadow-md border border-gray-200'
+            : 'bg-white text-gray-800 border border-gray-200 shadow-md';
 
         // 3. Row 생성 (여기서 items-start를 줘서 아바타를 무조건 위로 올림)
         const row = document.createElement('div');
@@ -487,54 +450,46 @@ function renderChatView() {
     });
 }
 
+
 function getAgentStyle(code) {
     switch (code) {
-        case 'chart': return { 
-            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-                    </svg>`,
-            role: 'Technical Analyst', 
+        case 'chart': return {
+            icon: `<img src="img/chart.png" alt="차트 분석가" class="w-8 h-8 mr-1.5">`,
+            role: 'Technical Analyst',
             color: 'text-red-300',
             border: 'border-red-500/30',
             bg: 'bg-red-500/10'
         };
-        case 'finance': return { 
-            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>`,
-            role: 'Financial Analyst', 
+        case 'finance': return {
+            icon: `<img src="img/finance.png" alt="재무 분석가" class="w-8 h-8 mr-1.5">`,
+            role: 'Financial Analyst',
             color: 'text-green-300',
             border: 'border-green-500/30',
             bg: 'bg-green-500/10'
         };
-        case 'news': return { 
-            icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-                    </svg>`,
-            role: 'News & Sentiment', 
-            color: 'text-yellow-300',
-            border: 'border-yellow-500/30',
-            bg: 'bg-yellow-500/10'
+        case 'news': return {
+            icon: `<img src="img/news.png" alt="뉴스 분석가" class="w-8 h-8 mr-1.5">`,
+            role: 'News Analyst',
+            color: 'text-blue-300',
+            border: 'border-blue-500/30',
+            bg: 'bg-blue-500/10'
         };
-        case 'moderator': return { 
+        case 'moderator': return {
             icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
                     </svg>`,
-            role: 'Moderator', 
+            role: 'Moderator',
             color: 'text-gray-300',
             border: 'border-gray-500/30',
             bg: 'bg-gray-500/10'
         };
-        default: return { 
+        default: return {
             icon: `<svg class="w-8 h-8 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                     </svg>`,
-            role: 'System', 
+            role: 'System',
             color: 'text-gray-300',
             border: 'border-gray-500/30',
             bg: 'bg-gray-500/10'
@@ -589,7 +544,7 @@ async function renderKospiChart() {
 
 async function renderRealMarketData() {
     const grid = document.getElementById('market-grid');
-    if(!grid) return;
+    if (!grid) return;
     try {
         const response = await fetch('http://127.0.0.1:8000/market-summary');
         const marketData = await response.json();
@@ -607,3 +562,38 @@ async function renderRealMarketData() {
         document.getElementById('market-time').innerText = new Date().toLocaleString();
     } catch (error) { console.error("Market Error:", error); }
 }
+
+// ============================================================
+// ★ [저장 함수] DB 저장 로직 (필수)
+// ============================================================
+window.saveAnalysisToDB = async function () {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        console.log("비로그인 상태 -> 저장 안 함");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/history/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                question: localStorage.getItem('userQuestion') || "",
+                summary: localStorage.getItem('analysis_summary') || "",
+                conclusion: localStorage.getItem('analysis_conclusion') || "",
+                chat_logs: localStorage.getItem('analysis_chat_history') || "[]"
+            })
+        });
+
+        if (response.ok) {
+            console.log("✅ 히스토리 DB 저장 성공!");
+        } else {
+            console.error("❌ 저장 실패:", await response.text());
+        }
+    } catch (e) {
+        console.error("DB 저장 중 통신 에러:", e);
+    }
+};

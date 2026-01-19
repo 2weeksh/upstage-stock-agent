@@ -10,179 +10,120 @@ async function loadHistory() {
     const emptyStateEl = document.getElementById('empty-state');
 
     try {
-        // ============================================================
-        // DB 연동 ?
-        /*
         const token = localStorage.getItem('accessToken');
-        
-        // 토큰이 없으면 로그인 페이지로 (필요시 사용)
-        // if (!token) {
-        //     window.location.href = 'login.html';
-        //     return;
-        // }
 
-        // const response = await fetch(`${AUTH_API_BASE}/history`, { 
-        const response = await fetch('/api/chat/history', { 
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // JWT 토큰 인증
-            }
-        });
-
-        if (!response.ok) {
-            // 401 Unauthorized 등 에러 처리
-            if (response.status === 401) {
-                alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-                window.location.href = 'login.html';
-                return;
-            }
-            throw new Error('서버에서 기록을 불러오는데 실패했습니다.');
-        }
-
-        // 서버 데이터로 교체 (변수명 data 재선언 주의: 아래 더미 데이터 const data 주석 처리 필요)
-        const data = await response.json();
-        */
-        // ============================================================
-
-
-        // ============================================================
-        
-        const data = [
-            {
-                id: 1,
-                question: "(테스트)삼성전자 주식 전망은 어떤가요?",
-                summary: "삼성전자는 반도체 업황 회복으로 긍정적 전망",
-                conclusion: "매수 추천",
-                log: "분석 실행 완료",
-                created_at: "2024-01-15T10:00:00Z"
-            },
-            {
-                id: 2,
-                question: "(테스트)LG에너지솔루션 투자 가치가 있을까요?",
-                summary: "LG에너지솔루션은 2차전지 산업 성장으로 수혜 예상",
-                conclusion: "관망 필요",
-                log: "상세 분석 완료",
-                created_at: "2024-01-16T14:30:00Z"
-            },
-            {
-                id: 3,
-                question: "최근 질문 테스트 (같은 날짜)",
-                summary: "테스트 데이터",
-                conclusion: "확인",
-                log: "로그",
-                created_at: "2024-01-16T10:00:00Z"
-            },
-            {
-                id: 1,
-                question: "(테스트)삼성전자 주식 전망은 어떤가요?",
-                summary: "삼성전자는 반도체 업황 회복으로 긍정적 전망",
-                conclusion: "매수 추천",
-                log: "분석 실행 완료",
-                created_at: "2024-01-15T10:00:00Z"
-            },
-            {
-                id: 2,
-                question: "(테스트)LG에너지솔루션 투자 가치가 있을까요?",
-                summary: "LG에너지솔루션은 2차전지 산업 성장으로 수혜 예상",
-                conclusion: "관망 필요",
-                log: "상세 분석 완료",
-                created_at: "2024-01-16T14:30:00Z"
-            },
-            {
-                id: 3,
-                question: "최근 질문 테스트 (같은 날짜)",
-                summary: "테스트 데이터",
-                conclusion: "확인",
-                log: "로그",
-                created_at: "2024-01-16T10:00:00Z"
-            }
-        ];
-        // ============================================================
-
-        // 3. 최신순으로 정렬
-        data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-        // 로딩 숨기기
-        loadingEl.style.display = 'none';
-
-        if (data.length === 0) {
-            emptyStateEl.style.display = 'block';
+        // 1. 비로그인 처리
+        if (!token) {
+            alert('로그인이 필요한 서비스입니다.');
+            window.location.href = 'login.html';
             return;
         }
 
-        historyListEl.style.display = 'block';
+        // 2. API 호출 (로그에 200 OK 떴으니 무조건 데이터 옴)
+        const response = await fetch('/api/history/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
-        // 4. 날짜별로 그룹화하여 렌더링
-        const groupedData = groupByDate(data);
-        renderHistoryList(groupedData);
+        // 3. 토큰 만료 처리
+        if (response.status === 401) {
+            alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const data = await response.json();
+
+        // 4. 화면 렌더링
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        if (!data || data.length === 0) {
+            if (emptyStateEl) emptyStateEl.style.display = 'block';
+            return;
+        }
+
+        if (historyListEl) {
+            historyListEl.style.display = 'block';
+            renderHistoryList(groupByDate(data));
+        }
 
     } catch (error) {
-        console.error(error);
-        loadingEl.innerHTML = '<div class="text-red-400">데이터를 불러오는 중 오류가 발생했습니다.</div>';
+        console.error("히스토리 로드 실패:", error);
+        if (loadingEl) loadingEl.innerHTML = '<div class="text-red-400">데이터를 불러오지 못했습니다.</div>';
     }
 }
 
-// 날짜별로 그룹화
+// 날짜별 그룹화
 function groupByDate(data) {
     const grouped = {};
-    
     data.forEach(item => {
-        const date = new Date(item.created_at).toLocaleDateString('ko-KR');
-        if (!grouped[date]) {
-            grouped[date] = [];
+        // created_at (YYYY-MM-DDTHH:mm:ss) -> 날짜만 추출
+        let dateStr = item.created_at;
+        if (dateStr && dateStr.includes('T')) {
+            dateStr = dateStr.split('T')[0];
+        } else if (dateStr && dateStr.includes(' ')) {
+            dateStr = dateStr.split(' ')[0];
         }
-        grouped[date].push(item);
+
+        if (!grouped[dateStr]) {
+            grouped[dateStr] = [];
+        }
+        grouped[dateStr].push(item);
     });
-    
     return grouped;
 }
 
-// 질문 기록 목록 렌더링
+// 리스트 그리기
+// 리스트 그리기 함수 (수정됨)
+// 리스트 그리기 함수 (질문만 표시되도록 수정됨)
 function renderHistoryList(groupedData) {
-    const historyListEl = document.getElementById('history-list');
-    historyListEl.innerHTML = '';
+    const listEl = document.getElementById('history-list');
+    listEl.innerHTML = '';
 
-    // 날짜 키 내림차순 정렬 (최신 날짜가 위로)
-    const sortedDates = Object.keys(groupedData).sort((a, b) => {
-        return new Date(b.replace(/\./g, '-')) - new Date(a.replace(/\./g, '-'));
-    });
+    // 최신 날짜순 정렬
+    const sortedDates = Object.keys(groupedData).sort((a, b) => new Date(b) - new Date(a));
 
     sortedDates.forEach(date => {
-        // 1. 날짜 배지 (중앙 배치)
-        const dateHeaderContainer = document.createElement('div');
-        dateHeaderContainer.className = 'flex justify-center mb-4 mt-8 first:mt-2';
-        
-        const dateBadge = document.createElement('span');
-        dateBadge.className = 'bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full border border-gray-700 font-mono';
-        dateBadge.textContent = date;
-        
-        dateHeaderContainer.appendChild(dateBadge);
-        historyListEl.appendChild(dateHeaderContainer);
+        // 1. 날짜 헤더 생성
+        const header = document.createElement('div');
+        header.className = 'flex justify-center mb-4 mt-8 first:mt-2';
+        header.innerHTML = `<span class="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full border border-gray-700 font-mono">${date}</span>`;
+        listEl.appendChild(header);
 
-        // 2. 해당 날짜의 질문
+        // 2. 카드 아이템 생성
         groupedData[date].forEach(item => {
             const card = document.createElement('div');
-            card.className = 'box cursor-pointer hover:border-blue-500 transition-all group mb-3';
-            
+            // 스타일: 깔끔한 박스 형태
+            card.className = 'box cursor-pointer hover:border-blue-500 transition-all group mb-3 p-5 bg-gray-900 border border-gray-700 rounded-lg shadow-sm hover:shadow-md hover:bg-gray-800';
+
+            // [수정] 오직 질문만 표시 (요약/의견 삭제됨)
             card.innerHTML = `
-                <p class="text-white text-lg font-medium line-clamp-2">${item.question}</p>
+                <div class="flex justify-between items-center w-full">
+                    <p class="text-white text-lg font-bold line-clamp-1 flex-1 pr-4">${item.question}</p>
+                    <span class="text-gray-500 group-hover:text-blue-400 transition-colors transform group-hover:translate-x-1 duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </span>
+                </div>
             `;
 
             // 클릭 시 분석 페이지로 이동
-            card.onclick = () => viewAnalysis(item.question, item.summary, item.conclusion, item.log);
-            
-            historyListEl.appendChild(card);
+            card.onclick = () => viewAnalysis(item);
+            listEl.appendChild(card);
         });
     });
 }
+// 분석 페이지로 데이터 넘기기
+function viewAnalysis(item) {
+    localStorage.setItem('userQuestion', item.question);
+    localStorage.setItem('analysis_summary', item.summary);
+    localStorage.setItem('analysis_conclusion', item.conclusion);
+    localStorage.setItem('analysis_chat_history', item.chat_logs); // DB JSON 문자열 그대로 저장
 
-// 분석 페이지로 이동
-function viewAnalysis(question, summary, conclusion, log) {
-    localStorage.setItem('userQuestion', question);
-    localStorage.setItem('analysis_summary', summary || '');
-    localStorage.setItem('analysis_conclusion', conclusion || '');
-    localStorage.setItem('analysis_log', log || '');
-    
+    // ★ 핵심: 다시보기 모드 ON
+    localStorage.setItem('history_mode', 'true');
+
     window.location.href = 'analysis.html';
 }

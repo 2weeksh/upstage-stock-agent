@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "test_date": "2026-01-19T13:48:12.952362",
+    "total_stocks": 1,
+    "evaluator": "LLM-as-Judge (Solar Pro 2)",
+    "multi_agent_type": "Full Debate System (기조발언 + 토론 + 최후변론 + 사회자요약 + 판정)"
+  },
+  "stocks": [
+    {
+      "company": "삼성전자",
+      "error": "Error code: 429 - {'error': {'message': \"You've reached your API request limit. Please wait and try again later. If your use case requires a higher rate limit, please refer to our Pricing - commitment tier at https://www.upstage.ai/pricing/api#commitment to see how rate limits are determined based on your commitment amount\", 'type': 'too_many_requests', 'param': '', 'code': 'too_many_requests'}}"
+    }
+  ],
+  "summary": {
+    "error": "유효한 평가 결과 없음"
+  }
+}
