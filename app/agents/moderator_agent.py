@@ -25,7 +25,7 @@ class ModeratorAgent:
         2. **STATUS**: 
            - 의견이 수렴되었거나, 정해진 시간이 지났다면 -> [TERMINATE]
            - 여전히 쟁점이 있어 토론이 더 필요하다면 -> [CONTINUE]
-        3. **NEXT_SPEAKER**: [CONTINUE]일 경우, 다음 발언자(Chart, News, Finance 중 1) 지목.
+        3. **NEXT_SPEAKER**: [CONTINUE]일 경우, 다음 발언자는 반드시 Chart, News, Finance 중 하나만 지목.
         4. **INSTRUCTION**: 그 발언자에게 시킬 구체적인 반박 질문.
 
         반드시 아래 포맷으로 답변하세요:

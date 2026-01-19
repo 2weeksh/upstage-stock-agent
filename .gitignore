@@ -215,3 +215,6 @@ tickers_cache.pkl
 
 #리포트 저장
 logs/
+
+#데이터
+/data
