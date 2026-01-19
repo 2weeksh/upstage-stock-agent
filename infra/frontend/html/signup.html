@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockWars</title>
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.cdnfonts.com/css/star-wars" rel="stylesheet">
 </head>
 <body class="page-main">
+    <a href="start.html" class="t-main" style="position: fixed; top: 25px; left: 25px; z-index: 1000; font-size: 1.5rem; font-family: 'Star Wars', sans-serif; text-decoration: none; letter-spacing: -0.02em;">SToCKwars</a>
     <div class="chart-bg" id="chartBg"></div>
 
     <main class="wrapper">
@@ -68,11 +69,23 @@
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // [수정] 중복 확인 여부 검사 로직 추가
+            if (!isUsernameChecked) {
+                alert('아이디 중복확인을 해주세요.');
+                document.getElementById('username').focus();
+                return;
+            }
+
+            if (!isNicknameChecked) {
+                alert('닉네임 중복확인을 해주세요.');
+                document.getElementById('nickname').focus();
+                return;
+            }
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const nickname = document.getElementById('nickname').value;
 
-            // [수정] 별도의 조건 검사(if문) 없이 바로 서버로 전송합니다.
             const success = await apiSignup(username, password, nickname);
             
             if (success) {

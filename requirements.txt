@@ -1,0 +1,56 @@
+# ===============================
+# Core Framework
+# ===============================
+fastapi
+uvicorn
+
+# ===============================
+# Environment & Config
+# ===============================
+python-dotenv
+
+# ===============================
+# Database
+# ===============================
+sqlalchemy
+aiosqlite
+
+# ===============================
+# Auth / Security
+# ===============================
+passlib[bcrypt]
+argon2-cffi
+python-jose[cryptography]
+
+# ===============================
+# HTTP & Utilities
+# ===============================
+requests
+
+# ===============================
+# Finance / Market Data
+# ===============================
+yfinance
+finance-datareader
+
+# ===============================
+# LLM / LangChain
+# ===============================
+langchain
+langchain-community
+langchain-upstage
+
+# ===============================
+# Vector DB
+# ===============================
+chromadb
+
+# ===============================
+# Search Tool
+# ===============================
+tavily-python
+
+# ===============================
+# Optional (progress bar, etc.)
+# ===============================
+tqdm
