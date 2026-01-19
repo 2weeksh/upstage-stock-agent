@@ -26,22 +26,24 @@ from app.agents.finance_agent import FinanceAgent
 from app.agents.moderator_agent import ModeratorAgent
 from app.agents.judge_agent import JudgeAgent
 from app.agents.report_agent import InsightReportAgent
+from app.agents.validator_agent import DataValidator # [수정] Validator Import 추가
 
 class StockService:
     def __init__(self):
         # 1. 공통 사용 LLM 초기화
-        self.news_llm = get_solar_model(temperature=0.3)
-        self.chart_llm = get_solar_model(temperature=0.1)
-        self.finance_llm = get_solar_model(temperature=0.1)
-        self.moderator_llm = get_solar_model(temperature=0.2)
-        self.judge_llm = get_solar_model(temperature=0.1)
-        self.report_llm = get_solar_model(temperature=0.2)
+        self.news_llm = get_solar_model()
+        self.chart_llm = get_solar_model()
+        self.finance_llm = get_solar_model()
+        self.moderator_llm = get_solar_model()
+        self.judge_llm = get_solar_model()
+        self.report_llm = get_solar_model()
 
         # 2. 데이터 콜렉터 초기화
         self.dart_collector = DartCollector()
         self.news_collector = NewsCollector()
         self.chart_collector = ChartCollector()
         self.finance_collector = FinanceCollector()
+        self.validator = DataValidator()
 
         # 3. 상태와 무관한 공통 에이전트 초기화
         self.moderator_agent = ModeratorAgent(self.moderator_llm)
@@ -102,7 +104,7 @@ class StockService:
             ingestor = StockIngestor(db)
 
             # ------------------------------------------------------------------
-            # [Step 1] 데이터 수집 및 지식 베이스 주입
+            # [Step 1] 데이터 수집 (Raw Data Collection)
             # ------------------------------------------------------------------
             yield create_msg("system", "status", f"'{refined_name}'의 최신 데이터를 수집하여 지식 베이스를 갱신합니다.")
 
@@ -112,13 +114,31 @@ class StockService:
             c_task = loop.run_in_executor(None, self.chart_collector.fetch_technical_data, ticker, refined_name)
             f_task = loop.run_in_executor(None, self.finance_collector.fetch_financial_summary, ticker, refined_name)
 
-            (dart_text, dart_title), n_docs, c_docs, f_docs = await asyncio.gather(d_task, n_task, c_task, f_task)
+            # [수정] 수집된 결과를 _raw 변수에 저장
+            (dart_text_raw, dart_title), n_docs_raw, c_docs_raw, f_docs_raw = await asyncio.gather(d_task, n_task, c_task, f_task)
 
-            # DB 주입 (DART는 보존, 나머지는 최신화)
-            ingestor.ingest_dart_data(pure_ticker, refined_name, dart_text, dart_title)
+            # ------------------------------------------------------------------
+            # [Step 1.5] 데이터 검증 (Data Validation & Filtering)
+            # ------------------------------------------------------------------
+            yield create_msg("system", "status", "수집된 데이터의 신뢰성을 검증하고 노이즈를 제거합니다.")
+
+            # [수정] ticker 인자를 추가로 전달합니다. (str() 변환은 Collector 리턴 타입에 따라 결정)
+            # 이제 Validator가 List[Document]를 직접 반환합니다.
+            v_n_task = loop.run_in_executor(None, self.validator.validate_and_filter, "news", refined_name, pure_ticker, str(n_docs_raw))
+            v_c_task = loop.run_in_executor(None, self.validator.validate_and_filter, "chart", refined_name, pure_ticker, str(c_docs_raw))
+            v_f_task = loop.run_in_executor(None, self.validator.validate_and_filter, "finance", refined_name, pure_ticker, str(f_docs_raw))
+            
+            # 결과 받기 (이제 이 변수들은 이미 [Document] 리스트입니다)
+            n_docs, c_docs, f_docs = await asyncio.gather(v_n_task, v_c_task, v_f_task)
+
+            # [Step 1.6] DB 주입 (Ingestion)
+            # 별도의 변환 과정 없이 바로 주입합니다. (코드가 훨씬 깔끔해짐)
+            ingestor.ingest_dart_data(pure_ticker, refined_name, dart_text_raw, dart_title)
             ingestor.ingest_news_data(pure_ticker, refined_name, n_docs)
             ingestor.ingest_chart_data(pure_ticker, refined_name, c_docs)
             ingestor.ingest_finance_data(pure_ticker, refined_name, f_docs)
+
+            
 
             # ------------------------------------------------------------------
             # [Step 2] 에이전트 런타임 생성 (Retriever 주입)
@@ -280,8 +300,6 @@ class StockService:
         except Exception as e:
             traceback.print_exc()
             yield create_msg("system", "error", f"분석 중 오류 발생: {str(e)}")
-
-
 
 
 
