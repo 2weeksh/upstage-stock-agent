@@ -93,7 +93,7 @@ def fetch_single_ticker(name, info):
         return None
 
 
-@app.get("/market-summary")
+@app.get("/api/market-summary")
 async def get_market_summary():
     global MARKET_CACHE
     current_time = time.time()
@@ -117,7 +117,7 @@ async def get_market_summary():
     return market_data
 
 
-@app.get("/kospi-data")
+@app.get("/api/kospi-data")
 async def get_kospi_data():
     try:
         kospi = yf.Ticker("^KS11")

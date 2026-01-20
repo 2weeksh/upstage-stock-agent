@@ -43,7 +43,7 @@ function initUserInput() {
             return;
         }
         localStorage.setItem('userQuestion', question);
-        window.location.href = "../loading.html";
+        window.location.href = "/html/loading.html";
     });
 }
 
@@ -77,7 +77,7 @@ function initLoadingPage() {
     if (stopBtn) {
         stopBtn.addEventListener('click', () => {
             if(confirm("분석을 중지하고 돌아가시겠습니까?")) {
-                window.location.href = 'userInput.html';
+                window.location.href = '/html/userInput.html';
             }
         });
     }
@@ -107,11 +107,11 @@ async function fetchAnalysisResult(question) {
 
         // 백엔드에서 보낸 speaker 코드에 따라 매핑
         if (speakerCode === 'chart') {
-            config = { type: 'agent', name: '차트 분석가', icon: '<img src="img/chart.png" class="agent-icon" alt="차트">', theme: 'theme-chart' };
+            config = { type: 'agent', name: '차트 분석가', icon: '<img src="/img/chart.png" class="agent-icon" alt="차트">', theme: 'theme-chart' };
         } else if (speakerCode === 'finance') {
-            config = { type: 'agent', name: '재무 분석가', icon: '<img src="img/finance.png" class="agent-icon" alt="재무">', theme: 'theme-finance' };
+            config = { type: 'agent', name: '재무 분석가', icon: '<img src="/img/finance.png" class="agent-icon" alt="재무">', theme: 'theme-finance' };
         } else if (speakerCode === 'news') {
-            config = { type: 'agent', name: '뉴스 분석가', icon: '<img src="img/news.png" class="agent-icon" alt="뉴스">', theme: 'theme-news' };
+            config = { type: 'agent', name: '뉴스 분석가', icon: '<img src="/img/news.png" class="agent-icon" alt="뉴스">', theme: 'theme-news' };
         }
         // system인 경우는 기본값 유지
 

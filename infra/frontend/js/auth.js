@@ -39,13 +39,13 @@ function renderAuthNav() {
     if (token && nickname) {
         navContainer.innerHTML = `
             <span class="user-nickname">${nickname}님</span>
-            <a href="mypage.html">마이페이지</a>
+            <a href="/html/mypage.html">마이페이지</a>
             <a href="#" onclick="handleLogout(event)">로그아웃</a>
         `;
     } else {
         navContainer.innerHTML = `
-            <a href="login.html">로그인</a>
-            <a href="signup.html">회원가입</a>
+            <a href="/html/login.html">로그인</a>
+            <a href="/html/signup.html">회원가입</a>
         `;
     }
 }

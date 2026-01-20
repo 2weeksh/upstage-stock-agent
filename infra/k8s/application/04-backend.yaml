@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ghcr.io/2weeksh/upstage-stock-agent-backend:latest
-        imagePullPolicy: Always
+        image: upstage-stock-agent-backend:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8001
           name: http
@@ -35,38 +35,44 @@ spec:
               name: app-secret
               key: UPSTAGE_API_KEY
               optional: true
-        - name: SERPER_API_KEY
+        - name: TAVILY_API_KEY
           valueFrom:
             secretKeyRef:
               name: app-secret
-              key: SERPER_API_KEY
+              key: TAVILY_API_KEY
+              optional: true
+        - name: DART_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: DART_API_KEY
               optional: true
         envFrom:
         - configMapRef:
             name: app-config
         resources:
           requests:
-            cpu: "100m"
-            memory: "128Mi"
+            cpu: "250m"
+            memory: "1Gi"
           limits:
             cpu: "500m"
-            memory: "512Mi"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
+            memory: "2Gi"
+#        livenessProbe:
+ #         httpGet:
+  #          path: /health
+   #         port: 8001
+    #      initialDelaySeconds: 30
+     #     periodSeconds: 10
+      #    timeoutSeconds: 5
+       #   failureThreshold: 3
+        #readinessProbe:
+        #  httpGet:
+         #   path: /health
+          #  port: 8001
+        #  initialDelaySeconds: 10
+      #    periodSeconds: 5
+      #    timeoutSeconds: 3
+      #    failureThreshold: 2
 
 ---
 # Service - Backend 내부 접근

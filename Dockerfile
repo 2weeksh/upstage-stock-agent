@@ -58,33 +58,3 @@ EXPOSE 8001
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
 
 # ======================================================================
-# Frontend Runtime Stage - Streamlit UI
-# ======================================================================
-FROM python:3.12-slim AS frontend
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-WORKDIR /app
-
-RUN useradd -m appuser
-
-# 빌더에서 가상환경 복사
-COPY --from=builder /app/.venv /app/.venv
-
-# 프론트엔드 코드 복사
-COPY --from=builder /app/infra /app/infra
-COPY --from=builder /app/pyproject.toml /app/pyproject.toml
-
-RUN chown -R appuser:appuser /app
-
-# 가상환경 경로 설정
-ENV VIRTUAL_ENV=/app/.venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-USER appuser
-
-EXPOSE 8002
-
-# Streamlit 실행
-CMD ["python", "-m", "streamlit", "run", "infra/frontend/ui.py", "--server.port", "8002", "--server.address", "0.0.0.0"]

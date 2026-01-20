@@ -15,7 +15,7 @@ async function loadHistory() {
         // 1. 비로그인 처리
         if (!token) {
             alert('로그인이 필요한 서비스입니다.');
-            window.location.href = 'login.html';
+            window.location.href = '/html/login.html';
             return;
         }
 
@@ -31,7 +31,7 @@ async function loadHistory() {
         // 3. 토큰 만료 처리
         if (response.status === 401) {
             alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-            window.location.href = 'login.html';
+            window.location.href = '/html/login.html';
             return;
         }
 
@@ -125,5 +125,5 @@ function viewAnalysis(item) {
     // ★ 핵심: 다시보기 모드 ON
     localStorage.setItem('history_mode', 'true');
     
-    window.location.href = 'analysis.html';
+    window.location.href = '/html/analysis.html';
 }

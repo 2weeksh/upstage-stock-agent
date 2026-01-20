@@ -455,21 +455,21 @@ function renderChatView() {
 function getAgentStyle(code) {
     switch (code) {
         case 'chart': return { 
-            icon: `<img src="img/chart.png" alt="차트 분석가" class="w-8 h-8 mr-1.5">`,
+            icon: `<img src="/img/chart.png" alt="차트 분석가" class="w-8 h-8 mr-1.5">`,
             role: 'Technical Analyst', 
             color: 'text-red-300',
             border: 'border-red-500/30',
             bg: 'bg-red-500/10'
         };
         case 'finance': return { 
-            icon: `<img src="img/finance.png" alt="재무 분석가" class="w-8 h-8 mr-1.5">`,
+            icon: `<img src="/img/finance.png" alt="재무 분석가" class="w-8 h-8 mr-1.5">`,
             role: 'Financial Analyst', 
             color: 'text-green-300',
             border: 'border-green-500/30',
             bg: 'bg-green-500/10'
         };
         case 'news': return { 
-            icon: `<img src="img/news.png" alt="뉴스 분석가" class="w-8 h-8 mr-1.5">`,
+            icon: `<img src="/img/news.png" alt="뉴스 분석가" class="w-8 h-8 mr-1.5">`,
             role: 'News Analyst', 
             color: 'text-blue-300',
             border: 'border-blue-500/30',
@@ -503,7 +503,7 @@ function getAgentStyle(code) {
 // 기존 차트/시장 함수
 // ============================================================
 async function renderKospiChart() {
-    const KOSPI_API_URL = 'http://127.0.0.1:8000/kospi-data';
+    const KOSPI_API_URL = '/api/kospi-data';
     try {
         const response = await fetch(KOSPI_API_URL);
         const data = await response.json();
@@ -548,7 +548,7 @@ async function renderRealMarketData() {
     const grid = document.getElementById('market-grid');
     if(!grid) return;
     try {
-        const response = await fetch('http://127.0.0.1:8000/market-summary');
+        const response = await fetch('/api/market-summary');
         const marketData = await response.json();
         grid.innerHTML = "";
         marketData.forEach(item => {
