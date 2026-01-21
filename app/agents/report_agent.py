@@ -11,7 +11,7 @@ class InsightReportAgent:
         report_schema = {
             "report_info": { "title": f"{company_name} 인사이트 리포트", "symbol": ticker, "date": "2026-01" },
             "header_summary": {
-                "rating": { "label": "Buy/Hold/Sell", "status": "중립적 관망 등", "color": "red/gray/blue" },
+                "rating": { "label": "Buy/Hold/Sell", "color": "red/gray/blue" },
                 "target_price": 0, "current_price": 0, "upside_ratio": "0.0%",
                 "key_metrics": { "PER": "0x", "PBR": "0x", "ROE": "0%", "Beta": "0.0" }
             },
@@ -55,10 +55,11 @@ class InsightReportAgent:
         당신은 월스트리트 수석 전략가입니다. 제공된 [전체 토론 기록]을 바탕으로 현업 펀드매니저 수준의 고퀄리티 JSON 리포트를 작성하세요.
         
         [작성 원칙]:
-        1. **입체적 분석**: 단순히 사실을 요약하지 말고 '매수 측면'과 '매도 측면'의 논리적 대립을 심도 있게 다루세요.
-        2. **수치 기반**: 토론에 나온 PER, RSI, 목표가, 실적 추정치 등 모든 정량적 데이터를 누락 없이 포함하세요.
-        3. **통찰력 주입**: 'strategic_importance'와 'consensus_clash' 필드에는 멘토님이 강조하신 '이게 왜 중요한가'에 대한 당신의 날카로운 해석을 담으세요.
-        4. **시나리오 설계**: 특정 변수(가격 하락 등) 발생 시의 영향도를 구체적으로 추정하여 risk_scenarios를 작성하세요.
+        1. - header_summary.rating.label 은 반드시 ("BUY", "HOLD", "SELL") 중 하나만 사용하세요.
+        2. **입체적 분석**: 단순히 사실을 요약하지 말고 '매수 측면'과 '매도 측면'의 논리적 대립을 심도 있게 다루세요.
+        3. **수치 기반**: 토론에 나온 PER, RSI, 목표가, 실적 추정치 등 모든 정량적 데이터를 누락 없이 포함하세요.
+        4. **통찰력 주입**: 'strategic_importance'와 'consensus_clash' 필드에는 멘토님이 강조하신 '이게 왜 중요한가'에 대한 당신의 날카로운 해석을 담으세요.
+        5. **시나리오 설계**: 특정 변수(가격 하락 등) 발생 시의 영향도를 구체적으로 추정하여 risk_scenarios를 작성하세요.
 
         [출력 형식]:
         - 반드시 아래 JSON 스키마 구조를 엄격히 준수하세요.

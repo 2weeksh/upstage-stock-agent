@@ -57,7 +57,7 @@ class StockService:
                 text_log += f"\n\n[{item['speaker']}]: {item['message']}"
         return text_log
 
-    async def handle_user_task(self, user_input: str, max_turns: int = 3):
+    async def handle_user_task(self, user_input: str, max_turns: int = 10):
         try:
             # 메시지 생성 헬퍼 (프론트엔드 규격 유지)
             def create_msg(speaker, msg_type, message, data=None):
@@ -199,11 +199,6 @@ class StockService:
             yield create_msg("system", "status", "분석 내용을 바탕으로 상호 토론을 시작합니다.")
             for turn in range(max_turns):
                 yield create_msg("system", "status", f"상호 토론 {turn +1}/{max_turns} 라운드")
-
-                # [추가 부분] 7라운드 이상 시 사회자의 Temperature를 낮춰 수렴 유도
-                if turn >= 7:
-                    self.moderator_agent.llm = self.moderator_llm.bind(temperature=0.1)
-
 
                 current_context = self._format_history_for_llm(discussion_log)
                 mod_output = await run_with_retry(self.moderator_agent.facilitate, refined_name, current_context)
